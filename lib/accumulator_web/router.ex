@@ -19,7 +19,6 @@ defmodule AccumulatorWeb.Router do
 
     get "/", PageController, :home
     live "/dashboard", DashboardLive
-    live "/test", TestLive
   end
 
   # Other scopes may use custom stacks.

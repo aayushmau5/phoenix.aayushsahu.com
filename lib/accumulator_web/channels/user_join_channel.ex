@@ -4,6 +4,9 @@ defmodule AccumulatorWeb.UserJoinChannel do
   alias AccumulatorWeb.Presence
   alias Accumulator.Storage.ViewCount
 
+  # Total website views are stored in "main" key
+  @total_view_slug "main"
+
   def join(_room_id, _params, socket) do
     send(self(), :after_join)
     {:ok, socket}
@@ -13,7 +16,7 @@ defmodule AccumulatorWeb.UserJoinChannel do
     {:ok, _} = Presence.track(socket, socket.id, %{})
     push(socket, "presence_state", Presence.list(socket))
 
-    view_count = ViewCount.increment_count("main")
+    view_count = ViewCount.increment_count(@total_view_slug)
     broadcast!(socket, "view-count", %{count: view_count})
 
     {:noreply, socket}
