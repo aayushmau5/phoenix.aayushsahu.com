@@ -48,6 +48,15 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
+  config :redix,
+    config: [
+      name: :redix,
+      host: System.get_env("REDIS_HOST"),
+      password: System.get_env("REDIS_PASSWORD"),
+      port: 6379,
+      socket_opts: [:inet6]
+    ]
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key

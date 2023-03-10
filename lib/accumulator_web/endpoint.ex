@@ -47,4 +47,9 @@ defmodule AccumulatorWeb.Endpoint do
   plug Plug.Head
   plug Plug.Session, @session_options
   plug AccumulatorWeb.Router
+
+  # A socket route
+  socket "/socket", AccumulatorWeb.UserSocket,
+    websocket: [connect_info: [session: @session_options]],
+    longpoll: false
 end

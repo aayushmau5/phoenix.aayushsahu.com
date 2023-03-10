@@ -423,6 +423,7 @@ defmodule AccumulatorWeb.CoreComponents do
   Renders a header with title.
   """
   attr :class, :string, default: nil
+  attr :h1_class, :string, default: nil
 
   slot :inner_block, required: true
 
@@ -430,7 +431,7 @@ defmodule AccumulatorWeb.CoreComponents do
     ~H"""
     <header class={["flex items-center justify-between gap-6", @class]}>
       <div>
-        <h1 class="text-lg font-semibold leading-8">
+        <h1 class={["font-semibold leading-8", @h1_class || "text-lg"]}>
           <%= render_slot(@inner_block) %>
         </h1>
       </div>
