@@ -22,3 +22,10 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 Make a blog post on demystifying phoenix(going deep into how everything works, macros, plugs, etc.)
 
 The need to understand how each piece fit together
+
+## How everything needs to fit together
+
+On "main" channel, when we update the view count, send a pubsub message to "update:main-page-view-count" topic, and when we receive this, update viewcount.
+We also need to update rt view count, so send message to "update:rt-main-page-view-count", and update.
+
+Similarly for blogs
