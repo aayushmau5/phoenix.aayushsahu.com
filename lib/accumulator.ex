@@ -23,21 +23,26 @@ defmodule Accumulator do
   Generates blog data in sorted order of their view count.
   """
   def generate_blog_data() do
+    # TODO: really inefficient method. we are getting keys and iterating over them twice * n. Find a way to get all keys at once(or maybe in two batches).
     {:ok, keys} = get_blog_keys()
 
-    Enum.map(keys, fn key ->
-      "blog:" <> slug = key
-
-      %{
-        key: slug,
-        views: ViewCount.get_count(key),
-        likes_count: LikesCount.get_count("like-blog:" <> slug),
-        # This thing doesn't really belong here
-        current_view_count:
-          Presence.list(key) |> Map.get("", %{metas: []}) |> Map.get(:metas) |> length()
-      }
-    end)
+    Enum.map(keys, &generate_single_blog_data(&1))
     |> Enum.sort(&(&1.views > &2.views))
+  end
+
+  # TODO: need a better data structure
+  defp generate_single_blog_data(key) do
+    "blog:" <> slug = key
+
+    %{
+      key: slug,
+      views: ViewCount.get_count(key),
+      likes_count: LikesCount.get_count("like-blog:" <> slug),
+
+      # This thing doesn't really belong here
+      current_view_count:
+        Presence.list(key) |> Map.get("", %{metas: []}) |> Map.get(:metas) |> length()
+    }
   end
 
   defp get_blog_keys() do

@@ -16,8 +16,7 @@ defmodule AccumulatorWeb.DashboardLive do
 
         assign(socket,
           total_page_views: Accumulator.get_total_website_views(),
-          current_page_view_count:
-            Presence.list("user-join") |> Map.get("", %{metas: []}) |> Map.get(:metas) |> length(),
+          current_page_view_count: get_presence_count("user-join"),
           # TODO: think about putting this data in a stream
           blogs_data: Accumulator.generate_blog_data()
         )
@@ -78,5 +77,45 @@ defmodule AccumulatorWeb.DashboardLive do
       end)
 
     {:noreply, assign(socket, blogs_data: blogs_data)}
+  end
+
+  @impl true
+  def handle_info(%{event: :main_page_user_count}, socket) do
+    # what to do now?
+    {:noreply, assign(socket, current_page_view_count: get_presence_count("user-join"))}
+  end
+
+  @impl true
+  def handle_info(%{event: :blog_page_user_count, key: key}, socket) do
+    blogs_data = socket.assigns.blogs_data
+
+    "blog:" <> slug = key
+
+    blog_index =
+      blogs_data
+      |> Enum.find_index(&(Map.get(&1, :key) == slug))
+
+    blogs_data =
+      case blog_index do
+        nil ->
+          # not sure if key should already exist or not
+          Accumulator.generate_blog_data()
+
+        index ->
+          # Key exists, update its view count.
+          List.update_at(blogs_data, index, fn map ->
+            Map.update!(map, :current_view_count, fn _ -> get_presence_count(key) end)
+          end)
+      end
+
+    {:noreply, assign(socket, blogs_data: blogs_data)}
+  end
+
+  defp get_presence_count(key) do
+    # TODO: fix this function
+    Presence.list(key)
+    |> Map.get(key, %{metas: []})
+    |> Map.get(:metas)
+    |> length()
   end
 end
