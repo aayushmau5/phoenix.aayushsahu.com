@@ -1,0 +1,22 @@
+# fly.toml file generated for phoenix-redis on 2023-03-13T02:28:02+05:30
+
+app = "phoenix-redis"
+kill_signal = "SIGINT"
+kill_timeout = 5
+processes = []
+
+[build]
+  image = "flyio/redis:6.2"
+
+[env]
+
+[experimental]
+  auto_rollback = true
+
+[mounts]
+  destination = "/data"
+  source = "redis_server"
+
+[metrics]
+  port = 9091
+  path = "/metrics"
