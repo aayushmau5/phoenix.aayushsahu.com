@@ -15,4 +15,16 @@ defmodule AccumulatorWeb.DashboardComponents do
     </div>
     """
   end
+
+  attr :class, :string, default: nil
+  attr :href, :string, required: true
+  slot :inner_block, required: true
+
+  def external_link(assigns) do
+    ~H"""
+    <a class={@class} href={@href} target="_blank" rel="noreferrer">
+      <%= render_slot(@inner_block) %>
+    </a>
+    """
+  end
 end

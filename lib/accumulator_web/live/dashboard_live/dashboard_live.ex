@@ -1,7 +1,6 @@
 defmodule AccumulatorWeb.DashboardLive do
   use AccumulatorWeb, :live_view
 
-  import AccumulatorWeb.DashboardComponents
   alias AccumulatorWeb.Presence
   alias Accumulator.Storage.{LikesCount, ViewCount}
   alias Phoenix.PubSub
@@ -26,7 +25,7 @@ defmodule AccumulatorWeb.DashboardLive do
 
     {:ok,
      socket
-     |> assign(page_title: "Accumulator Dashboard")}
+     |> assign(page_title: "Dashboard")}
   end
 
   @impl true

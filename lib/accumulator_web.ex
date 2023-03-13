@@ -85,6 +85,9 @@ defmodule AccumulatorWeb do
       # Core UI components and translation
       import AccumulatorWeb.CoreComponents
 
+      # Custom components
+      import AccumulatorWeb.DashboardComponents
+
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
 
