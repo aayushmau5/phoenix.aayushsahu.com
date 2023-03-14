@@ -7,13 +7,11 @@ defmodule Accumulator do
   if it comes from the database, an external API or others.
   """
 
-  alias Accumulator.Storage.{LikesCount, ViewCount}
-  alias AccumulatorWeb.Presence
-
   @spec get_total_website_views() :: atom() | integer()
   def get_total_website_views() do
     case Redix.command(:redix, ["GET", "main"]) do
       {:ok, count} -> count
+      # TODO: handle this error
       {:error, reason} -> reason
     end
   end
@@ -23,10 +21,11 @@ defmodule Accumulator do
   Generates blog data in sorted order of their view count.
   """
   def generate_blog_data() do
-    # TODO: really inefficient method. we are getting keys and iterating over them twice * n. Find a way to get all keys at once(or maybe in two batches).
     {:ok, keys} = get_blog_keys()
 
     Enum.map(keys, &generate_single_blog_data(&1))
+    # Sort by view count
+    # TODO: implement sort based on user input
     |> Enum.sort(&(&1.views > &2.views))
   end
 
@@ -34,15 +33,25 @@ defmodule Accumulator do
   defp generate_single_blog_data(key) do
     "blog:" <> slug = key
 
-    %{
-      key: slug,
-      views: ViewCount.get_count(key),
-      likes_count: LikesCount.get_count("like-blog:" <> slug),
+    case Redix.command(:redix, ["MGET", key, "like-" <> key]) do
+      {:ok, [views, nil]} ->
+        %{
+          key: slug,
+          views: String.to_integer(views),
+          likes_count: 0
+        }
 
-      # This thing doesn't really belong here
-      current_view_count:
-        Presence.list(key) |> Map.get("", %{metas: []}) |> Map.get(:metas) |> length()
-    }
+      {:ok, [views, likes]} ->
+        %{
+          key: slug,
+          views: String.to_integer(views),
+          likes_count: String.to_integer(likes)
+        }
+
+      {:error, reason} ->
+        # TODO: handle error
+        throw(reason)
+    end
   end
 
   defp get_blog_keys() do

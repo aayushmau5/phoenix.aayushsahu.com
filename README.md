@@ -23,6 +23,13 @@ Make a blog post on demystifying phoenix(going deep into how everything works, m
 
 The need to understand how each piece fit together
 
+- [ ] refactor: more spec
+- [ ] move dashboard data into a stream
+- [ ] table sort based on user input
+- [ ] refactor: remove useless components
+- [ ] refactor: better assign names
+- [ ] handle errors properly and show them on frontend
+
 ## How everything needs to fit together
 
 On "main" channel, when we update the view count, send a pubsub message to "update:main-page-view-count" topic, and when we receive this, update viewcount.

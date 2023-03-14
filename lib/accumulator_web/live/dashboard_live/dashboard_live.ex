@@ -7,7 +7,6 @@ defmodule AccumulatorWeb.DashboardLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    # TODO: Need to decide on how to get rt updates when anything changes
     # TODO: better assign naming
     socket =
       if connected?(socket) do
@@ -17,7 +16,7 @@ defmodule AccumulatorWeb.DashboardLive do
           total_page_views: Accumulator.get_total_website_views(),
           current_page_view_count: get_presence_count("user-join"),
           # TODO: think about putting this data in a stream
-          blogs_data: Accumulator.generate_blog_data()
+          blogs_data: generate_blog_data()
         )
       else
         assign(socket, total_page_views: 0, blogs_data: [], current_page_view_count: 0)
@@ -45,7 +44,7 @@ defmodule AccumulatorWeb.DashboardLive do
       case blog_index do
         nil ->
           # Key doesn't exist, a new blog data. Get all data.
-          Accumulator.generate_blog_data()
+          generate_blog_data()
 
         index ->
           # Key exists, update its view count.
@@ -80,7 +79,6 @@ defmodule AccumulatorWeb.DashboardLive do
 
   @impl true
   def handle_info(%{event: :main_page_user_count}, socket) do
-    # what to do now?
     {:noreply, assign(socket, current_page_view_count: get_presence_count("user-join"))}
   end
 
@@ -98,7 +96,7 @@ defmodule AccumulatorWeb.DashboardLive do
       case blog_index do
         nil ->
           # not sure if key should already exist or not
-          Accumulator.generate_blog_data()
+          generate_blog_data()
 
         index ->
           # Key exists, update its view count.
@@ -110,8 +108,16 @@ defmodule AccumulatorWeb.DashboardLive do
     {:noreply, assign(socket, blogs_data: blogs_data)}
   end
 
+  defp generate_blog_data(), do: Accumulator.generate_blog_data() |> insert_presence_count()
+
+  defp insert_presence_count(blogs) do
+    Enum.map(blogs, fn blog ->
+      presence_count = get_presence_count("blog:" <> blog.key)
+      Map.put(blog, :current_view_count, presence_count)
+    end)
+  end
+
   defp get_presence_count(key) do
-    # TODO: fix this function
     Presence.list(key)
     |> Map.get(key, %{metas: []})
     |> Map.get(:metas)
