@@ -18,10 +18,10 @@ defmodule AccumulatorWeb.Presence do
     {:ok, state}
   end
 
-  def handle_metas("blog:" <> slug, _, _, state) do
+  def handle_metas("blog:" <> id, _, _, state) do
     PubSub.broadcast(Accumulator.PubSub, "update:count", %{
       event: :blog_page_user_count,
-      key: "blog:" <> slug
+      key: "blog:" <> id
     })
 
     {:ok, state}

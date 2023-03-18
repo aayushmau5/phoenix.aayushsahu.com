@@ -1,6 +1,7 @@
 defmodule AccumulatorWeb.DashboardLive do
   use AccumulatorWeb, :live_view
 
+  alias Accumulator.BlogData
   alias AccumulatorWeb.Presence
   alias Accumulator.Storage.{LikesCount, ViewCount}
   alias Phoenix.PubSub
@@ -16,7 +17,7 @@ defmodule AccumulatorWeb.DashboardLive do
           total_page_views: Accumulator.get_total_website_views(),
           current_page_view_count: get_presence_count("user-join"),
           # TODO: think about putting this data in a stream
-          blogs_data: generate_blog_data() |> sort_blog_data("key", "asc")
+          blogs_data: generate_blog_data() |> sort_blog_data("id", "asc")
         )
       else
         assign(socket, total_page_views: 0, blogs_data: [], current_page_view_count: 0)
@@ -24,7 +25,7 @@ defmodule AccumulatorWeb.DashboardLive do
 
     {:ok,
      socket
-     |> assign(page_title: "Dashboard", sort_key: "key", sort_order: "asc")}
+     |> assign(page_title: "Dashboard", sort_key: "id", sort_order: "asc")}
   end
 
   @impl true
@@ -37,12 +38,9 @@ defmodule AccumulatorWeb.DashboardLive do
   end
 
   @impl true
-  def handle_info(%{event: :blog_page_view_count, key: "blog:" <> key}, socket) do
+  def handle_info(%{event: :blog_page_view_count, key: "blog:" <> id}, socket) do
     blogs_data = socket.assigns.blogs_data
-
-    blog_index =
-      blogs_data
-      |> Enum.find_index(&(Map.get(&1, :key) == key))
+    blog_index = Enum.find_index(blogs_data, &(Map.get(&1, :id) == id))
 
     blogs_data =
       case blog_index do
@@ -52,10 +50,10 @@ defmodule AccumulatorWeb.DashboardLive do
 
         index ->
           # Key exists, update its view count.
-          blog_view_count = ViewCount.get_count("blog:" <> key)
+          blog_view_count = ViewCount.get_count("blog:" <> id)
 
-          List.update_at(blogs_data, index, fn map ->
-            Map.update!(map, :views, fn _ -> blog_view_count end)
+          List.update_at(blogs_data, index, fn blog ->
+            Map.update!(blog, :views, fn _ -> blog_view_count end)
           end)
       end
 
@@ -66,19 +64,15 @@ defmodule AccumulatorWeb.DashboardLive do
   end
 
   @impl true
-  def handle_info(%{event: :blog_like_count, key: "blog:" <> key}, socket) do
+  def handle_info(%{event: :blog_like_count, key: "blog:" <> id}, socket) do
     blogs_data = socket.assigns.blogs_data
-
-    blog_index =
-      blogs_data
-      |> Enum.find_index(&(Map.get(&1, :key) == key))
-
-    blog_likes_count = LikesCount.get_count("like-blog:" <> key)
+    blog_index = Enum.find_index(blogs_data, &(Map.get(&1, :id) == id))
+    blog_likes_count = LikesCount.get_count("like-blog:" <> id)
 
     # We assume key exists(because you can't like a blog without opening it, thus changing its view count).
     blogs_data =
-      List.update_at(blogs_data, blog_index, fn map ->
-        Map.update!(map, :likes_count, fn _ -> blog_likes_count end)
+      List.update_at(blogs_data, blog_index, fn blog ->
+        Map.update!(blog, :likes, fn _ -> blog_likes_count end)
       end)
 
     {:noreply,
@@ -95,12 +89,8 @@ defmodule AccumulatorWeb.DashboardLive do
   @impl true
   def handle_info(%{event: :blog_page_user_count, key: key}, socket) do
     blogs_data = socket.assigns.blogs_data
-
-    "blog:" <> slug = key
-
-    blog_index =
-      blogs_data
-      |> Enum.find_index(&(Map.get(&1, :key) == slug))
+    "blog:" <> id = key
+    blog_index = Enum.find_index(blogs_data, &(Map.get(&1, :id) == id))
 
     blogs_data =
       case blog_index do
@@ -110,8 +100,8 @@ defmodule AccumulatorWeb.DashboardLive do
 
         index ->
           # Key exists, update its view count.
-          List.update_at(blogs_data, index, fn map ->
-            Map.update!(map, :current_view_count, fn _ -> get_presence_count(key) end)
+          List.update_at(blogs_data, index, fn blog ->
+            Map.update!(blog, :current_viewing, fn _ -> get_presence_count(key) end)
           end)
       end
 
@@ -125,8 +115,8 @@ defmodule AccumulatorWeb.DashboardLive do
 
   defp insert_presence_count(blogs) do
     Enum.map(blogs, fn blog ->
-      presence_count = get_presence_count("blog:" <> blog.key)
-      Map.put(blog, :current_view_count, presence_count)
+      presence_count = get_presence_count("blog:" <> blog.id)
+      BlogData.update_current_viewing_value(blog, presence_count)
     end)
   end
 
@@ -161,10 +151,12 @@ defmodule AccumulatorWeb.DashboardLive do
   end
 
   defp sort_blog_data(data, sort_key, sort_order) do
+    sort_key = String.to_atom(sort_key)
+
     if sort_order == "asc" do
-      data |> Enum.sort(&(&1[String.to_atom(sort_key)] <= &2[String.to_atom(sort_key)]))
+      Enum.sort(data, &(Map.get(&1, sort_key) <= Map.get(&2, sort_key)))
     else
-      data |> Enum.sort(&(&1[String.to_atom(sort_key)] >= &2[String.to_atom(sort_key)]))
+      Enum.sort(data, &(Map.get(&1, sort_key) >= Map.get(&2, sort_key)))
     end
   end
 end

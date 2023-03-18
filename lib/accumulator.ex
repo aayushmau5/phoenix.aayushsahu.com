@@ -6,6 +6,7 @@ defmodule Accumulator do
   Contexts are also responsible for managing your data, regardless
   if it comes from the database, an external API or others.
   """
+  alias Accumulator.BlogData
 
   @spec get_total_website_views() :: atom() | integer()
   def get_total_website_views() do
@@ -16,7 +17,7 @@ defmodule Accumulator do
     end
   end
 
-  @spec generate_blog_data() :: list(map())
+  @spec generate_blog_data() :: list(BlogData)
   @doc """
   Generates blog data in sorted order of their view count.
   """
@@ -32,18 +33,10 @@ defmodule Accumulator do
 
     case Redix.command(:redix, ["MGET", key, "like-" <> key]) do
       {:ok, [views, nil]} ->
-        %{
-          key: slug,
-          views: String.to_integer(views),
-          likes_count: 0
-        }
+        %BlogData{id: slug, views: String.to_integer(views), likes: 0}
 
       {:ok, [views, likes]} ->
-        %{
-          key: slug,
-          views: String.to_integer(views),
-          likes_count: String.to_integer(likes)
-        }
+        %BlogData{id: slug, views: String.to_integer(views), likes: String.to_integer(likes)}
 
       {:error, reason} ->
         # TODO: handle error
