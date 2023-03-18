@@ -25,7 +25,6 @@ The need to understand how each piece fit together
 
 - [ ] refactor: more spec
 - [ ] move dashboard data into a stream
-- [ ] refactor: remove useless components
 - [ ] handle errors properly and show them on frontend
 
 ## How everything needs to fit together

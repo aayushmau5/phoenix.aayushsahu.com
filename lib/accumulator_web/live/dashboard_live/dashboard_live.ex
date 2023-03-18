@@ -8,7 +8,6 @@ defmodule AccumulatorWeb.DashboardLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    # TODO: better assign naming
     socket =
       if connected?(socket) do
         PubSub.subscribe(Accumulator.PubSub, "update:count")
