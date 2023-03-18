@@ -16,7 +16,7 @@ defmodule AccumulatorWeb.DashboardLive do
           total_page_views: Accumulator.get_total_website_views(),
           current_page_view_count: get_presence_count("user-join"),
           # TODO: think about putting this data in a stream
-          blogs_data: generate_blog_data()
+          blogs_data: generate_blog_data() |> sort_blog_data("key", "asc")
         )
       else
         assign(socket, total_page_views: 0, blogs_data: [], current_page_view_count: 0)
@@ -24,8 +24,12 @@ defmodule AccumulatorWeb.DashboardLive do
 
     {:ok,
      socket
-     |> assign(page_title: "Dashboard")}
+     |> assign(page_title: "Dashboard", sort_key: "key", sort_order: "asc")}
   end
+
+  @impl true
+  def handle_event("sort:" <> sort_key, _, socket),
+    do: {:noreply, handle_sort_data_change(socket, sort_key)}
 
   @impl true
   def handle_info(%{event: :main_page_view_count}, socket) do
@@ -55,7 +59,10 @@ defmodule AccumulatorWeb.DashboardLive do
           end)
       end
 
-    {:noreply, assign(socket, blogs_data: blogs_data)}
+    {:noreply,
+     assign(socket,
+       blogs_data: sort_blog_data(blogs_data, socket.assigns.sort_key, socket.assigns.sort_order)
+     )}
   end
 
   @impl true
@@ -74,7 +81,10 @@ defmodule AccumulatorWeb.DashboardLive do
         Map.update!(map, :likes_count, fn _ -> blog_likes_count end)
       end)
 
-    {:noreply, assign(socket, blogs_data: blogs_data)}
+    {:noreply,
+     assign(socket,
+       blogs_data: sort_blog_data(blogs_data, socket.assigns.sort_key, socket.assigns.sort_order)
+     )}
   end
 
   @impl true
@@ -105,7 +115,10 @@ defmodule AccumulatorWeb.DashboardLive do
           end)
       end
 
-    {:noreply, assign(socket, blogs_data: blogs_data)}
+    {:noreply,
+     assign(socket,
+       blogs_data: sort_blog_data(blogs_data, socket.assigns.sort_key, socket.assigns.sort_order)
+     )}
   end
 
   defp generate_blog_data(), do: Accumulator.generate_blog_data() |> insert_presence_count()
@@ -122,5 +135,36 @@ defmodule AccumulatorWeb.DashboardLive do
     |> Map.get(key, %{metas: []})
     |> Map.get(:metas)
     |> length()
+  end
+
+  defp handle_sort_data_change(socket, sort_key_to_match) do
+    case socket.assigns do
+      %{sort_key: ^sort_key_to_match, sort_order: "asc"} = _ ->
+        assign(socket,
+          sort_order: "desc",
+          blogs_data: sort_blog_data(socket.assigns.blogs_data, sort_key_to_match, "desc")
+        )
+
+      %{sort_key: ^sort_key_to_match, sort_order: "desc"} = _ ->
+        assign(socket,
+          sort_order: "asc",
+          blogs_data: sort_blog_data(socket.assigns.blogs_data, sort_key_to_match, "asc")
+        )
+
+      _ ->
+        assign(socket,
+          sort_key: sort_key_to_match,
+          sort_order: "asc",
+          blogs_data: sort_blog_data(socket.assigns.blogs_data, sort_key_to_match, "asc")
+        )
+    end
+  end
+
+  defp sort_blog_data(data, sort_key, sort_order) do
+    if sort_order == "asc" do
+      data |> Enum.sort(&(&1[String.to_atom(sort_key)] <= &2[String.to_atom(sort_key)]))
+    else
+      data |> Enum.sort(&(&1[String.to_atom(sort_key)] >= &2[String.to_atom(sort_key)]))
+    end
   end
 end

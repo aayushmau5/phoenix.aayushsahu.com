@@ -24,9 +24,6 @@ defmodule Accumulator do
     {:ok, keys} = get_blog_keys()
 
     Enum.map(keys, &generate_single_blog_data(&1))
-    # Sort by view count
-    # TODO: implement sort based on user input
-    |> Enum.sort(&(&1.views > &2.views))
   end
 
   # TODO: need a better data structure

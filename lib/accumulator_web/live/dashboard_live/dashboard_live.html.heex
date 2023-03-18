@@ -12,9 +12,18 @@
 
 <p class="my-3 mt-6 text-lg font-semibold">Blog stats</p>
 
-<.table id="blogs_data" rows={@blogs_data}>
-  <:col :let={blog} label="Slug"><%= blog.key %></:col>
-  <:col :let={blog} label="Views"><%= blog.views %></:col>
-  <:col :let={blog} label="Likes"><%= blog.likes_count %></:col>
-  <:col :let={blog} label="Currently Viewing"><%= blog.current_view_count %></:col>
+<.table id="blogs_data" rows={@blogs_data} sort_key={@sort_key} sort_order={@sort_order}>
+  <:col :let={blog} label="Slug" click="sort:key" name="key"><%= blog.key %></:col>
+  <:col :let={blog} label="Views" click="sort:views" name="views"><%= blog.views %></:col>
+  <:col :let={blog} label="Likes" click="sort:likes_count" name="likes_count">
+    <%= blog.likes_count %>
+  </:col>
+  <:col
+    :let={blog}
+    label="Currently Viewing"
+    click="sort:current_view_count"
+    name="current_view_count"
+  >
+    <%= blog.current_view_count %>
+  </:col>
 </.table>
