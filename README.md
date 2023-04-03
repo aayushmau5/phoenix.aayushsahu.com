@@ -1,4 +1,8 @@
-# Accumulator
+# phoenix.aayushsahu.com
+
+Internally called **Accumulator**
+
+## Setup
 
 To start your Phoenix server:
 
@@ -17,19 +21,20 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 - Forum: https://elixirforum.com/c/phoenix-forum
 - Source: https://github.com/phoenixframework/phoenix
 
-## TODO
+## TODO:
 
-Make a blog post on demystifying phoenix(going deep into how everything works, macros, plugs, etc.)
+Future:
 
-The need to understand how each piece fit together
+- Move dashboard data into stream(currently stream doesn't support filtering, sorting, etc without being hacky)
 
-- [ ] refactor: more spec
-- [ ] move dashboard data into a stream
-- [ ] handle errors properly and show them on frontend
+## Internals
 
-## How everything needs to fit together
+### Dashboard
 
-On "main" channel, when we update the view count, send a pubsub message to "update:main-page-view-count" topic, and when we receive this, update viewcount.
-We also need to update rt view count, so send message to "update:rt-main-page-view-count", and update.
+All the data is stored on redis. The first render shows dummy data. As soon as liveview connection is established, we fetch data from redis, and current user on the website count(using Presence) and update the client. Liveview also subscribes(through Phoenix PubSub) to a particular topic(with "update:" prefix) to get some updates.
 
-Similarly for blogs
+Whenever data is updated(a new user visits my website/blog), we send a pubsub message to a that "update:<topic>" topic. The liveview gets a message on this topic, fetches latest data from redis and presence count, and updates the liveview.
+
+High overview on how everything fits together:
+
+![Illustration](dashboard-working.png)
