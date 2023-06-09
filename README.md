@@ -2,10 +2,21 @@
 
 Internally called **Accumulator**
 
-## Setup
+## Local Setup
+
+This application uses Redis. You can either install it manually or through docker. Your redis instance should run on Port 6379(default). If the port is different, you need to make changes to the `config/dev.exs` file.
+
+```bash
+# Redis docker setup
+docker network create -d bridge redisnet
+docker run -d -p 6379:6379 --network redisnet redis
+```
+
+Make sure you have elixir installed.
 
 To start your Phoenix server:
 
+- Clone the repo
 - Run `mix setup` to install and setup dependencies
 - Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
