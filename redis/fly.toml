@@ -1,9 +1,13 @@
-# fly.toml file generated for phoenix-redis on 2023-03-13T02:28:02+05:30
+# fly.toml app configuration file generated for phoenix-redis on 2023-06-26T12:55:59+05:30
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
 app = "phoenix-redis"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
+services = []
 
 [build]
   image = "flyio/redis:6.2"
@@ -12,11 +16,13 @@ processes = []
 
 [experimental]
   auto_rollback = true
-
-[mounts]
-  destination = "/data"
-  source = "redis_server"
+  private_network = true
 
 [metrics]
-  port = 9091
   path = "/metrics"
+  port = 9091
+
+[[mounts]]
+  destination = "/data"
+  encrypted = false
+  source = "redis_server"
