@@ -47,7 +47,8 @@ defmodule Accumulator.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:redix, "~> 1.2.1"},
       {:castore, "~> 1.0.1"},
-      {:req, "~> 0.3.10"}
+      {:req, "~> 0.3.10"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 

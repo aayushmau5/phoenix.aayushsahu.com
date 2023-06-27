@@ -33,13 +33,11 @@ defmodule Accumulator.Spotify.Helpers do
   end
 
   defp get_image_url(track) do
-    images = track["album"]["images"]
-    first_image = Enum.at(images, 0)
+    first_image = Enum.at(track["album"]["images"], 0)
     first_image["url"]
   end
 
   defp get_artists_name(track) do
-    artists = track["artists"]
-    Enum.map(artists, fn artist -> artist["name"] end) |> Enum.join(", ")
+    Enum.map_join(track["artists"], ", ", fn artist -> artist["name"] end)
   end
 end

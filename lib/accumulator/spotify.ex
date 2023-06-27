@@ -8,7 +8,7 @@ defmodule Accumulator.Spotify do
   @now_playing_key "spotify:now_playing"
   @top_tracks_key "spotify:top_tracks"
   @now_playing_expire 300
-  @top_tracks_expire 86400
+  @top_tracks_expire 86_400
 
   alias Accumulator.Spotify.{API, Helpers}
 
