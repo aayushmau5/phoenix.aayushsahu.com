@@ -3,8 +3,6 @@ defmodule Accumulator.Spotify.API do
   The Spotify API module
   """
 
-  # Scopes are not used
-  @scopes ["user-top-read", "user-read-currently-playing"]
   @top_tracks_limit 10
   @top_tracks_offset 0
   @top_artists_limit 10

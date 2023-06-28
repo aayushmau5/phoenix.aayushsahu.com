@@ -47,6 +47,17 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# Scheduler config
+config :accumulator, Accumulator.Scheduler,
+  timeout: 10_000,
+  jobs: [
+    spotify: [
+      # Every 5 minutes
+      schedule: "*/5 * * * *",
+      task: {Accumulator.Scheduler, :spotify_now_playing_job, []}
+    ]
+  ]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

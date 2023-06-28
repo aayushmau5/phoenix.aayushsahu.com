@@ -5,7 +5,7 @@ defmodule Accumulator.MixProject do
     [
       app: :accumulator,
       version: "0.1.0",
-      elixir: "~> 1.14",
+      elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -48,7 +48,8 @@ defmodule Accumulator.MixProject do
       {:redix, "~> 1.2"},
       {:castore, "~> 1.0"},
       {:req, "~> 0.3"},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:quantum, "~> 3.0"}
     ]
   end
 

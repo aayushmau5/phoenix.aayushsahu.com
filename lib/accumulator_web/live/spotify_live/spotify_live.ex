@@ -2,11 +2,16 @@ defmodule AccumulatorWeb.SpotifyLive do
   use AccumulatorWeb, :live_view
 
   alias Accumulator.Spotify
+  alias AccumulatorWeb.Presence
+  alias Phoenix.PubSub
 
   @impl true
   def mount(_params, _session, socket) do
     socket =
       if connected?(socket) do
+        {:ok, _} = Presence.track(self(), "spotify-join", socket.id, %{})
+        PubSub.subscribe(Accumulator.PubSub, "spotify:now_playing_update")
+
         # TODO: think about spawning a task to get now playing and top tracks data so that they don't block each other
         # Task.async(fn -> Spotify.get_now_playing() end)
         # Task.async(fn -> Spotify.get_top_tracks() end)
@@ -27,8 +32,7 @@ defmodule AccumulatorWeb.SpotifyLive do
   end
 
   @impl true
-  def handle_event("refresh-now-playing", _params, socket) do
-    now_playing = Spotify.get_now_playing()
-    {:noreply, assign(socket, now_playing: now_playing)}
+  def handle_info(%{event: :spotify_now_playing, data: data} = _event_data, socket) do
+    {:noreply, assign(socket, now_playing: data)}
   end
 end

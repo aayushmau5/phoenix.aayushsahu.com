@@ -48,5 +48,7 @@ defmodule AccumulatorWeb.UserSocket do
   #
   # Returning `nil` makes this socket anonymous.
   @impl true
-  def id(_socket), do: nil
+  def id(_socket) do
+    "user_socket:#{Time.utc_now() |> Time.to_string()}"
+  end
 end

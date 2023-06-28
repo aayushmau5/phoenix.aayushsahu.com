@@ -17,7 +17,8 @@ defmodule Accumulator.Application do
       AccumulatorWeb.Presence,
       # Start a worker by calling: Accumulator.Worker.start_link(arg)
       # {Accumulator.Worker, arg}
-      {Redix, Application.fetch_env!(:redix, :config)}
+      {Redix, Application.fetch_env!(:redix, :config)},
+      Accumulator.Scheduler
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
