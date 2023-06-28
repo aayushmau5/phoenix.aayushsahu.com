@@ -7,7 +7,7 @@ defmodule AccumulatorWeb.SpotifyLive do
   def mount(_params, _session, socket) do
     socket =
       if connected?(socket) do
-        # TODO: think about spawn a task to get now playing and top tracks data so that they don't block each other
+        # TODO: think about spawning a task to get now playing and top tracks data so that they don't block each other
         # Task.async(fn -> Spotify.get_now_playing() end)
         # Task.async(fn -> Spotify.get_top_tracks() end)
         assign(socket,

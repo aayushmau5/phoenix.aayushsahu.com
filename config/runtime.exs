@@ -20,6 +20,10 @@ if System.get_env("PHX_SERVER") do
   config :accumulator, AccumulatorWeb.Endpoint, server: true
 end
 
+config :accumulator,
+  client_id: System.get_env("SPOTIFY_CLIENT_ID"),
+  client_secret: System.get_env("SPOTIFY_CLIENT_SECRET")
+
 if config_env() == :prod do
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you

@@ -201,8 +201,8 @@ defmodule Accumulator.Spotify do
   end
 
   defp get_client_id_and_secret do
-    id = System.get_env("SPOTIFY_CLIENT_ID")
-    secret = System.get_env("SPOTIFY_CLIENT_SECRET")
+    id = Application.get_env(:accumulator, :client_id)
+    secret = Application.get_env(:accumulator, :client_secret)
     {id, secret}
   end
 end
