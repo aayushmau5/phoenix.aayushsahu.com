@@ -87,6 +87,7 @@ defmodule AccumulatorWeb do
 
       # Custom components
       import AccumulatorWeb.DashboardComponents
+      import AccumulatorWeb.SpotifyComponents
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS

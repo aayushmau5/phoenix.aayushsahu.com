@@ -1,0 +1,13 @@
+<.back navigate={~p"/"}>Home</.back>
+
+<h1 class="text-2xl font-bold">My spotify data</h1>
+
+<h2 class="text-lg mt-6 mb-4">Currently Playing</h2>
+<.now_playing now_playing={@now_playing} />
+<.refresh_now_playing />
+
+<h2 class="text-lg mt-4 mb-4">Top tracks</h2>
+<.top_tracks tracks={@top_tracks} />
+
+<h2 class="text-lg mt-4 mb-4">Top artists</h2>
+<.top_artists artists={@top_artists} />

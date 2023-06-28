@@ -3,7 +3,6 @@ defmodule AccumulatorWeb.DashboardComponents do
   Components for dashboard.
   """
   use Phoenix.Component
-  # alias AccumulatorWeb.DashboardComponents, as: Component
 
   attr :class, :string, default: nil
   slot :inner_block, required: true
