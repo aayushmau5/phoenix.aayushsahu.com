@@ -12,8 +12,15 @@ defmodule AccumulatorWeb.SpotifyLive do
         {:ok, _} = Presence.track(self(), "spotify-join", socket.id, %{})
         PubSub.subscribe(Accumulator.PubSub, "spotify:now_playing_update")
 
+        now_playing = Spotify.get_cached_now_playing()
+
+        PubSub.broadcast_from(Accumulator.PubSub, self(), "spotify:now_playing_update", %{
+          event: :spotify_now_playing,
+          data: now_playing
+        })
+
         assign(socket,
-          now_playing: Spotify.get_cached_now_playing(),
+          now_playing: now_playing,
           top_tracks: Spotify.get_top_tracks(),
           top_artists: Spotify.get_top_artists()
         )

@@ -31,8 +31,14 @@ defmodule AccumulatorWeb.UserJoinChannel do
     # Spotify now playing
     Presence.track(self(), "spotify-join", socket.id, %{})
     PubSub.subscribe(Accumulator.PubSub, @spotify_update_event)
-    data = Spotify.get_cached_now_playing() |> process_spotify_now_playing()
+    now_playing = Spotify.get_cached_now_playing()
+    data = process_spotify_now_playing(now_playing)
     push(socket, @spotify_update_event, data)
+
+    PubSub.broadcast_from(Accumulator.PubSub, self(), "spotify:now_playing_update", %{
+      event: :spotify_now_playing,
+      data: now_playing
+    })
 
     {:noreply, socket}
   end
