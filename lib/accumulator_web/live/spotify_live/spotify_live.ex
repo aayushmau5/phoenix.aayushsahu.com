@@ -12,11 +12,8 @@ defmodule AccumulatorWeb.SpotifyLive do
         {:ok, _} = Presence.track(self(), "spotify-join", socket.id, %{})
         PubSub.subscribe(Accumulator.PubSub, "spotify:now_playing_update")
 
-        # TODO: think about spawning a task to get now playing and top tracks data so that they don't block each other
-        # Task.async(fn -> Spotify.get_now_playing() end)
-        # Task.async(fn -> Spotify.get_top_tracks() end)
         assign(socket,
-          now_playing: Spotify.get_now_playing(),
+          now_playing: Spotify.get_cached_now_playing(),
           top_tracks: Spotify.get_top_tracks(),
           top_artists: Spotify.get_top_artists()
         )

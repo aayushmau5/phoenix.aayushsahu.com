@@ -52,8 +52,8 @@ config :accumulator, Accumulator.Scheduler,
   timeout: 10_000,
   jobs: [
     spotify: [
-      # Every 5 minutes
-      schedule: "*/5 * * * *",
+      # Every 1 minute
+      schedule: "* * * * *",
       task: {Accumulator.Scheduler, :spotify_now_playing_job, []}
     ]
   ]

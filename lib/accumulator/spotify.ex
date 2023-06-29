@@ -8,7 +8,7 @@ defmodule Accumulator.Spotify do
   @now_playing_key "spotify:now_playing"
   @top_tracks_key "spotify:top_tracks"
   @top_artists_key "spotify:top_artists"
-  @now_playing_expire 300
+  @now_playing_expire 180
   @top_tracks_expire 86_400
   @top_artists_expire 86_400
 
@@ -63,6 +63,17 @@ defmodule Accumulator.Spotify do
 
       error ->
         error
+    end
+  end
+
+  @doc """
+  Get cached now playing data
+  """
+  def get_cached_now_playing() do
+    case Redix.command(:redix, ["GET", @now_playing_key]) do
+      {:ok, nil} -> {:not_playing, "Nothing playing at the moment"}
+      {:ok, value} -> {:ok, Jason.decode!(value)}
+      error -> error
     end
   end
 
