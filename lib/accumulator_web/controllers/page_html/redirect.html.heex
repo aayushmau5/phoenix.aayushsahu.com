@@ -1,0 +1,100 @@
+<.back navigate={~p"/"}>Home</.back>
+
+<h1 class="text-xl font-bold">Redirect page</h1>
+
+<p class="my-4">This page will redirect you to provided search page.</p>
+
+<%= if @error do %>
+  <div class="p-2 border-red-400 bg-red-500 rounded-md mb-4">
+    Please provide the required params.
+  </div>
+<% end %>
+
+<p class="font-bold">Valid parameters:</p>
+<div class="p-2">
+  <div>
+    <span class="font-bold">p</span>: The page (required)
+  </div>
+  <div>
+    <span class="font-bold">q</span>: The search query (required)
+  </div>
+  <div>
+    <span class="font-bold">s</span>: Sort by (optional)
+  </div>
+  <div>
+    <span class="font-bold">t</span>: Search type (optional)
+  </div>
+</div>
+
+<p class="font-bold">Supported redirects:</p>
+<ul class="list-disc p-4">
+  <li>
+    <p>Youtube</p>
+    <p><span class="font-bold">p</span>: yt</p>
+    <p><span class="font-bold">q</span>: any</p>
+    <p>
+      <span class="font-bold">s</span>: <span class="font-bold">ud</span> (upload date)
+    </p>
+  </li>
+  <li>
+    <p>Google</p>
+    <p><span class="font-bold">p</span>: g</p>
+    <p><span class="font-bold">q</span>: any</p>
+  </li>
+  <li>
+    <p>DDG</p>
+    <p><span class="font-bold">p</span>: ddg</p>
+    <p><span class="font-bold">q</span>: any</p>
+  </li>
+  <li>
+    <p>Google Images</p>
+    <p><span class="font-bold">p</span>: gi</p>
+    <p><span class="font-bold">q</span>: any</p>
+  </li>
+  <li>
+    <p>Hackernews search</p>
+    <p><span class="font-bold">p</span>: hn</p>
+    <p><span class="font-bold">q</span>: any</p>
+    <p>
+      <span class="font-bold">s</span>: <span class="font-bold">popular</span>
+      (by popularity), <span class="font-bold">date</span>
+      (by date)
+    </p>
+    <p>
+      <span class="font-bold">t</span>: <span class="font-bold">story</span>
+      (show only stories), <span class="font-bold">comment</span>
+      (show only comments)
+    </p>
+  </li>
+  <li>
+    <p>npm</p>
+    <p><span class="font-bold">p</span>: npm</p>
+    <p><span class="font-bold">q</span>: any</p>
+    <p>
+      <span class="font-bold">s</span>: <span class="font-bold">popular</span>
+      (sort by popular packages)
+    </p>
+  </li>
+  <li>
+    <p>Hex.pm</p>
+    <p><span class="font-bold">p</span>: hex</p>
+    <p><span class="font-bold">q</span>: any</p>
+    <p>
+      <span class="font-bold">s</span>: <span class="font-bold">download</span>
+      (sort by total downloads), <span class="font-bold">recent</span>
+      (sort by recent downloads)
+    </p>
+  </li>
+  <li>
+    <p>Gmail</p>
+    <p><span class="font-bold">p</span>: gm</p>
+    <p><span class="font-bold">q</span>: any</p>
+  </li>
+</ul>
+
+<div>
+  <p>Example:</p>
+  <code class="block break-words bg-black bg-opacity-25 p-2 my-2">
+    https://phoenix.aayushsahu.com/redirect?p=yt&q=meow
+  </code>
+</div>

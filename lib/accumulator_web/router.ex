@@ -18,6 +18,7 @@ defmodule AccumulatorWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/redirect", PageController, :redirect
     live "/dashboard", DashboardLive
     live "/spotify", SpotifyLive
   end
