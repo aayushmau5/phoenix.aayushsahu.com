@@ -15,6 +15,7 @@ defmodule Accumulator.Application do
       # Start the Endpoint (http/https)
       AccumulatorWeb.Endpoint,
       AccumulatorWeb.Presence,
+      Accumulator.Repo,
       # Start a worker by calling: Accumulator.Worker.start_link(arg)
       # {Accumulator.Worker, arg}
       {Redix, Application.fetch_env!(:redix, :config)},
