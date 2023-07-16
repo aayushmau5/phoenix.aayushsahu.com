@@ -1,6 +1,8 @@
 defmodule AccumulatorWeb.Router do
   use AccumulatorWeb, :router
 
+  import AccumulatorWeb.UserAuth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -8,6 +10,7 @@ defmodule AccumulatorWeb.Router do
     plug :put_root_layout, {AccumulatorWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_user
   end
 
   pipeline :api do
@@ -21,6 +24,7 @@ defmodule AccumulatorWeb.Router do
     get "/redirect", PageController, :redirect
     live "/dashboard", DashboardLive
     live "/spotify", SpotifyLive
+    delete "/logout", UserSessionController, :delete
   end
 
   # Other scopes may use custom stacks.
@@ -41,6 +45,28 @@ defmodule AccumulatorWeb.Router do
       pipe_through :browser
 
       live_dashboard "/livedashboard", metrics: AccumulatorWeb.Telemetry
+    end
+  end
+
+  ## Authentication routes
+
+  scope "/", AccumulatorWeb do
+    pipe_through [:browser, :redirect_if_user_is_authenticated]
+
+    live_session :redirect_if_user_is_authenticated,
+      on_mount: [{AccumulatorWeb.UserAuth, :redirect_if_user_is_authenticated}] do
+      live "/login", UserLoginLive, :new
+    end
+
+    post "/login", UserSessionController, :create
+  end
+
+  scope "/", AccumulatorWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :require_authenticated_user,
+      on_mount: [{AccumulatorWeb.UserAuth, :ensure_authenticated}] do
+      live "/sync", SyncLive
     end
   end
 end

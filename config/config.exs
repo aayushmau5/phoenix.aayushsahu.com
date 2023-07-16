@@ -17,13 +17,6 @@ config :accumulator, AccumulatorWeb.Endpoint,
   pubsub_server: Accumulator.PubSub,
   live_view: [signing_salt: "1Ureky+P"]
 
-# ecto
-config :accumulator, Accumulator.Repo,
-  database: "accounts",
-  username: "username",
-  password: "password",
-  hostname: "localhost"
-
 config :accumulator, ecto_repos: [Accumulator.Repo]
 
 # Configure esbuild (the version is required)
@@ -62,7 +55,7 @@ config :accumulator, Accumulator.Scheduler,
   jobs: [
     spotify: [
       # Every 1 minute
-      schedule: "* * * * *",
+      schedule: "* 1 * * *",
       task: {Accumulator.Scheduler, :spotify_now_playing_job, []}
     ]
   ]

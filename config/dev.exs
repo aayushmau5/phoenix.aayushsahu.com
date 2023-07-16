@@ -71,3 +71,10 @@ config :redix,
     port: 6379,
     socket_opts: [:inet6]
   ]
+
+# ecto
+config :accumulator, Accumulator.Repo,
+  database: "accounts",
+  username: "username",
+  password: "password",
+  hostname: "localhost"
