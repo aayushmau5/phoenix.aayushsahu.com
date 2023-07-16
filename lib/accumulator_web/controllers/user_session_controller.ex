@@ -10,7 +10,7 @@ defmodule AccumulatorWeb.UserSessionController do
 
   defp create(conn, %{"user" => user_params}, info) do
     %{"password" => password} = user_params
-    email = Application.get_env(:accumulator, :admin_email) |> dbg()
+    email = Application.get_env(:accumulator, :admin_email)
 
     if user = Auth.get_user_by_email_and_password(email, password) do
       conn
