@@ -49,3 +49,7 @@ Whenever data is updated(a new user visits my website/blog), we send a pubsub me
 High overview on how everything fits together:
 
 ![Illustration](dashboard-working.png)
+
+## TODO:
+
+- Think about settings up a "demo" page for view only access
