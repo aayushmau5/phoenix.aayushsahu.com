@@ -34,8 +34,7 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 
 ## TODO:
 
-Future:
-
+- Think about settings up a "demo" page for view only access
 - Move dashboard data into stream(currently stream doesn't support filtering, sorting, etc without being hacky)
 
 ## Internals
@@ -49,7 +48,3 @@ Whenever data is updated(a new user visits my website/blog), we send a pubsub me
 High overview on how everything fits together:
 
 ![Illustration](dashboard-working.png)
-
-## TODO:
-
-- Think about settings up a "demo" page for view only access
