@@ -32,6 +32,7 @@ defmodule Accumulator.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:bcrypt_elixir, "~> 3.0"},
       {:phoenix, "~> 1.7.0"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
@@ -49,7 +50,9 @@ defmodule Accumulator.MixProject do
       {:castore, "~> 1.0"},
       {:req, "~> 0.3"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:quantum, "~> 3.0"}
+      {:quantum, "~> 3.0"},
+      {:ecto_sql, "~> 3.0"},
+      {:postgrex, "~> 0.17"}
     ]
   end
 

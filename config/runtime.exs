@@ -22,7 +22,8 @@ end
 
 config :accumulator,
   client_id: System.get_env("SPOTIFY_CLIENT_ID"),
-  client_secret: System.get_env("SPOTIFY_CLIENT_SECRET")
+  client_secret: System.get_env("SPOTIFY_CLIENT_SECRET"),
+  admin_email: System.get_env("ADMIN_EMAIL")
 
 if config_env() == :prod do
   # The secret key base is used to sign/encrypt cookies and other secrets.
@@ -60,6 +61,13 @@ if config_env() == :prod do
       port: 6379,
       socket_opts: [:inet6]
     ]
+
+  # ecto
+  config :accumulator, Accumulator.Repo,
+    database: System.get_env("POSTGRES_DB"),
+    username: System.get_env("POSTGRES_USERNAME"),
+    password: System.get_env("POSTGRES_PASSWORD"),
+    hostname: System.get_env("POSTGRES_HOSTNAME")
 
   # ## SSL Support
   #
