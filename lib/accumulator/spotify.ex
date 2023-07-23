@@ -82,8 +82,7 @@ defmodule Accumulator.Spotify do
          {:ok, response} <- API.now_playing(access_token) do
       case response.status do
         200 ->
-          currently_playing =
-            Helpers.process_currently_playing(response.body["item"])
+          currently_playing = Helpers.process_currently_playing(response.body["item"])
 
           stringified_currently_playing = Jason.encode!(currently_playing)
 
@@ -184,8 +183,7 @@ defmodule Accumulator.Spotify do
     refresh_token = get_refresh_token_from_redis()
     {client_id, client_secret} = get_client_id_and_secret()
 
-    response =
-      API.refresh_access_token(client_id, client_secret, refresh_token)
+    response = API.refresh_access_token(client_id, client_secret, refresh_token)
 
     case response do
       {:ok, response} ->

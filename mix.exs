@@ -52,6 +52,7 @@ defmodule Accumulator.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:quantum, "~> 3.0"},
       {:ecto_sql, "~> 3.0"},
+      {:phoenix_ecto, "~> 4.0"},
       {:postgrex, "~> 0.17"}
     ]
   end

@@ -226,7 +226,7 @@ defmodule AccumulatorWeb.CoreComponents do
       <select
         id={@id}
         name={@name}
-        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 sm:text-sm"
+        class="mt-1 text-black block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 sm:text-sm"
         multiple={@multiple}
         {@rest}
       >
@@ -518,5 +518,17 @@ defmodule AccumulatorWeb.CoreComponents do
   """
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
+  end
+
+  @doc """
+  Converts UTC time to local time
+  """
+  attr :date, :string, required: true
+  attr :id, :string, required: true
+
+  def local_time(assigns) do
+    ~H"""
+    <time phx-hook="LocalTime" id={@id} class="invisible"><%= @date %></time>
+    """
   end
 end
