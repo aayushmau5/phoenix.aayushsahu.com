@@ -28,7 +28,9 @@ defmodule AccumulatorWeb.BinLive.Home do
             navigate={~p"/bin/#{paste.id}/show"}
           >
             <div><%= paste.title %></div>
-            <div>Expires at: <.local_time id="paste-expire-time" date={paste.expire_at} /></div>
+            <div>
+              Expires at: <.local_time id={"paste-expire-time-#{paste.id}"} date={paste.expire_at} />
+            </div>
           </.link>
       <% end %>
     </div>

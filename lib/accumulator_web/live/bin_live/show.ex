@@ -3,8 +3,6 @@ defmodule AccumulatorWeb.BinLive.Show do
 
   alias Accumulator.Pastes
 
-  # TODO: add copy button for content
-
   @impl true
   def render(assigns) do
     ~H"""
@@ -28,17 +26,23 @@ defmodule AccumulatorWeb.BinLive.Show do
           <% paste -> %>
             <div>
               <div class="mt-4 text-xl font-bold"><%= paste.title %></div>
-              <div class="my-5 border p-2 rounded-md">
-                <%= paste.content %>
-              </div>
               <div>Expires at: <.local_time id="paste-expire-time" date={paste.expire_at} /></div>
-
               <button
                 phx-click="delete"
-                class="mt-5 border border border-white px-2 py-1 rounded-md hover:opacity-70"
+                class="mt-2 border border border-white px-2 py-1 rounded-md hover:opacity-70"
               >
                 Delete
               </button>
+              <button
+                phx-click={JS.dispatch("phx:copy", to: "#copy-content")}
+                class="block text-sm ml-auto my-2 border border border-white px-2 py-1 rounded-md hover:opacity-70"
+              >
+                Copy
+              </button>
+              <pre
+                id="copy-content"
+                class="overflow-auto font-inherit max-h-96 mb-5 border p-2 rounded-md"
+              ><%= paste.content %></pre>
             </div>
         <% end %>
       <% end %>

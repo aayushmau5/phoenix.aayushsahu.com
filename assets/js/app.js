@@ -35,6 +35,13 @@ Hooks.LocalTime = {
 	}
 }
 
+window.addEventListener("phx:copy", (event) => {
+	const text = event.target.innerText;
+	navigator.clipboard.writeText(text).then(() => {
+		console.log("Content copied");
+	})
+})
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks, params: { _csrf_token: csrfToken } })
 
