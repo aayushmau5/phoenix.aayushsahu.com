@@ -2,8 +2,10 @@ defmodule AccumulatorWeb.BlogChannel do
   use Phoenix.Channel
 
   alias AccumulatorWeb.Presence
-  alias Accumulator.Storage.{LikesCount, ViewCount}
+  alias Accumulator.Stats
   alias Phoenix.PubSub
+
+  @pubsub Accumulator.PubSub
 
   def join(room_id, _params, socket) do
     send(self(), {:after_join, room_id})
@@ -14,25 +16,23 @@ defmodule AccumulatorWeb.BlogChannel do
     {:ok, _} = Presence.track(socket, room_id, %{})
     push(socket, "presence_state", Presence.list(socket))
 
-    view_count = ViewCount.increment_count(room_id)
-    broadcast!(socket, "blog-view-count", %{count: view_count})
+    blog_stats = Stats.increment_blog_view_count(room_id)
+    broadcast!(socket, "blog-view-count", %{count: blog_stats.views})
+    push(socket, "likes-count", %{count: blog_stats.likes})
 
-    PubSub.broadcast_from(Accumulator.PubSub, self(), "update:count", %{
+    PubSub.broadcast_from(@pubsub, self(), "update:count", %{
       event: :blog_page_view_count,
       key: room_id
     })
-
-    likes_count = LikesCount.get_count("like-#{room_id}")
-    push(socket, "likes-count", %{count: likes_count})
 
     {:noreply, socket}
   end
 
   def handle_in("like", %{"topic" => topic} = params, socket) do
-    likes_count = LikesCount.increment_count("like-#{topic}")
-    broadcast!(socket, "likes-count", %{count: likes_count})
+    blog_stats = Stats.increment_blog_like_count(topic)
+    broadcast!(socket, "likes-count", %{count: blog_stats.likes})
 
-    PubSub.broadcast_from(Accumulator.PubSub, self(), "update:count", %{
+    PubSub.broadcast_from(@pubsub, self(), "update:count", %{
       event: :blog_like_count,
       key: topic
     })

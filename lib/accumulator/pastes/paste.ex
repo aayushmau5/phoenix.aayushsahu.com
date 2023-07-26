@@ -13,7 +13,6 @@ defmodule Accumulator.Pastes.Paste do
   end
 
   def changeset(paste, params \\ %{}) do
-    # TODO: validate expire_at greater than current time
     paste
     |> cast(params, [:title, :content, :expire_at, :time_duration, :time_type])
     |> validate_required([:title, :content, :time_duration, :time_type])

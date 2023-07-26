@@ -13,7 +13,7 @@
 <p class="my-3 mt-6 text-lg font-semibold">Blog stats</p>
 
 <.table id="blogs_data" rows={@blogs_data} sort_key={@sort_key} sort_order={@sort_order}>
-  <:col :let={blog} label="Slug" click="sort:id" name="id"><%= blog.id %></:col>
+  <:col :let={blog} label="Slug" click="sort:slug" name="slug"><%= blog.slug %></:col>
   <:col :let={blog} label="Views" click="sort:views" name="views"><%= blog.views %></:col>
   <:col :let={blog} label="Likes" click="sort:likes" name="likes">
     <%= blog.likes %>

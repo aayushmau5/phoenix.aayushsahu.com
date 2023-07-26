@@ -1,13 +1,11 @@
 defmodule AccumulatorWeb.UserJoinChannel do
   use Phoenix.Channel
 
-  alias Accumulator.Storage.ViewCount
-  alias Accumulator.Spotify
+  alias Accumulator.{Stats, Spotify}
   alias AccumulatorWeb.Presence
   alias Phoenix.PubSub
 
-  # Total website views are stored in "main" key
-  @total_view_slug "main"
+  @pubsub Accumulator.PubSub
   @spotify_update_event "spotify:now_playing_update"
 
   @impl true
@@ -21,21 +19,21 @@ defmodule AccumulatorWeb.UserJoinChannel do
     {:ok, _} = Presence.track(socket, "user-join", %{})
     push(socket, "presence_state", Presence.list(socket))
 
-    view_count = ViewCount.increment_count(@total_view_slug)
-    broadcast!(socket, "view-count", %{count: view_count})
+    main_stats = Stats.increment_main_view_count()
+    broadcast!(socket, "view-count", %{count: main_stats.views})
 
-    PubSub.broadcast_from(Accumulator.PubSub, self(), "update:count", %{
+    PubSub.broadcast_from(@pubsub, self(), "update:count", %{
       event: :main_page_view_count
     })
 
     # Spotify now playing
     Presence.track(self(), "spotify-join", socket.id, %{})
-    PubSub.subscribe(Accumulator.PubSub, @spotify_update_event)
+    PubSub.subscribe(@pubsub, @spotify_update_event)
     now_playing = Spotify.get_cached_now_playing()
     data = process_spotify_now_playing(now_playing)
     push(socket, @spotify_update_event, data)
 
-    PubSub.broadcast_from(Accumulator.PubSub, self(), "spotify:now_playing_update", %{
+    PubSub.broadcast_from(@pubsub, self(), "spotify:now_playing_update", %{
       event: :spotify_now_playing,
       data: now_playing
     })
