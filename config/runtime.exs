@@ -53,15 +53,6 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
-  config :redix,
-    config: [
-      name: :redix,
-      host: System.get_env("REDIS_HOST"),
-      password: System.get_env("REDIS_PASSWORD"),
-      port: 6379,
-      socket_opts: [:inet6]
-    ]
-
   # ecto
   config :accumulator, Accumulator.Repo,
     database: System.get_env("POSTGRES_DB"),

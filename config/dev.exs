@@ -64,14 +64,6 @@ config :phoenix, :stacktrace_depth, 20
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
-config :redix,
-  config: [
-    name: :redix,
-    host: "localhost",
-    port: 6379,
-    socket_opts: [:inet6]
-  ]
-
 # ecto
 config :accumulator, Accumulator.Repo,
   database: "accounts",

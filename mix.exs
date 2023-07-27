@@ -46,7 +46,6 @@ defmodule Accumulator.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.4"},
       {:plug_cowboy, "~> 2.5"},
-      {:redix, "~> 1.2"},
       {:castore, "~> 1.0"},
       {:req, "~> 0.3"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
