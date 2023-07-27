@@ -37,8 +37,6 @@ defmodule Accumulator.Spotify.API do
       "https://api.spotify.com/v1/me/player/currently-playing",
       headers: [{"Authorization", "Bearer #{access_token}"}]
     )
-
-    # {:ok, response} | {:error, reason}
   end
 
   @doc """

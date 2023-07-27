@@ -3,16 +3,18 @@ defmodule Accumulator.Spotify do
   Get top tracks and current playing from spotify
   """
 
-  @access_token_key "spotify:access_token"
-  @refresh_token_key "spotify:refresh_token"
-  @now_playing_key "spotify:now_playing"
-  @top_tracks_key "spotify:top_tracks"
-  @top_artists_key "spotify:top_artists"
+  import Ecto.Query
+  alias Accumulator.Spotify.{API, Helpers, Schema}
+  alias Accumulator.Repo
+
+  @access_token_key "access_token"
+  @refresh_token_key "refresh_token"
+  @now_playing_key "now_playing"
+  @top_tracks_key "top_tracks"
+  @top_artists_key "top_artists"
   @now_playing_expire 180
   @top_tracks_expire 86_400
   @top_artists_expire 86_400
-
-  alias Accumulator.Spotify.{API, Helpers}
 
   @doc """
   Get current playing track information
@@ -20,15 +22,12 @@ defmodule Accumulator.Spotify do
   @spec get_now_playing() ::
           {:ok, Helpers.track()} | {:not_playing, String.t()} | {:error, String.t()}
   def get_now_playing() do
-    case Redix.command(:redix, ["GET", @now_playing_key]) do
-      {:ok, nil} ->
+    case get_data(@now_playing_key) do
+      nil ->
         get_and_cache_now_playing()
 
-      {:ok, now_playing} ->
-        {:ok, Jason.decode!(now_playing)}
-
-      error ->
-        error
+      %{data: data} ->
+        {:ok, Jason.decode!(data)}
     end
   end
 
@@ -37,15 +36,12 @@ defmodule Accumulator.Spotify do
   """
   @spec get_top_tracks() :: {:ok, [Helpers.track()]} | {:error, String.t() | any()}
   def get_top_tracks() do
-    case Redix.command(:redix, ["GET", @top_tracks_key]) do
-      {:ok, nil} ->
+    case get_data(@top_tracks_key) do
+      nil ->
         get_and_cache_top_tracks()
 
-      {:ok, top_tracks} ->
-        {:ok, Jason.decode!(top_tracks)}
-
-      error ->
-        error
+      %{data: data} ->
+        {:ok, Jason.decode!(data)}
     end
   end
 
@@ -54,15 +50,12 @@ defmodule Accumulator.Spotify do
   """
   @spec get_top_artists() :: {:ok, [Helpers.artist()]} | {:error, String.t() | any()}
   def get_top_artists() do
-    case Redix.command(:redix, ["GET", @top_artists_key]) do
-      {:ok, nil} ->
+    case get_data(@top_artists_key) do
+      nil ->
         get_and_cache_top_artists()
 
-      {:ok, top_artists} ->
-        {:ok, Jason.decode!(top_artists)}
-
-      error ->
-        error
+      %{data: data} ->
+        {:ok, Jason.decode!(data)}
     end
   end
 
@@ -70,10 +63,9 @@ defmodule Accumulator.Spotify do
   Get cached now playing data
   """
   def get_cached_now_playing() do
-    case Redix.command(:redix, ["GET", @now_playing_key]) do
-      {:ok, nil} -> {:not_playing, "Nothing playing at the moment"}
-      {:ok, value} -> {:ok, Jason.decode!(value)}
-      error -> error
+    case get_data(@now_playing_key) do
+      nil -> {:not_playing, "Nothing playing at the moment"}
+      %{data: data} -> {:ok, Jason.decode!(data)}
     end
   end
 
@@ -87,13 +79,12 @@ defmodule Accumulator.Spotify do
           stringified_currently_playing = Jason.encode!(currently_playing)
 
           {:ok, _} =
-            Redix.command(:redix, [
-              "SET",
-              @now_playing_key,
-              stringified_currently_playing,
-              "EX",
-              @now_playing_expire
-            ])
+            %Schema{
+              type: @now_playing_key,
+              data: stringified_currently_playing,
+              expire_at: Accumulator.Helpers.get_future_time(@now_playing_expire)
+            }
+            |> Repo.insert()
 
           {:ok, currently_playing}
 
@@ -120,13 +111,12 @@ defmodule Accumulator.Spotify do
           stringified_top_tracks = Jason.encode!(top_tracks)
 
           {:ok, _} =
-            Redix.command(:redix, [
-              "SET",
-              @top_tracks_key,
-              stringified_top_tracks,
-              "EX",
-              @top_tracks_expire
-            ])
+            %Schema{
+              type: @top_tracks_key,
+              data: stringified_top_tracks,
+              expire_at: Accumulator.Helpers.get_future_time(@top_tracks_expire)
+            }
+            |> Repo.insert()
 
           {:ok, top_tracks}
 
@@ -150,13 +140,12 @@ defmodule Accumulator.Spotify do
           stringified_top_artists = Jason.encode!(top_artists)
 
           {:ok, _} =
-            Redix.command(:redix, [
-              "SET",
-              @top_artists_key,
-              stringified_top_artists,
-              "EX",
-              @top_artists_expire
-            ])
+            %Schema{
+              type: @top_artists_key,
+              data: stringified_top_artists,
+              expire_at: Accumulator.Helpers.get_future_time(@top_artists_expire)
+            }
+            |> Repo.insert()
 
           {:ok, top_artists}
 
@@ -172,15 +161,14 @@ defmodule Accumulator.Spotify do
   end
 
   defp get_access_token do
-    case Redix.command(:redix, ["GET", @access_token_key]) do
-      {:ok, nil} -> refresh_access_token()
-      {:ok, token} -> {:ok, token}
-      {:error, reason} -> {:error, reason}
+    case get_data(@access_token_key) do
+      nil -> refresh_access_token()
+      %{data: data} -> {:ok, data}
     end
   end
 
-  defp refresh_access_token do
-    refresh_token = get_refresh_token_from_redis()
+  defp refresh_access_token() do
+    refresh_token = get_refresh_token()
     {client_id, client_secret} = get_client_id_and_secret()
 
     response = API.refresh_access_token(client_id, client_secret, refresh_token)
@@ -189,11 +177,19 @@ defmodule Accumulator.Spotify do
       {:ok, response} ->
         if response.status == 200 do
           access_token = response.body["access_token"]
-          expire = response.body["expires_in"]
-          {:ok, _} = Redix.command(:redix, ["SET", @access_token_key, access_token, "EX", expire])
+          expire_seconds = response.body["expires_in"]
+
+          {:ok, _} =
+            %Schema{
+              type: @access_token_key,
+              data: access_token,
+              expire_at: Accumulator.Helpers.get_future_time(expire_seconds)
+            }
+            |> Repo.insert()
+
           {:ok, access_token}
         else
-          {:error, "Cannot refresh token"}
+          {:error, "Cannot refresh access token"}
         end
 
       error ->
@@ -201,17 +197,40 @@ defmodule Accumulator.Spotify do
     end
   end
 
-  defp get_refresh_token_from_redis do
-    case Redix.command(:redix, ["GET", @refresh_token_key]) do
-      {:ok, nil} -> raise("Refresh token not present")
-      {:ok, token} -> token
-      {:error, reason} -> raise(reason)
+  defp get_refresh_token() do
+    refresh_token_data =
+      from(s in Schema, where: s.type == @refresh_token_key)
+      |> Repo.one()
+
+    case refresh_token_data do
+      nil -> raise("Refresh token not present")
+      %{data: data} -> data
     end
   end
 
-  defp get_client_id_and_secret do
+  defp get_client_id_and_secret() do
     id = Application.get_env(:accumulator, :client_id)
     secret = Application.get_env(:accumulator, :client_secret)
+    IO.inspect({id, secret})
     {id, secret}
+  end
+
+  defp get_data(type) do
+    remove_expired_data()
+
+    from(s in Schema, where: s.type == ^type)
+    |> Repo.one()
+  end
+
+  defp remove_expired_data() do
+    current_date_time = DateTime.utc_now() |> DateTime.truncate(:second)
+
+    query =
+      from(s in Schema,
+        where: s.expire_at < ^current_date_time,
+        select: s.id
+      )
+
+    Repo.delete_all(query)
   end
 end

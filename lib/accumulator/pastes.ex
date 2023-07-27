@@ -1,6 +1,6 @@
 defmodule Accumulator.Pastes do
   import Ecto.Query
-  alias Accumulator.{Pastes.Paste, Repo}
+  alias Accumulator.{Pastes.Paste, Repo, Helpers}
 
   # TODO: add tests
 
@@ -26,7 +26,7 @@ defmodule Accumulator.Pastes do
         nil
 
       paste ->
-        if expired?(paste) do
+        if Helpers.date_passed?(paste.expire_at) do
           Repo.delete(paste)
           broadcast(:paste_delete)
           nil
@@ -67,10 +67,5 @@ defmodule Accumulator.Pastes do
 
   defp broadcast(event) do
     Phoenix.PubSub.broadcast(@pubsub, @pubsub_topic, event)
-  end
-
-  defp expired?(paste) do
-    current_date_time = DateTime.utc_now() |> DateTime.truncate(:second)
-    if DateTime.compare(current_date_time, paste.expire_at) == :lt, do: false, else: true
   end
 end
