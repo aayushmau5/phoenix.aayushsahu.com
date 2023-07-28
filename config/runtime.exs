@@ -54,11 +54,14 @@ if config_env() == :prod do
     secret_key_base: secret_key_base
 
   # ecto
+  maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
+
   config :accumulator, Accumulator.Repo,
     database: System.get_env("POSTGRES_DB"),
     username: System.get_env("POSTGRES_USERNAME"),
     password: System.get_env("POSTGRES_PASSWORD"),
-    hostname: System.get_env("POSTGRES_HOSTNAME")
+    hostname: System.get_env("POSTGRES_HOSTNAME"),
+    socket_options: maybe_ipv6
 
   # ## SSL Support
   #
