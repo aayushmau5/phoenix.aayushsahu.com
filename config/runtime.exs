@@ -57,11 +57,9 @@ if config_env() == :prod do
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
   config :accumulator, Accumulator.Repo,
-    database: System.get_env("POSTGRES_DB"),
-    username: System.get_env("POSTGRES_USERNAME"),
-    password: System.get_env("POSTGRES_PASSWORD"),
-    hostname: System.get_env("POSTGRES_HOSTNAME"),
-    socket_options: maybe_ipv6
+    url: System.get_env("DATABASE_URL"),
+    socket_options: maybe_ipv6,
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
   # ## SSL Support
   #

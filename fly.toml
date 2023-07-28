@@ -9,7 +9,11 @@ kill_signal = "SIGTERM"
 kill_timeout = "5s"
 
 [experimental]
+  private_network = true
   auto_rollback = true
+
+[deploy]
+  release_command = "/app/bin/migrate"
 
 [env]
   PHX_HOST = "phoenix-aayushsahu-com.fly.dev"
