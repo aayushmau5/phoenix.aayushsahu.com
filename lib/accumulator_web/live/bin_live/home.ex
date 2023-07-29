@@ -10,7 +10,7 @@ defmodule AccumulatorWeb.BinLive.Home do
       <h1 class="mb-5 text-xl font-bold">LiveBin</h1>
 
       <.link
-        class="inline-block mb-5 border border border-white px-2 py-1 rounded-md hover:opacity-70"
+        class="inline-block mb-5 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
         navigate={~p"/bin/create"}
       >
         Create
@@ -24,7 +24,7 @@ defmodule AccumulatorWeb.BinLive.Home do
         <% pastes -> %>
           <.link
             :for={paste <- pastes}
-            class="block border mb-2 p-2 rounded-md hover:bg-slate-700 hover:border-slate-500"
+            class="block mb-2 p-2 rounded-md hover:bg-slate-800"
             navigate={~p"/bin/#{paste.id}/show"}
           >
             <div><%= paste.title %></div>

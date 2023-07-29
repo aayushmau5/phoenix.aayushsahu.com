@@ -29,13 +29,13 @@ defmodule AccumulatorWeb.BinLive.Show do
               <div>Expires at: <.local_time id="paste-expire-time" date={paste.expire_at} /></div>
               <button
                 phx-click="delete"
-                class="mt-2 border border border-white px-2 py-1 rounded-md hover:opacity-70"
+                class="mt-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
               >
                 Delete
               </button>
               <button
                 phx-click={JS.dispatch("phx:copy", to: "#copy-content")}
-                class="block text-sm ml-auto my-2 border border border-white px-2 py-1 rounded-md hover:opacity-70"
+                class="block text-sm ml-auto my-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
               >
                 Copy
               </button>
