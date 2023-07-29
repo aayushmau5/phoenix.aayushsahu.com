@@ -27,21 +27,29 @@ defmodule AccumulatorWeb.BinLive.Show do
             <div>
               <div class="mt-4 text-xl font-bold"><%= paste.title %></div>
               <div>Expires at: <.local_time id="paste-expire-time" date={paste.expire_at} /></div>
-              <button
-                phx-click="delete"
-                class="mt-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
-              >
-                Delete
-              </button>
+              <div class="flex gap-2">
+                <button
+                  phx-click="edit"
+                  class="flex w-max items-center gap-1 mt-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
+                >
+                  <Heroicons.pencil_square class="h-5" /> Edit
+                </button>
+                <button
+                  phx-click="delete"
+                  class="flex w-max items-center gap-1 mt-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
+                >
+                  <Heroicons.trash class="h-5" /> Delete
+                </button>
+              </div>
               <button
                 phx-click={JS.dispatch("phx:copy", to: "#copy-content")}
-                class="block text-sm ml-auto my-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
+                class="flex w-max items-center gap-1 text-sm ml-auto my-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
               >
-                Copy
+                <Heroicons.clipboard class="h-5" /> <span id="copy-button-text">Copy</span>
               </button>
               <pre
                 id="copy-content"
-                class="overflow-auto font-inherit max-h-96 mb-5 border p-2 rounded-md"
+                class="overflow-auto font-inherit max-h-96 mb-5 bg-slate-800 p-2 rounded-md"
               ><%= paste.content %></pre>
             </div>
         <% end %>
@@ -53,8 +61,9 @@ defmodule AccumulatorWeb.BinLive.Show do
   @impl true
   def mount(params, _session, socket) do
     paste = show_paste(socket, params)
+    title = page_title(socket, paste) <> " | LiveBin"
 
-    {:ok, assign(socket, paste: paste, is_loading: !connected?(socket))}
+    {:ok, assign(socket, page_title: title, paste: paste, is_loading: !connected?(socket))}
   end
 
   @impl true
@@ -79,6 +88,17 @@ defmodule AccumulatorWeb.BinLive.Show do
         {_, _} -> :error
         :error -> :error
       end
+    end
+  end
+
+  defp page_title(socket, paste) do
+    if connected?(socket) do
+      case paste do
+        :error -> "Error"
+        %{title: title} -> title
+      end
+    else
+      "Loading..."
     end
   end
 end

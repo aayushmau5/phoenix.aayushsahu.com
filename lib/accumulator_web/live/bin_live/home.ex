@@ -10,10 +10,10 @@ defmodule AccumulatorWeb.BinLive.Home do
       <h1 class="mb-5 text-xl font-bold">LiveBin</h1>
 
       <.link
-        class="inline-block mb-5 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
+        class="flex items-center gap-1 w-max mb-5 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
         navigate={~p"/bin/create"}
       >
-        Create
+        <Heroicons.plus class="h-5" /> Create
       </.link>
 
       <%= case @pastes do %>
@@ -45,7 +45,7 @@ defmodule AccumulatorWeb.BinLive.Home do
         Pastes.get_all_pastes()
       end
 
-    {:ok, assign(socket, pastes: pastes)}
+    {:ok, assign(socket, page_title: "LiveBin", pastes: pastes)}
   end
 
   @impl true

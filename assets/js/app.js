@@ -39,6 +39,11 @@ window.addEventListener("phx:copy", (event) => {
 	const text = event.target.innerText;
 	navigator.clipboard.writeText(text).then(() => {
 		console.log("Content copied");
+		const copyButtonTextEl = document.getElementById("copy-button-text");
+		copyButtonTextEl.innerText = "Copied!";
+		setTimeout(() => {
+			copyButtonTextEl.innerText = "Copy";
+		}, 1000);
 	})
 })
 

@@ -64,7 +64,9 @@ defmodule AccumulatorWeb.BinLive.Create do
   @impl true
   def mount(_params, _session, socket) do
     paste_form = %Paste{} |> Paste.changeset() |> to_form
-    {:ok, assign(socket, paste_form: paste_form, submit_disabled: true)}
+
+    {:ok,
+     assign(socket, page_title: "Create | LiveBin", paste_form: paste_form, submit_disabled: true)}
   end
 
   @impl true
