@@ -71,6 +71,7 @@ defmodule AccumulatorWeb.Router do
       live "/bin", BinLive.Home
       live "/bin/create", BinLive.Create
       live "/bin/:id/show", BinLive.Show
+      live "/bin/:id/edit", BinLive.Edit
     end
   end
 end

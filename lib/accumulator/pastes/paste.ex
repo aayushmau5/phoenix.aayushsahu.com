@@ -18,4 +18,11 @@ defmodule Accumulator.Pastes.Paste do
     |> validate_required([:title, :content, :time_duration, :time_type])
     |> validate_number(:time_duration, greater_than: 0)
   end
+
+  def update_changeset(paste, params \\ %{}) do
+    paste
+    |> cast(params, [:title, :content, :expire_at, :time_duration, :time_type])
+    |> validate_required([:title, :content, :time_duration, :time_type])
+    |> validate_number(:time_duration, greater_than_or_equal_to: 0)
+  end
 end

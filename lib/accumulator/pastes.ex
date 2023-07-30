@@ -49,6 +49,14 @@ defmodule Accumulator.Pastes do
     end
   end
 
+  def update_existing_paste(changeset) do
+    Repo.insert(
+      changeset,
+      on_conflict: :replace_all,
+      conflict_target: [:id]
+    )
+  end
+
   def cleanup_expired_pastes() do
     current_date_time = DateTime.utc_now() |> DateTime.truncate(:second)
 

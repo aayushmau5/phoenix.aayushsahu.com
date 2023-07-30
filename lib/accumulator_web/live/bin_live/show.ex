@@ -67,6 +67,12 @@ defmodule AccumulatorWeb.BinLive.Show do
   end
 
   @impl true
+  def handle_event("edit", _params, socket) do
+    paste_id = socket.assigns.paste.id
+    {:noreply, push_navigate(socket, to: "/bin/#{paste_id}/edit")}
+  end
+
+  @impl true
   def handle_event("delete", _params, socket) do
     paste_id = socket.assigns.paste.id
 
