@@ -29,8 +29,9 @@ defmodule AccumulatorWeb.BinLive.Show do
               <div>Expires at: <.local_time id="paste-expire-time" date={paste.expire_at} /></div>
               <div class="flex gap-2">
                 <button
+                  disabled={!@enable_edit}
                   phx-click="edit"
-                  class="flex w-max items-center gap-1 mt-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
+                  class="flex w-max items-center gap-1 mt-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 disabled:opacity-30"
                 >
                   <Heroicons.pencil_square class="h-5" /> Edit
                 </button>
@@ -63,7 +64,17 @@ defmodule AccumulatorWeb.BinLive.Show do
     paste = show_paste(socket, params)
     title = page_title(socket, paste) <> " | LiveBin"
 
-    {:ok, assign(socket, page_title: title, paste: paste, is_loading: !connected?(socket))}
+    if connected?(socket) and paste not in [nil, :error] do
+      Phoenix.PubSub.subscribe(Accumulator.PubSub, "paste_updates:#{paste.id}")
+    end
+
+    {:ok,
+     assign(socket,
+       page_title: title,
+       paste: paste,
+       enable_edit: true,
+       is_loading: !connected?(socket)
+     )}
   end
 
   @impl true
@@ -83,6 +94,18 @@ defmodule AccumulatorWeb.BinLive.Show do
       end
 
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info(%{event: :edit, count: count}, socket) do
+    enable_edit = if count == 0, do: true, else: false
+    {:noreply, assign(socket, enable_edit: enable_edit)}
+  end
+
+  @impl true
+  def handle_info(%{event: :paste_update}, socket) do
+    updated_paste = Pastes.get_paste(socket.assigns.paste.id)
+    {:noreply, assign(socket, paste: updated_paste)}
   end
 
   defp show_paste(socket, params) do

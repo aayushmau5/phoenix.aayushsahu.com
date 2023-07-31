@@ -27,6 +27,15 @@ defmodule AccumulatorWeb.Presence do
     {:ok, state}
   end
 
+  def handle_metas("paste_edit:" <> id, _metas, presences, state) do
+    PubSub.broadcast(Accumulator.PubSub, "paste_updates:#{id}", %{
+      event: :edit,
+      count: map_size(presences)
+    })
+
+    {:ok, state}
+  end
+
   def handle_metas(_topic, _metas, _presences, state) do
     {:ok, state}
   end

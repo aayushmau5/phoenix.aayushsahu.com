@@ -2,6 +2,7 @@ defmodule AccumulatorWeb.BinLive.Edit do
   use AccumulatorWeb, :live_view
 
   alias Accumulator.{Pastes, Pastes.Paste}
+  alias AccumulatorWeb.Presence
 
   @impl true
   def render(assigns) do
@@ -13,71 +14,13 @@ defmodule AccumulatorWeb.BinLive.Edit do
         Back
       </.back>
 
-      <%= if @loading do %>
-        <div>Loading...</div>
-      <% else %>
-        <%= case @paste do %>
-          <% nil -> %>
-            <div class="text-xl text-center font-bold">
-              No paste found! It either expired or doesn't exist.
-            </div>
-          <% :error -> %>
-            <div class="text-xl text-center font-bold">Invalid paste id provided.</div>
-          <% paste -> %>
-            <div>
-              <h1 class="text-center text-xl font-bold">Edit paste</h1>
-
-              <.simple_form
-                for={@paste_form}
-                id="paste_form"
-                phx-submit="update_paste"
-                phx-change="validate_paste"
-              >
-                <.input
-                  field={@paste_form[:title]}
-                  type="text"
-                  id="paste_title"
-                  label="Title"
-                  required
-                />
-                <.input
-                  field={@paste_form[:content]}
-                  type="textarea"
-                  id="paste_content"
-                  label="Content"
-                  required
-                />
-
-                <div>Expires at: <.local_time id="paste-expire-time" date={paste.expire_at} /></div>
-
-                <.input
-                  field={@paste_form[:time_duration]}
-                  type="number"
-                  id="paste_expire_duration"
-                  label="Extend Expire Duration"
-                  required
-                />
-                <.input
-                  field={@paste_form[:time_type]}
-                  type="select"
-                  id="paste_expire_type"
-                  label="Expire Type"
-                  options={["minute", "hour", "day"]}
-                  required
-                />
-                <:actions>
-                  <.button
-                    class="disabled:bg-red-400"
-                    disabled={@submit_disabled}
-                    phx-disable-with="Saving..."
-                  >
-                    Save
-                  </.button>
-                </:actions>
-              </.simple_form>
-            </div>
-        <% end %>
-      <% end %>
+      <div :if={@loading}>Loading...</div>
+      <div :if={@editing} class="text-center font-bold mt-2">
+        Someone else is editing the form. Try again after some time.
+      </div>
+      <.render_or_show_error :if={!@loading and !@editing} paste={@paste} title="Edit paste">
+        <.edit_form paste={@paste} form={@form} submit_disabled={@submit_disabled} />
+      </.render_or_show_error>
     </div>
     """
   end
@@ -86,28 +29,15 @@ defmodule AccumulatorWeb.BinLive.Edit do
   def mount(params, _session, socket) do
     loading = if connected?(socket), do: false, else: true
     paste = show_paste(socket, params)
-
-    paste_form =
-      case paste do
-        :error ->
-          nil
-
-        nil ->
-          nil
-
-        paste ->
-          paste
-          |> Map.merge(%{time_duration: 0, time_type: "minute"})
-          |> Paste.update_changeset()
-          |> to_form
-      end
+    editing = editing?(socket, paste)
 
     {:ok,
      assign(socket,
        page_title: "Edit | LiveBin",
        loading: loading,
+       editing: editing,
        paste: paste,
-       paste_form: paste_form,
+       form: paste_form(paste),
        submit_disabled: false
      )}
   end
@@ -121,7 +51,7 @@ defmodule AccumulatorWeb.BinLive.Edit do
       |> Map.put(:action, :validate)
       |> to_form
 
-    {:noreply, assign(socket, paste_form: paste_form, submit_disabled: !paste_changeset.valid?)}
+    {:noreply, assign(socket, form: paste_form, submit_disabled: !paste_changeset.valid?)}
   end
 
   @impl true
@@ -140,8 +70,15 @@ defmodule AccumulatorWeb.BinLive.Edit do
 
     socket =
       case Pastes.update_existing_paste(paste_changeset) do
-        {:ok, paste} -> push_navigate(socket, to: "/bin/#{paste.id}/show")
-        {:error, changeset} -> assign(socket, paste_form: to_form(changeset))
+        {:ok, paste} ->
+          Phoenix.PubSub.broadcast(Accumulator.PubSub, "paste_updates:#{paste.id}", %{
+            event: :paste_update
+          })
+
+          push_navigate(socket, to: "/bin/#{paste.id}/show")
+
+        {:error, changeset} ->
+          assign(socket, form: to_form(changeset))
       end
 
     {:noreply, socket}
@@ -160,7 +97,39 @@ defmodule AccumulatorWeb.BinLive.Edit do
     DateTime.add(expiratio_time, duration, type) |> DateTime.truncate(:second)
   end
 
-  def show_paste(socket, params) do
+  defp editing?(socket, paste) do
+    if connected?(socket) && paste not in [nil, :error] do
+      topic = "paste_edit:#{paste.id}"
+      count = Presence.list(topic) |> map_size()
+
+      if count == 0 do
+        {:ok, _} = Presence.track(self(), topic, socket.id, %{})
+        false
+      else
+        true
+      end
+    else
+      false
+    end
+  end
+
+  defp paste_form(paste) do
+    case paste do
+      :error ->
+        nil
+
+      nil ->
+        nil
+
+      paste ->
+        paste
+        |> Map.merge(%{time_duration: 0, time_type: "minute"})
+        |> Paste.update_changeset()
+        |> to_form
+    end
+  end
+
+  defp show_paste(socket, params) do
     paste_id = Map.get(params, "id")
 
     if connected?(socket) do

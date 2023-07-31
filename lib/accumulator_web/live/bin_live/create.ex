@@ -14,49 +14,35 @@ defmodule AccumulatorWeb.BinLive.Create do
       </.back>
 
       <h1 class="text-center text-xl font-bold">Create a paste</h1>
+      <.simple_form for={@form} id="paste_form" phx-submit="add_paste" phx-change="validate_paste">
+        <.input field={@form[:title]} type="text" id="paste_title" label="Title" required />
+        <.input field={@form[:content]} type="textarea" id="paste_content" label="Content" required />
 
-      <div>
-        <.simple_form
-          for={@paste_form}
-          id="paste_form"
-          phx-submit="add_paste"
-          phx-change="validate_paste"
-        >
-          <.input field={@paste_form[:title]} type="text" id="paste_title" label="Title" required />
-          <.input
-            field={@paste_form[:content]}
-            type="textarea"
-            id="paste_content"
-            label="Content"
-            required
-          />
-
-          <.input
-            field={@paste_form[:time_duration]}
-            type="number"
-            id="paste_expire_duration"
-            label="Expire Duration"
-            required
-          />
-          <.input
-            field={@paste_form[:time_type]}
-            type="select"
-            id="paste_expire_type"
-            label="Expire Type"
-            options={["minute", "hour", "day"]}
-            required
-          />
-          <:actions>
-            <.button
-              class="disabled:bg-red-400"
-              disabled={@submit_disabled}
-              phx-disable-with="Saving..."
-            >
-              Save
-            </.button>
-          </:actions>
-        </.simple_form>
-      </div>
+        <.input
+          field={@form[:time_duration]}
+          type="number"
+          id="paste_expire_duration"
+          label="Expire Duration"
+          required
+        />
+        <.input
+          field={@form[:time_type]}
+          type="select"
+          id="paste_expire_type"
+          label="Expire Type"
+          options={["minute", "hour", "day"]}
+          required
+        />
+        <:actions>
+          <.button
+            class="disabled:bg-red-400"
+            disabled={@submit_disabled}
+            phx-disable-with="Saving..."
+          >
+            Save
+          </.button>
+        </:actions>
+      </.simple_form>
     </div>
     """
   end
@@ -65,14 +51,11 @@ defmodule AccumulatorWeb.BinLive.Create do
   def mount(_params, _session, socket) do
     paste_form = %Paste{} |> Paste.changeset() |> to_form
 
-    {:ok,
-     assign(socket, page_title: "Create | LiveBin", paste_form: paste_form, submit_disabled: true)}
+    {:ok, assign(socket, page_title: "Create | LiveBin", form: paste_form, submit_disabled: true)}
   end
 
   @impl true
-  def handle_event("validate_paste", params, socket) do
-    %{"paste" => paste_params} = params
-
+  def handle_event("validate_paste", %{"paste" => paste_params}, socket) do
     paste_changeset = %Paste{} |> Paste.changeset(paste_params)
 
     paste_form =
@@ -80,12 +63,11 @@ defmodule AccumulatorWeb.BinLive.Create do
       |> Map.put(:action, :validate)
       |> to_form
 
-    {:noreply, assign(socket, paste_form: paste_form, submit_disabled: !paste_changeset.valid?)}
+    {:noreply, assign(socket, form: paste_form, submit_disabled: !paste_changeset.valid?)}
   end
 
   @impl true
-  def handle_event("add_paste", params, socket) do
-    %{"paste" => paste_params} = params
+  def handle_event("add_paste", %{"paste" => paste_params}, socket) do
     expire_at = get_expiration_time(paste_params["time_duration"], paste_params["time_type"])
 
     paste_changeset =
@@ -96,7 +78,7 @@ defmodule AccumulatorWeb.BinLive.Create do
     socket =
       case Pastes.add_paste(paste_changeset) do
         :ok -> push_navigate(socket, to: ~p"/bin")
-        {:error, changeset} -> assign(socket, paste_form: to_form(changeset))
+        {:error, changeset} -> assign(socket, form: to_form(changeset))
       end
 
     {:noreply, socket}
