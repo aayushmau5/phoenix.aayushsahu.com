@@ -13,10 +13,63 @@ defmodule AccumulatorWeb.BinLive.Create do
         Back
       </.back>
 
+      <%!-- <.form for={@form} phx-change="file-input">
+        <label class="block font-bold" for={@uploads.files.ref}>Files</label>
+        <.live_file_input style="margin-top:10px;" upload={@uploads.files} />
+        <%= for entry <- @uploads.files.entries do %>
+          <div>
+            Name: <%= entry.client_name %>
+            <progress value={entry.progress} max="100"><%= entry.progress %>%</progress>
+            <button
+              type="button"
+              phx-click="cancel-upload"
+              phx-value-ref={entry.ref}
+              aria-label="cancel"
+            >
+              &times;
+            </button>
+            <%= for err <- upload_errors(@uploads.files, entry) do %>
+              <p class="alert alert-danger"><%= error_to_string(err) %></p>
+            <% end %>
+          </div>
+        <% end %>
+      </.form> --%>
+
+      <div>
+        Hello <%= length(@uploads.files.entries) %>
+      </div>
+
       <h1 class="text-center text-xl font-bold">Create a paste</h1>
       <.simple_form for={@form} id="paste_form" phx-submit="add_paste" phx-change="validate_paste">
         <.input field={@form[:title]} type="text" id="paste_title" label="Title" required />
-        <.input field={@form[:content]} type="textarea" id="paste_content" label="Content" required />
+        <.input
+          field={@form[:content]}
+          type="textarea"
+          id="paste_content"
+          label="Content"
+          data-attrs="style"
+          phx-hook="MaintainAttrs"
+          required
+        />
+
+        <%!-- File uploads --%>
+        <label class="block font-bold" for={@uploads.files.ref}>Files</label>
+        <.live_file_input style="margin-top:10px;" upload={@uploads.files} />
+        <div :for={entry <- @uploads.files.entries}>
+          Name: <%= entry.client_name %>
+          <progress value={entry.progress} max="100"><%= entry.progress %>%</progress>
+          <button
+            type="button"
+            phx-click="cancel-upload"
+            phx-value-ref={entry.ref}
+            aria-label="cancel"
+          >
+            &times;
+          </button>
+          <%= for err <- upload_errors(@uploads.files, entry) do %>
+            <p class="alert alert-danger"><%= error_to_string(err) %></p>
+          <% end %>
+        </div>
 
         <.input
           field={@form[:time_duration]}
@@ -51,7 +104,15 @@ defmodule AccumulatorWeb.BinLive.Create do
   def mount(_params, _session, socket) do
     paste_form = %Paste{} |> Paste.changeset() |> to_form
 
-    {:ok, assign(socket, page_title: "Create | LiveBin", form: paste_form, submit_disabled: true)}
+    {:ok,
+     socket
+     |> assign(
+       page_title: "Create | LiveBin",
+       form: paste_form,
+       submit_disabled: true,
+       uploaded_files: []
+     )
+     |> allow_upload(:files, accept: :any, max_entries: 20, max_file_size: 5_000_000)}
   end
 
   @impl true
@@ -96,4 +157,8 @@ defmodule AccumulatorWeb.BinLive.Create do
 
     DateTime.add(DateTime.utc_now(), duration, type) |> DateTime.truncate(:second)
   end
+
+  defp error_to_string(:too_large), do: "Too large"
+  defp error_to_string(:not_accepted), do: "You have selected an unacceptable file type"
+  defp error_to_string(:too_many_files), do: "You have selected too many files"
 end
