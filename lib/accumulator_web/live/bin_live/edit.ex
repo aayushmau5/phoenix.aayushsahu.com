@@ -332,8 +332,7 @@ defmodule AccumulatorWeb.BinLive.Edit do
 
   defp cleanup_deleted_files(socket) do
     Enum.filter(socket.assigns.paste.files, &(Map.get(&1, :deleted) == true))
-    |> Enum.map(&Pastes.File.delete_file(&1))
-    |> dbg()
+    |> Pastes.cleanup_files()
   end
 
   defp error_to_string(:too_large), do: "Too large"

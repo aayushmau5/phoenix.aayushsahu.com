@@ -15,8 +15,14 @@ defmodule Accumulator.Pastes do
   end
 
   def get_all_pastes() do
-    cleanup_expired_pastes()
-    query = from(p in Paste, select: [:id, :title, :expire_at], order_by: [desc: :id])
+    current_date_time = DateTime.utc_now() |> DateTime.truncate(:second)
+
+    query =
+      from(paste in Paste,
+        where: paste.expire_at > ^current_date_time,
+        select: paste
+      )
+
     Repo.all(query)
   end
 
@@ -26,13 +32,7 @@ defmodule Accumulator.Pastes do
         nil
 
       paste ->
-        if Helpers.date_passed?(paste.expire_at) do
-          Repo.delete(paste)
-          broadcast(:paste_delete)
-          nil
-        else
-          paste
-        end
+        if Helpers.date_passed?(paste.expire_at), do: nil, else: paste
     end
   end
 
@@ -43,6 +43,7 @@ defmodule Accumulator.Pastes do
 
       paste ->
         with {:ok, _} <- Repo.delete(paste) do
+          cleanup_files(paste.files)
           broadcast(:paste_delete)
           :ok
         end
@@ -60,20 +61,40 @@ defmodule Accumulator.Pastes do
   def cleanup_expired_pastes() do
     current_date_time = DateTime.utc_now() |> DateTime.truncate(:second)
 
+    get_expired_pastes_files(current_date_time) |> Enum.map(&cleanup_files(&1))
+
     query =
       from(paste in Paste,
-        where: paste.expire_at < ^current_date_time,
-        select: paste.id
+        where: paste.expire_at < ^current_date_time
       )
 
     Repo.delete_all(query)
+    broadcast(:paste_delete)
   end
 
   def subscribe() do
     Phoenix.PubSub.subscribe(@pubsub, @pubsub_topic)
   end
 
+  def cleanup_files(files) do
+    Enum.map(files, &delete_file(&1))
+  end
+
   defp broadcast(event) do
     Phoenix.PubSub.broadcast(@pubsub, @pubsub_topic, event)
+  end
+
+  defp get_expired_pastes_files(current_date_time) do
+    query =
+      from(paste in Paste,
+        where: paste.expire_at < ^current_date_time,
+        select: paste.files
+      )
+
+    Repo.all(query)
+  end
+
+  defp delete_file(%{storage_path: path} = _file) do
+    File.rm(path)
   end
 end

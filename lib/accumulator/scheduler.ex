@@ -1,7 +1,7 @@
 defmodule Accumulator.Scheduler do
   use Quantum, otp_app: :accumulator
 
-  alias Accumulator.Spotify
+  alias Accumulator.{Spotify, Pastes}
   alias AccumulatorWeb.Presence
   alias Phoenix.PubSub
 
@@ -16,5 +16,9 @@ defmodule Accumulator.Scheduler do
         data: now_playing
       })
     end
+  end
+
+  def cleanup_expired_pastes do
+    Pastes.cleanup_expired_pastes()
   end
 end

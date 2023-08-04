@@ -14,8 +14,4 @@ defmodule Accumulator.Pastes.File do
     |> cast(attrs, [:name, :access_path, :storage_path, :type], empty_values: [[], nil])
     |> validate_required([:name, :access_path, :storage_path])
   end
-
-  def delete_file(%{storage_path: path} = _file) do
-    File.rm(path)
-  end
 end

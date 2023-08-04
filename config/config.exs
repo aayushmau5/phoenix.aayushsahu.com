@@ -57,6 +57,11 @@ config :accumulator, Accumulator.Scheduler,
       # Every 1 minute
       schedule: "* * * * *",
       task: {Accumulator.Scheduler, :spotify_now_playing_job, []}
+    ],
+    pastes_cleanup: [
+      # Every hour
+      schedule: "0 * * * *",
+      task: {Accumulator.Scheduler, :cleanup_expired_pastes, []}
     ]
   ]
 
