@@ -35,6 +35,11 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 ## TODO:
 
 - Think about settings up a "demo" page for view only access
+- Move get and check calls to "upsert"(but will this incur more complexity?).
+- Move show and edit into in a single module using components and actions
+- Add admin tool(https://github.com/tfwright/live_admin or https://github.com/mojotech/torch)
+- Send email when someone logs in
+- A list of sessions with the ability to delete any session
 - Move dashboard data into stream(currently stream doesn't support filtering, sorting, etc without being hacky)
 
 ## Internals

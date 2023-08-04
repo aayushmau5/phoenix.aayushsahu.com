@@ -3,6 +3,8 @@ defmodule AccumulatorWeb.BinLive.Show do
 
   alias Accumulator.Pastes
 
+  # TODO: download with original file name
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -52,6 +54,15 @@ defmodule AccumulatorWeb.BinLive.Show do
                 id="copy-content"
                 class="overflow-auto font-inherit max-h-96 mb-5 bg-slate-800 p-2 rounded-md"
               ><%= paste.content %></pre>
+              <div :if={paste.files != []}>
+                <p>Files:</p>
+                <div :for={file <- paste.files} class="mt-2 bg-white bg-opacity-5 p-2 rounded-md">
+                  <a href={file.access_path}>
+                    <%= file.name %>
+                  </a>
+                  <div class="text-sm opacity-40"><%= file.type %></div>
+                </div>
+              </div>
             </div>
         <% end %>
       <% end %>
@@ -123,6 +134,7 @@ defmodule AccumulatorWeb.BinLive.Show do
   defp page_title(socket, paste) do
     if connected?(socket) do
       case paste do
+        nil -> "No paste found"
         :error -> "Error"
         %{title: title} -> title
       end

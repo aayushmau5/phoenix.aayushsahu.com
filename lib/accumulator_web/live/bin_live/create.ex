@@ -3,6 +3,9 @@ defmodule AccumulatorWeb.BinLive.Create do
 
   alias Accumulator.{Pastes, Pastes.Paste}
 
+  @max_file_entries 20
+  @max_file_size 5_000_000_00
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -12,32 +15,6 @@ defmodule AccumulatorWeb.BinLive.Create do
       <.back navigate={~p"/bin"}>
         Back
       </.back>
-
-      <%!-- <.form for={@form} phx-change="file-input">
-        <label class="block font-bold" for={@uploads.files.ref}>Files</label>
-        <.live_file_input style="margin-top:10px;" upload={@uploads.files} />
-        <%= for entry <- @uploads.files.entries do %>
-          <div>
-            Name: <%= entry.client_name %>
-            <progress value={entry.progress} max="100"><%= entry.progress %>%</progress>
-            <button
-              type="button"
-              phx-click="cancel-upload"
-              phx-value-ref={entry.ref}
-              aria-label="cancel"
-            >
-              &times;
-            </button>
-            <%= for err <- upload_errors(@uploads.files, entry) do %>
-              <p class="alert alert-danger"><%= error_to_string(err) %></p>
-            <% end %>
-          </div>
-        <% end %>
-      </.form> --%>
-
-      <div>
-        Hello <%= length(@uploads.files.entries) %>
-      </div>
 
       <h1 class="text-center text-xl font-bold">Create a paste</h1>
       <.simple_form for={@form} id="paste_form" phx-submit="add_paste" phx-change="validate_paste">
@@ -67,7 +44,7 @@ defmodule AccumulatorWeb.BinLive.Create do
             &times;
           </button>
           <%= for err <- upload_errors(@uploads.files, entry) do %>
-            <p class="alert alert-danger"><%= error_to_string(err) %></p>
+            <p><%= error_to_string(err) %></p>
           <% end %>
         </div>
 
@@ -96,6 +73,10 @@ defmodule AccumulatorWeb.BinLive.Create do
           </.button>
         </:actions>
       </.simple_form>
+
+      <%= for err <- upload_errors(@uploads.files) do %>
+        <p><%= error_to_string(err) %></p>
+      <% end %>
     </div>
     """
   end
@@ -109,10 +90,13 @@ defmodule AccumulatorWeb.BinLive.Create do
      |> assign(
        page_title: "Create | LiveBin",
        form: paste_form,
-       submit_disabled: true,
-       uploaded_files: []
+       submit_disabled: true
      )
-     |> allow_upload(:files, accept: :any, max_entries: 20, max_file_size: 5_000_000)}
+     |> allow_upload(:files,
+       accept: :any,
+       max_entries: @max_file_entries,
+       max_file_size: @max_file_size
+     )}
   end
 
   @impl true
@@ -128,13 +112,44 @@ defmodule AccumulatorWeb.BinLive.Create do
   end
 
   @impl true
+  def handle_event("cancel-upload", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :files, ref)}
+  end
+
+  @impl true
   def handle_event("add_paste", %{"paste" => paste_params}, socket) do
-    expire_at = get_expiration_time(paste_params["time_duration"], paste_params["time_type"])
+    uploaded_files =
+      consume_uploaded_entries(socket, :files, fn %{path: path}, entry ->
+        %{client_name: file_name, client_type: file_type} = entry
+        file_ext = Path.extname(file_name)
+
+        dest =
+          Path.join([
+            :code.priv_dir(:accumulator),
+            "static",
+            "uploads",
+            Path.basename(path) <> file_ext
+          ])
+
+        File.cp!(path, dest)
+
+        {:ok,
+         %{
+           name: file_name,
+           storage_path: dest,
+           type: file_type,
+           access_path: "/uploads/#{Path.basename(dest)}"
+         }}
+      end)
 
     paste_changeset =
       %Paste{}
       |> Paste.changeset(paste_params)
-      |> Ecto.Changeset.put_change(:expire_at, expire_at)
+      |> Ecto.Changeset.put_change(
+        :expire_at,
+        get_expiration_time(paste_params["time_duration"], paste_params["time_type"])
+      )
+      |> Ecto.Changeset.put_embed(:files, uploaded_files)
 
     socket =
       case Pastes.add_paste(paste_changeset) do
