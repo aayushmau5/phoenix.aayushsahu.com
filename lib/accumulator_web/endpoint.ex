@@ -23,6 +23,11 @@ defmodule AccumulatorWeb.Endpoint do
     gzip: false,
     only: AccumulatorWeb.static_paths()
 
+  plug Plug.Static,
+    at: "/uploads",
+    from: {:accumulator, "priv/uploads"},
+    gzip: Mix.env() == :prod
+
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do

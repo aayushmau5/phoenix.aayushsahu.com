@@ -20,7 +20,8 @@ defmodule Accumulator.Pastes do
     query =
       from(paste in Paste,
         where: paste.expire_at > ^current_date_time,
-        select: paste
+        select: paste,
+        order_by: [desc: paste.id]
       )
 
     Repo.all(query)

@@ -35,22 +35,30 @@ defmodule AccumulatorWeb.BinLive.Edit do
             <p class="block font-semibold text-sm">Files</p>
             <div
               :for={{file, index} <- Enum.with_index(@paste.files)}
-              class={"mt-2 bg-white bg-opacity-5 p-2 rounded-md #{if Map.get(file, :deleted) == true, do: "opacity-30", else: ""}"}
+              class="mt-2 bg-white bg-opacity-5 p-2 rounded-md"
             >
-              <a href={file.access_path}>
+              <a
+                href={file.access_path}
+                class={"#{if Map.get(file, :deleted) == true, do: "opacity-30", else: ""}"}
+              >
                 <%= file.name %>
               </a>
               <div class="text-sm opacity-40"><%= file.type %></div>
               <%= if Map.get(file, :deleted) == true do %>
-                <div>
-                  <p>Deleted</p>
+                <div class="flex items-center justify-between gap-2">
+                  <p class="text-sm opacity-50">Deleted</p>
                   <button type="button" phx-click="undo-remove-file" phx-value-index={index}>
                     Undo
                   </button>
                 </div>
               <% else %>
-                <button type="button" phx-click="remove-file" phx-value-index={index}>
-                  &times;
+                <button
+                  type="button"
+                  phx-click="remove-file"
+                  phx-value-index={index}
+                  class="text-sm text-red-400"
+                >
+                  Remove
                 </button>
               <% end %>
             </div>
@@ -59,25 +67,37 @@ defmodule AccumulatorWeb.BinLive.Edit do
           <%!-- File uploads --%>
           <label class="block font-semibold text-sm" for={@uploads.files.ref}>Add Files</label>
           <.live_file_input style="margin-top:10px;" upload={@uploads.files} />
-          <div :for={entry <- @uploads.files.entries}>
-            Name: <%= entry.client_name %>
-            <progress value={entry.progress} max="100"><%= entry.progress %>%</progress>
-            <button
-              type="button"
-              phx-click="cancel-upload"
-              phx-value-ref={entry.ref}
-              aria-label="cancel"
-            >
-              &times;
-            </button>
-            <%= for err <- upload_errors(@uploads.files, entry) do %>
-              <p class=""><%= error_to_string(err) %></p>
-            <% end %>
+          <div :for={entry <- @uploads.files.entries} class="flex justify-between">
+            <div>
+              <div><%= entry.client_name %></div>
+              <div class="text-sm opacity-30"><%= entry.client_type %></div>
+              <button
+                type="button"
+                phx-click="cancel-upload"
+                phx-value-ref={entry.ref}
+                class="block text-sm"
+              >
+                Cancel
+              </button>
+              <%= for err <- upload_errors(@uploads.files, entry) do %>
+                <p class="text-sm text-red-500"><%= error_to_string(err) %></p>
+              <% end %>
+            </div>
+
+            <div>
+              <progress class="rounded-md" value={entry.progress} max="100">
+                <%= entry.progress %>%
+              </progress>
+            </div>
           </div>
 
           <div :if={@file_limit_exceeded?} class="text-red-500">
             File limit exceeded
           </div>
+
+          <%= for err <- upload_errors(@uploads.files) do %>
+            <p class="text-sm text-red-500"><%= error_to_string(err) %></p>
+          <% end %>
 
           <div>Expires at: <.local_time id="paste-expire-time" date={@paste.expire_at} /></div>
 
@@ -106,10 +126,6 @@ defmodule AccumulatorWeb.BinLive.Edit do
             </.button>
           </:actions>
         </.simple_form>
-
-        <%= for err <- upload_errors(@uploads.files) do %>
-          <p><%= error_to_string(err) %></p>
-        <% end %>
       </.render_or_show_error>
     </div>
     """
@@ -200,11 +216,11 @@ defmodule AccumulatorWeb.BinLive.Edit do
         dest =
           Path.join([
             :code.priv_dir(:accumulator),
-            "static",
             "uploads",
             Path.basename(path) <> file_ext
           ])
 
+        # TODO: check if we have to mv instead of cp
         File.cp!(path, dest)
 
         {:ok,
@@ -324,8 +340,6 @@ defmodule AccumulatorWeb.BinLive.Edit do
 
     current_files_present =
       length(non_deleted_files) + length(socket.assigns.uploads.files.entries)
-
-    dbg(current_files_present > @max_file_entries)
 
     current_files_present > @max_file_entries
   end

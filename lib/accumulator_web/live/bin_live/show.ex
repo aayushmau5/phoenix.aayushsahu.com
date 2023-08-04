@@ -3,7 +3,7 @@ defmodule AccumulatorWeb.BinLive.Show do
 
   alias Accumulator.Pastes
 
-  # TODO: download with original file name
+  # TODO: download with original file name(need to sanitize filename and save it as it is)
 
   @impl true
   def render(assigns) do
@@ -57,7 +57,7 @@ defmodule AccumulatorWeb.BinLive.Show do
               <div :if={paste.files != []}>
                 <p>Files:</p>
                 <div :for={file <- paste.files} class="mt-2 bg-white bg-opacity-5 p-2 rounded-md">
-                  <a href={file.access_path}>
+                  <a href={file.access_path} target="_blank">
                     <%= file.name %>
                   </a>
                   <div class="text-sm opacity-40"><%= file.type %></div>

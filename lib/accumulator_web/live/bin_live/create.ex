@@ -32,21 +32,33 @@ defmodule AccumulatorWeb.BinLive.Create do
         <%!-- File uploads --%>
         <label class="block font-bold" for={@uploads.files.ref}>Files</label>
         <.live_file_input style="margin-top:10px;" upload={@uploads.files} />
-        <div :for={entry <- @uploads.files.entries}>
-          Name: <%= entry.client_name %>
-          <progress value={entry.progress} max="100"><%= entry.progress %>%</progress>
-          <button
-            type="button"
-            phx-click="cancel-upload"
-            phx-value-ref={entry.ref}
-            aria-label="cancel"
-          >
-            &times;
-          </button>
-          <%= for err <- upload_errors(@uploads.files, entry) do %>
-            <p><%= error_to_string(err) %></p>
-          <% end %>
+        <div :for={entry <- @uploads.files.entries} class="flex justify-between">
+          <div>
+            <div><%= entry.client_name %></div>
+            <div class="text-sm opacity-30"><%= entry.client_type %></div>
+            <button
+              type="button"
+              phx-click="cancel-upload"
+              phx-value-ref={entry.ref}
+              class="block text-sm"
+            >
+              Cancel
+            </button>
+            <%= for err <- upload_errors(@uploads.files, entry) do %>
+              <p class="text-sm text-red-500"><%= error_to_string(err) %></p>
+            <% end %>
+          </div>
+
+          <div>
+            <progress class="rounded-md" value={entry.progress} max="100">
+              <%= entry.progress %>%
+            </progress>
+          </div>
         </div>
+
+        <%= for err <- upload_errors(@uploads.files) do %>
+          <p class="text-sm text-red-500"><%= error_to_string(err) %></p>
+        <% end %>
 
         <.input
           field={@form[:time_duration]}
@@ -73,10 +85,6 @@ defmodule AccumulatorWeb.BinLive.Create do
           </.button>
         </:actions>
       </.simple_form>
-
-      <%= for err <- upload_errors(@uploads.files) do %>
-        <p><%= error_to_string(err) %></p>
-      <% end %>
     </div>
     """
   end
@@ -126,11 +134,11 @@ defmodule AccumulatorWeb.BinLive.Create do
         dest =
           Path.join([
             :code.priv_dir(:accumulator),
-            "static",
             "uploads",
             Path.basename(path) <> file_ext
           ])
 
+        # TODO: check if we have to mv instead of cp
         File.cp!(path, dest)
 
         {:ok,

@@ -2,8 +2,6 @@ defmodule Accumulator.Pastes.Paste do
   use Ecto.Schema
   import Ecto.Changeset
 
-  # TODO: separate out UI schema and db schema: https://hexdocs.pm/ecto/data-mapping-and-validation.html
-
   schema "pastes" do
     field(:title, :string)
     field(:content, :string)
