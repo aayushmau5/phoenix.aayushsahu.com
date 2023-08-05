@@ -3,8 +3,6 @@ defmodule AccumulatorWeb.BinLive.Show do
 
   alias Accumulator.Pastes
 
-  # TODO: download with original file name(need to sanitize filename and save it as it is)
-
   @impl true
   def render(assigns) do
     ~H"""
@@ -15,57 +13,48 @@ defmodule AccumulatorWeb.BinLive.Show do
         Back
       </.back>
 
-      <%= if @is_loading do %>
-        <div>Loading...</div>
-      <% else %>
-        <%= case @paste do %>
-          <% nil -> %>
-            <div class="text-xl text-center font-bold">
-              No paste found! It either expired or doesn't exist.
+      <div :if={@is_loading}>Loading...</div>
+
+      <.render_or_show_error :if={!@is_loading} paste={@paste}>
+        <div>
+          <div class="mt-4 text-xl font-bold"><%= @paste.title %></div>
+          <div>Expires at: <.local_time id="paste-expire-time" date={@paste.expire_at} /></div>
+          <div class="flex gap-2">
+            <button
+              disabled={!@enable_edit}
+              phx-click="edit"
+              class="flex w-max items-center gap-1 mt-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 disabled:opacity-30"
+            >
+              <Heroicons.pencil_square class="h-5" /> Edit
+            </button>
+            <button
+              phx-click="delete"
+              class="flex w-max items-center gap-1 mt-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
+            >
+              <Heroicons.trash class="h-5" /> Delete
+            </button>
+          </div>
+          <button
+            phx-click={JS.dispatch("phx:copy", to: "#copy-content")}
+            class="flex w-max items-center gap-1 text-sm ml-auto my-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
+          >
+            <Heroicons.clipboard class="h-5" /> <span id="copy-button-text">Copy</span>
+          </button>
+          <pre
+            id="copy-content"
+            class="overflow-auto font-inherit max-h-96 mb-5 bg-slate-800 p-2 rounded-md"
+          ><%= @paste.content %></pre>
+          <div :if={@paste.files != []}>
+            <p>Files:</p>
+            <div :for={file <- @paste.files} class="mt-2 bg-white bg-opacity-5 p-2 rounded-md">
+              <a href={file.access_path} target="_blank">
+                <%= file.name %>
+              </a>
+              <div class="text-sm opacity-40"><%= file.type %></div>
             </div>
-          <% :error -> %>
-            <div class="text-xl text-center font-bold">Invalid paste id provided.</div>
-          <% paste -> %>
-            <div>
-              <div class="mt-4 text-xl font-bold"><%= paste.title %></div>
-              <div>Expires at: <.local_time id="paste-expire-time" date={paste.expire_at} /></div>
-              <div class="flex gap-2">
-                <button
-                  disabled={!@enable_edit}
-                  phx-click="edit"
-                  class="flex w-max items-center gap-1 mt-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 disabled:opacity-30"
-                >
-                  <Heroicons.pencil_square class="h-5" /> Edit
-                </button>
-                <button
-                  phx-click="delete"
-                  class="flex w-max items-center gap-1 mt-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
-                >
-                  <Heroicons.trash class="h-5" /> Delete
-                </button>
-              </div>
-              <button
-                phx-click={JS.dispatch("phx:copy", to: "#copy-content")}
-                class="flex w-max items-center gap-1 text-sm ml-auto my-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
-              >
-                <Heroicons.clipboard class="h-5" /> <span id="copy-button-text">Copy</span>
-              </button>
-              <pre
-                id="copy-content"
-                class="overflow-auto font-inherit max-h-96 mb-5 bg-slate-800 p-2 rounded-md"
-              ><%= paste.content %></pre>
-              <div :if={paste.files != []}>
-                <p>Files:</p>
-                <div :for={file <- paste.files} class="mt-2 bg-white bg-opacity-5 p-2 rounded-md">
-                  <a href={file.access_path} target="_blank">
-                    <%= file.name %>
-                  </a>
-                  <div class="text-sm opacity-40"><%= file.type %></div>
-                </div>
-              </div>
-            </div>
-        <% end %>
-      <% end %>
+          </div>
+        </div>
+      </.render_or_show_error>
     </div>
     """
   end

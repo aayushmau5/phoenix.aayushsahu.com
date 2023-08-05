@@ -52,7 +52,8 @@ defmodule Accumulator.MixProject do
       {:quantum, "~> 3.0"},
       {:ecto_sql, "~> 3.0"},
       {:phoenix_ecto, "~> 4.0"},
-      {:postgrex, "~> 0.17"}
+      {:postgrex, "~> 0.17"},
+      {:zarex, "~> 1.0"}
     ]
   end
 

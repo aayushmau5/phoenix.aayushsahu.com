@@ -44,7 +44,10 @@ defmodule Accumulator.Pastes do
 
       paste ->
         with {:ok, _} <- Repo.delete(paste) do
-          cleanup_files(paste.files)
+          if Map.get(paste, :storage_directory) != nil do
+            cleanup_dir(paste.storage_directory)
+          end
+
           broadcast(:paste_delete)
           :ok
         end
@@ -62,7 +65,10 @@ defmodule Accumulator.Pastes do
   def cleanup_expired_pastes() do
     current_date_time = DateTime.utc_now() |> DateTime.truncate(:second)
 
-    get_expired_pastes_files(current_date_time) |> Enum.map(&cleanup_files(&1))
+    get_expired_pastes_dir(current_date_time)
+    |> Enum.map(fn dir ->
+      if dir != nil, do: cleanup_dir(dir)
+    end)
 
     query =
       from(paste in Paste,
@@ -81,18 +87,32 @@ defmodule Accumulator.Pastes do
     Enum.map(files, &delete_file(&1))
   end
 
+  def create_storage_dir() do
+    storage_directory_uuid = Ecto.UUID.generate()
+
+    storage_directory =
+      Path.join([:code.priv_dir(:accumulator), "uploads", storage_directory_uuid])
+
+    :ok = File.mkdir(storage_directory)
+    storage_directory
+  end
+
   defp broadcast(event) do
     Phoenix.PubSub.broadcast(@pubsub, @pubsub_topic, event)
   end
 
-  defp get_expired_pastes_files(current_date_time) do
+  defp get_expired_pastes_dir(current_date_time) do
     query =
       from(paste in Paste,
         where: paste.expire_at < ^current_date_time,
-        select: paste.files
+        select: paste.storage_directory
       )
 
     Repo.all(query)
+  end
+
+  defp cleanup_dir(dir) do
+    {:ok, _} = File.rm_rf(dir)
   end
 
   defp delete_file(%{storage_path: path} = _file) do

@@ -21,7 +21,8 @@ defmodule AccumulatorWeb.BinLive.Edit do
       <div :if={@editing} class="text-center font-bold mt-2">
         Someone else is editing the form. Try again after some time.
       </div>
-      <.render_or_show_error :if={!@loading and !@editing} paste={@paste} title="Edit paste">
+      <.render_or_show_error :if={!@loading and !@editing} paste={@paste}>
+        <h1 class="text-center text-xl font-bold">Edit paste</h1>
         <.simple_form
           for={@form}
           id="paste_form"
@@ -178,7 +179,6 @@ defmodule AccumulatorWeb.BinLive.Edit do
       end)
 
     socket = assign(socket, paste: paste)
-
     socket = assign(socket, file_limit_exceeded?: file_limit_exceeded?(socket))
 
     {:noreply, socket}
@@ -208,27 +208,23 @@ defmodule AccumulatorWeb.BinLive.Edit do
   end
 
   def handle_event("update_paste", %{"paste" => paste_params}, socket) do
+    storage_directory = if files_present?(socket), do: get_or_create_storage_dir(socket)
+
     uploaded_files =
       consume_uploaded_entries(socket, :files, fn %{path: path}, entry ->
         %{client_name: file_name, client_type: file_type} = entry
-        file_ext = Path.extname(file_name)
+        santized_filename = Zarex.sanitize(file_name)
 
-        dest =
-          Path.join([
-            :code.priv_dir(:accumulator),
-            "uploads",
-            Path.basename(path) <> file_ext
-          ])
-
-        # TODO: check if we have to mv instead of cp
+        dest = Path.join([storage_directory, santized_filename])
         File.cp!(path, dest)
 
         {:ok,
          %{
-           name: file_name,
-           storage_path: dest,
+           name: santized_filename,
            type: file_type,
-           access_path: "/uploads/#{Path.basename(dest)}"
+           storage_path: dest,
+           access_path:
+             "/uploads/#{Path.join(Path.basename(storage_directory), santized_filename)}"
          }}
       end)
 
@@ -244,6 +240,11 @@ defmodule AccumulatorWeb.BinLive.Edit do
         )
       )
       |> assign_files(socket.assigns.paste.files, uploaded_files)
+
+    paste_changeset =
+      if storage_directory != nil,
+        do: Ecto.Changeset.put_change(paste_changeset, :storage_directory, storage_directory),
+        else: paste_changeset
 
     socket =
       case Pastes.update_existing_paste(paste_changeset) do
@@ -344,9 +345,23 @@ defmodule AccumulatorWeb.BinLive.Edit do
     current_files_present > @max_file_entries
   end
 
+  defp get_or_create_storage_dir(socket) do
+    case Map.get(socket.assigns.paste, :storage_directory) do
+      nil -> Pastes.create_storage_dir()
+      dir -> dir
+    end
+  end
+
   defp cleanup_deleted_files(socket) do
     Enum.filter(socket.assigns.paste.files, &(Map.get(&1, :deleted) == true))
     |> Pastes.cleanup_files()
+  end
+
+  defp files_present?(socket) do
+    case uploaded_entries(socket, :files) do
+      {[], []} -> false
+      _ -> true
+    end
   end
 
   defp error_to_string(:too_large), do: "Too large"

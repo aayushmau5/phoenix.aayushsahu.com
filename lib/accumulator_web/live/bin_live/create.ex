@@ -126,27 +126,23 @@ defmodule AccumulatorWeb.BinLive.Create do
 
   @impl true
   def handle_event("add_paste", %{"paste" => paste_params}, socket) do
+    storage_directory = if files_present?(socket), do: Pastes.create_storage_dir()
+
     uploaded_files =
       consume_uploaded_entries(socket, :files, fn %{path: path}, entry ->
         %{client_name: file_name, client_type: file_type} = entry
-        file_ext = Path.extname(file_name)
+        santized_filename = Zarex.sanitize(file_name)
 
-        dest =
-          Path.join([
-            :code.priv_dir(:accumulator),
-            "uploads",
-            Path.basename(path) <> file_ext
-          ])
-
-        # TODO: check if we have to mv instead of cp
+        dest = Path.join([storage_directory, santized_filename])
         File.cp!(path, dest)
 
         {:ok,
          %{
-           name: file_name,
-           storage_path: dest,
+           name: santized_filename,
            type: file_type,
-           access_path: "/uploads/#{Path.basename(dest)}"
+           storage_path: dest,
+           access_path:
+             "/uploads/#{Path.join(Path.basename(storage_directory), santized_filename)}"
          }}
       end)
 
@@ -158,6 +154,11 @@ defmodule AccumulatorWeb.BinLive.Create do
         get_expiration_time(paste_params["time_duration"], paste_params["time_type"])
       )
       |> Ecto.Changeset.put_embed(:files, uploaded_files)
+
+    paste_changeset =
+      if storage_directory != nil,
+        do: Ecto.Changeset.put_change(paste_changeset, :storage_directory, storage_directory),
+        else: paste_changeset
 
     socket =
       case Pastes.add_paste(paste_changeset) do
@@ -179,6 +180,13 @@ defmodule AccumulatorWeb.BinLive.Create do
       end
 
     DateTime.add(DateTime.utc_now(), duration, type) |> DateTime.truncate(:second)
+  end
+
+  defp files_present?(socket) do
+    case uploaded_entries(socket, :files) do
+      {[], []} -> false
+      _ -> true
+    end
   end
 
   defp error_to_string(:too_large), do: "Too large"
