@@ -23,5 +23,7 @@ config :logger, level: :info
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
 
-config :accumulator, serve_dir: "/data"
-config :accumulator, upload_dir: "/data"
+# File upload config
+config :accumulator,
+  serve_dir: "/data",
+  upload_dir: "/data"

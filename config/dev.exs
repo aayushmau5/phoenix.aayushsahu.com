@@ -71,5 +71,7 @@ config :accumulator, Accumulator.Repo,
   password: "password",
   hostname: "localhost"
 
-config :accumulator, serve_dir: {:accumulator, "priv/uploads"}
-config :accumulator, upload_dir: Path.join(Path.expand("."), "priv/uploads")
+# File upload config
+config :accumulator,
+  serve_dir: {:accumulator, "priv/uploads"},
+  upload_dir: Path.join(Path.expand("."), "priv/uploads")
