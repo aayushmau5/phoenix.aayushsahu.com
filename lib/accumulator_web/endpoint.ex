@@ -25,7 +25,7 @@ defmodule AccumulatorWeb.Endpoint do
 
   plug Plug.Static,
     at: "/uploads",
-    from: {:accumulator, "priv/uploads"},
+    from: Application.compile_env(:accumulator, :serve_dir),
     gzip: Mix.env() == :prod
 
   # Code reloading can be explicitly enabled under the

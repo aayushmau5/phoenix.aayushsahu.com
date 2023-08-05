@@ -15,6 +15,10 @@ kill_timeout = "5s"
 [deploy]
   release_command = "/app/bin/migrate"
 
+[mount]
+  source="accumulator_data"
+  destination="/data"
+
 [env]
   PHX_HOST = "phoenix-aayushsahu-com.fly.dev"
   PORT = "8080"

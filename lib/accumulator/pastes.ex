@@ -91,7 +91,7 @@ defmodule Accumulator.Pastes do
     storage_directory_uuid = Ecto.UUID.generate()
 
     storage_directory =
-      Path.join([:code.priv_dir(:accumulator), "uploads", storage_directory_uuid])
+      Path.join([Application.fetch_env!(:accumulator, :upload_dir), storage_directory_uuid])
 
     :ok = File.mkdir(storage_directory)
     storage_directory
