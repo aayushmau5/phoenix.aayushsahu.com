@@ -22,6 +22,7 @@ kill_timeout = "5s"
 [env]
   PHX_HOST = "phoenix-aayushsahu-com.fly.dev"
   PORT = "8080"
+  RELEASE_COOKIE = "59YpC0na-heDJtd8urKDYMwp6uAw-DAqVLahqKxJCj7DzsF7Cvh87Q=="
 
 [[services]]
   protocol = "tcp"
