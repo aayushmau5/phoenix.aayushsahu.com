@@ -75,3 +75,13 @@ config :accumulator, Accumulator.Repo,
 config :accumulator,
   serve_dir: {:accumulator, "priv/uploads"},
   upload_dir: Path.join(Path.expand("."), "priv/uploads")
+
+# Configures the mailer
+#
+# By default it uses the "Local" adapter which stores the emails
+# locally. You can see the emails in your browser, at "/dev/mailbox".
+#
+# For production it's recommended to configure a different adapter
+# at the `config/runtime.exs`.
+config :accumulator, Accumulator.Mailer, adapter: Swoosh.Adapters.Local
+config :swoosh, :api_client, false

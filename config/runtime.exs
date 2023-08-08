@@ -61,6 +61,9 @@ if config_env() == :prod do
     socket_options: maybe_ipv6,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
+  # Swoosh
+  config :accumulator, Accumulator.Mailer, api_key: System.get_env("RESEND_API_KEY")
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key

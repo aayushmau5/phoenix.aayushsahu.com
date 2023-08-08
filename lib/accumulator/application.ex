@@ -12,6 +12,8 @@ defmodule Accumulator.Application do
       AccumulatorWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: Accumulator.PubSub},
+      # Start Finch
+      {Finch, name: Accumulator.Finch},
       # Start the Endpoint (http/https)
       AccumulatorWeb.Endpoint,
       AccumulatorWeb.Presence,

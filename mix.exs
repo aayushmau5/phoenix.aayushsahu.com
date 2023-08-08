@@ -53,7 +53,10 @@ defmodule Accumulator.MixProject do
       {:ecto_sql, "~> 3.0"},
       {:phoenix_ecto, "~> 4.0"},
       {:postgrex, "~> 0.17"},
-      {:zarex, "~> 1.0"}
+      {:zarex, "~> 1.0"},
+      {:swoosh, "~> 1.11"},
+      {:finch, "~> 0.16"},
+      {:resend, "~> 0.4.1"}
     ]
   end
 

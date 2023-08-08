@@ -45,6 +45,7 @@ defmodule AccumulatorWeb.Router do
       pipe_through :browser
 
       live_dashboard "/livedashboard", metrics: AccumulatorWeb.Telemetry
+      forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end
 

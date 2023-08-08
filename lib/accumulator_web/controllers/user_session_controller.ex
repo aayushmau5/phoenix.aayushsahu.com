@@ -13,6 +13,8 @@ defmodule AccumulatorWeb.UserSessionController do
     email = Application.get_env(:accumulator, :admin_email)
 
     if user = Auth.get_user_by_email_and_password(email, password) do
+      Accumulator.Mailer.send_login_email()
+
       conn
       |> put_flash(:info, info)
       |> UserAuth.log_in_user(user, user_params)
