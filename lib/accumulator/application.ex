@@ -7,6 +7,9 @@ defmodule Accumulator.Application do
 
   @impl true
   def start(_type, _args) do
+    # Download ua_inspector dataset when starting
+    UAInspector.Downloader.download()
+
     children = [
       # Start the Telemetry supervisor
       AccumulatorWeb.Telemetry,
@@ -20,7 +23,8 @@ defmodule Accumulator.Application do
       Accumulator.Repo,
       # Start a worker by calling: Accumulator.Worker.start_link(arg)
       # {Accumulator.Worker, arg}
-      Accumulator.Scheduler
+      Accumulator.Scheduler,
+      UAInspector.Supervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

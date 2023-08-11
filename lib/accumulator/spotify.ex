@@ -211,7 +211,6 @@ defmodule Accumulator.Spotify do
   defp get_client_id_and_secret() do
     id = Application.get_env(:accumulator, :client_id)
     secret = Application.get_env(:accumulator, :client_secret)
-    IO.inspect({id, secret})
     {id, secret}
   end
 

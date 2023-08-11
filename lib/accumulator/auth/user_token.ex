@@ -10,6 +10,9 @@ defmodule Accumulator.Auth.UserToken do
   schema "users_tokens" do
     field(:token, :binary)
     field(:context, :string)
+    field(:ip_address, :string)
+    field(:location, :string)
+    field(:device_info, :string)
     belongs_to(:user, Accumulator.Auth.User)
 
     timestamps(updated_at: false)

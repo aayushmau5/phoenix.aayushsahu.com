@@ -13,11 +13,14 @@ defmodule AccumulatorWeb.UserSessionController do
     email = Application.get_env(:accumulator, :admin_email)
 
     if user = Auth.get_user_by_email_and_password(email, password) do
-      Accumulator.Mailer.send_login_email()
+      connection_info = Accumulator.Auth.Info.connection_info(conn)
+
+      # TODO: run this async using a task
+      Accumulator.Mailer.send_login_email(connection_info)
 
       conn
       |> put_flash(:info, info)
-      |> UserAuth.log_in_user(user, user_params)
+      |> UserAuth.log_in_user(user, user_params, connection_info)
     else
       conn
       |> put_flash(:error, "Invalid email or password")

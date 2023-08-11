@@ -30,11 +30,27 @@ defmodule Accumulator.Auth do
 
   ## Session
 
+  def get_all_sessions() do
+    Repo.all(UserToken)
+  end
+
+  def delete_session_by_id(id) do
+    query = from(t in UserToken, where: t.id == ^id)
+    Repo.delete_all(query)
+  end
+
   @doc """
   Generates a session token.
   """
-  def generate_user_session_token(user) do
+  def generate_user_session_token(user, connection_info) do
     {token, user_token} = UserToken.build_session_token(user)
+
+    user_token =
+      user_token
+      |> Map.put(:ip_address, connection_info.ip_address)
+      |> Map.put(:location, connection_info.location)
+      |> Map.put(:device_info, connection_info.device_info)
+
     Repo.insert!(user_token)
     token
   end

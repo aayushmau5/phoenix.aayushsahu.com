@@ -20,8 +20,8 @@ defmodule AccumulatorWeb.UserAuth do
   to avoid fixation attacks. See the renew_session
   function to customize this behaviour.
   """
-  def log_in_user(conn, user, params \\ %{}) do
-    token = Auth.generate_user_session_token(user)
+  def log_in_user(conn, user, params \\ %{}, connection_info) do
+    token = Auth.generate_user_session_token(user, connection_info)
     user_return_to = get_session(conn, :user_return_to)
 
     conn
