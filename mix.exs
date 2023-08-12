@@ -19,7 +19,7 @@ defmodule Accumulator.MixProject do
   def application do
     [
       mod: {Accumulator.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :os_mon]
     ]
   end
 
@@ -33,13 +33,13 @@ defmodule Accumulator.MixProject do
   defp deps do
     [
       {:bcrypt_elixir, "~> 3.0"},
-      {:phoenix, "~> 1.7.0"},
+      {:phoenix, "~> 1.7.7"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.18.16"},
+      {:phoenix_live_view, "~> 0.19.0"},
       {:heroicons, "~> 0.5"},
       {:floki, ">= 0.30.0", only: :test},
-      {:phoenix_live_dashboard, "~> 0.7.2"},
+      {:phoenix_live_dashboard, "~> 0.8.1"},
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 0.6"},
@@ -56,7 +56,8 @@ defmodule Accumulator.MixProject do
       {:zarex, "~> 1.0"},
       {:swoosh, "~> 1.11"},
       {:finch, "~> 0.16"},
-      {:resend, "~> 0.4.1"}
+      {:resend, "~> 0.4.1"},
+      {:ecto_psql_extras, "~> 0.6"}
     ]
   end
 
