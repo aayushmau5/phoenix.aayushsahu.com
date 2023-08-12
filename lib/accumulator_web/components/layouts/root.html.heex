@@ -23,6 +23,9 @@
         <.link :if={@current_user} navigate={~p"/sessions"} class="hover:bg-slate-800 p-2 rounded-md">
           /sessions
         </.link>
+        <.link :if={@current_user} navigate={~p"/livedashboard"} class="hover:bg-slate-800 p-2 rounded-md">
+          /livedashboard
+        </.link>
       </div>
       <ul class="text-right ml-auto">
         <%= if @current_user do %>
