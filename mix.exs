@@ -19,8 +19,7 @@ defmodule Accumulator.MixProject do
   def application do
     [
       mod: {Accumulator.Application, []},
-      extra_applications: [:logger, :runtime_tools],
-      included_applications: [:ua_inspector]
+      extra_applications: [:logger, :runtime_tools]
     ]
   end
 
@@ -57,8 +56,7 @@ defmodule Accumulator.MixProject do
       {:zarex, "~> 1.0"},
       {:swoosh, "~> 1.11"},
       {:finch, "~> 0.16"},
-      {:resend, "~> 0.4.1"},
-      {:ua_inspector, "~> 3.4"}
+      {:resend, "~> 0.4.1"}
     ]
   end
 

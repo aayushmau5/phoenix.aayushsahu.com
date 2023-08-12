@@ -3,37 +3,41 @@ defmodule Accumulator.Auth.Info do
 
   def connection_info(conn) do
     {ip_address, location} = get_ip_address_and_location_info(conn)
-    device_info = get_device_info_from_user_agent(conn)
+    user_agent = get_user_agent(conn)
 
     %__MODULE__{
       ip_address: ip_address,
       location: location,
-      device_info: device_info
+      device_info: user_agent
     }
   end
 
   defp get_ip_address_and_location_info(conn) do
-    ip_address = conn.remote_ip
+    ip_address = get_ip_address(conn)
 
-    # We lookup only ipv4 address
-    if :inet.is_ipv4_address(ip_address) do
-      ip_address =
-        ip_address
-        |> Tuple.to_list()
-        |> Enum.join(".")
+    IO.inspect(ip_address, label: :ip)
 
-      location = ip_city_country_info(ip_address)
-      {ip_address, location}
+    location = ip_city_country_info(ip_address)
+    {ip_address, location}
+  end
+
+  defp get_ip_address(conn) do
+    # Fly.io provides client ip address in a separate header called "fly-client-ip"
+    # Alternatively: we can also use the first element of "x-forwarded-for" header
+    ip_address = Plug.Conn.get_req_header(conn, "fly-client-ip") |> dbg()
+
+    if ip_address != [] do
+      Enum.at(ip_address, 0)
     else
-      # false representation for ipv6 but it's ok i guess
-      ip_address = ip_address |> Tuple.to_list() |> Enum.join(":")
-      {ip_address, nil}
+      conn.remote_ip
+      |> Tuple.to_list()
+      |> Enum.join(".")
     end
   end
 
-  defp get_device_info_from_user_agent(conn) do
+  defp get_user_agent(conn) do
     [user_agent] = Plug.Conn.get_req_header(conn, "user-agent")
-    get_device_info(user_agent)
+    user_agent
   end
 
   defp ip_city_country_info(address) when is_binary(address) do
@@ -46,16 +50,6 @@ defmodule Accumulator.Auth.Info do
 
       {:error, _} ->
         nil
-    end
-  end
-
-  defp get_device_info(user_agent) do
-    case UAInspector.parse(user_agent) do
-      %{browser_family: :unknown} ->
-        nil
-
-      %{browser_family: browser_family, device: %{model: model}, os: %{name: name}} ->
-        "#{browser_family}:#{model}:#{name}"
     end
   end
 end

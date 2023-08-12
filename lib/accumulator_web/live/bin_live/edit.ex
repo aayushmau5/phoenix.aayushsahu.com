@@ -30,7 +30,15 @@ defmodule AccumulatorWeb.BinLive.Edit do
           phx-change="validate_paste"
         >
           <.input field={@form[:title]} type="text" id="paste_title" label="Title" required />
-          <.input field={@form[:content]} type="textarea" id="paste_content" label="Content" required />
+          <.input
+            field={@form[:content]}
+            type="textarea"
+            id="paste_content"
+            label="Content"
+            data-attrs="style"
+            phx-hook="MaintainAttrs"
+            required
+          />
 
           <div :if={@paste.files != []}>
             <p class="block font-semibold text-sm">Files</p>
