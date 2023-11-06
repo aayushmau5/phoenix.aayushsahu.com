@@ -15,8 +15,6 @@ defmodule Accumulator.Auth.Info do
   defp get_ip_address_and_location_info(conn) do
     ip_address = get_ip_address(conn)
 
-    IO.inspect(ip_address, label: :ip)
-
     location = ip_city_country_info(ip_address)
     {ip_address, location}
   end
@@ -24,7 +22,7 @@ defmodule Accumulator.Auth.Info do
   defp get_ip_address(conn) do
     # Fly.io provides client ip address in a separate header called "fly-client-ip"
     # Alternatively: we can also use the first element of "x-forwarded-for" header
-    ip_address = Plug.Conn.get_req_header(conn, "fly-client-ip") |> dbg()
+    ip_address = Plug.Conn.get_req_header(conn, "fly-client-ip")
 
     if ip_address != [] do
       Enum.at(ip_address, 0)
