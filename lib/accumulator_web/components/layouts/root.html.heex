@@ -10,6 +10,10 @@
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
+    <link rel="manifest" href={~p"/manifest.json"} />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
   </head>
   <body class="bg-slate-900 text-white antialiased">
     <div class="flex flex-wrap bg-slate-500 m-2 rounded-md bg-opacity-10 p-2 justify-between items-center">
@@ -20,10 +24,18 @@
         <.link :if={@current_user} navigate={~p"/bin"} class="hover:bg-slate-800 p-2 rounded-md">
           /bin
         </.link>
-        <.link :if={@current_user} navigate={~p"/sessions"} class="hover:bg-slate-800 p-2 rounded-md">
+        <.link
+          :if={@current_user}
+          navigate={~p"/sessions"}
+          class="hover:bg-slate-800 p-2 rounded-md"
+        >
           /sessions
         </.link>
-        <.link :if={@current_user} navigate={~p"/livedashboard"} class="hover:bg-slate-800 p-2 rounded-md">
+        <.link
+          :if={@current_user}
+          navigate={~p"/livedashboard"}
+          class="hover:bg-slate-800 p-2 rounded-md"
+        >
           /livedashboard
         </.link>
       </div>
