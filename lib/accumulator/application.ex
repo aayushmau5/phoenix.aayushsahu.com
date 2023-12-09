@@ -7,6 +7,17 @@ defmodule Accumulator.Application do
 
   @impl true
   def start(_type, _args) do
+    topologies = [
+      dns_poll: [
+        strategy: Cluster.Strategy.DNSPoll,
+        config: [
+          polling_interval: 5_000,
+          query: "aayush-battleship.internal",
+          node_basename: "aayush-battleship"
+        ]
+      ]
+    ]
+
     children = [
       # Start the Telemetry supervisor
       AccumulatorWeb.Telemetry,
@@ -14,6 +25,8 @@ defmodule Accumulator.Application do
       {Phoenix.PubSub, name: Accumulator.PubSub},
       # Start Finch
       {Finch, name: Accumulator.Finch},
+      # Start libcluster
+      {Cluster.Supervisor, [topologies, [name: Accumulator.ClusterSupervisor]]},
       # Start the Endpoint (http/https)
       AccumulatorWeb.Endpoint,
       AccumulatorWeb.Presence,
