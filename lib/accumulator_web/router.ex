@@ -52,6 +52,9 @@ defmodule AccumulatorWeb.Router do
   scope "/", AccumulatorWeb do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
+    # todos route
+    # live "/todo", TodoLive
+
     live_session :redirect_if_user_is_authenticated,
       on_mount: [{AccumulatorWeb.UserAuth, :redirect_if_user_is_authenticated}] do
       live "/login", UserLoginLive, :new

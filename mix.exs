@@ -38,7 +38,7 @@ defmodule Accumulator.MixProject do
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.20.1"},
       {:heroicons, "~> 0.5"},
-      {:floki, ">= 0.30.0", only: :test},
+      {:floki, ">= 0.30.0"},
       {:phoenix_live_dashboard, "~> 0.8.2"},
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev},
@@ -58,7 +58,9 @@ defmodule Accumulator.MixProject do
       {:finch, "~> 0.16"},
       {:resend, "~> 0.4.1"},
       {:ecto_psql_extras, "~> 0.6"},
-      {:libcluster, "~> 3.3"}
+      {:libcluster, "~> 3.3"},
+      {:live_view_native, "~> 0.2"},
+      {:live_view_native_swiftui, "~> 0.2"}
     ]
   end
 
