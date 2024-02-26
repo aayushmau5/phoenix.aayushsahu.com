@@ -4,15 +4,9 @@ Internally called **Accumulator**
 
 ## Local Setup
 
-This application uses Redis. You can either install it manually or through docker. Your redis instance should run on Port 6379(default). If the port is different, you need to make changes to the `config/dev.exs` file.
+Requires: Elixir, PostgresSQL.
 
-```bash
-# Redis docker setup
-docker network create -d bridge redisnet
-docker run -d -p 6379:6379 --network redisnet redis
-```
-
-Make sure you have elixir installed.
+This application uses PostgresSQL. You can either install it manually or through docker. If the port is different, you need to make changes to the `config/dev.exs` file.
 
 To start your Phoenix server:
 
@@ -32,21 +26,21 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 - Forum: https://elixirforum.com/c/phoenix-forum
 - Source: https://github.com/phoenixframework/phoenix
 
-## TODO:
-
-- Think about settings up a "demo" page for view only access
-- Move get and check calls to "upsert"(but will this incur more complexity?).
-- Add admin tool(https://github.com/tfwright/live_admin or https://github.com/mojotech/torch or kaffy)
-- Move dashboard and spotify data into stream(currently stream doesn't support filtering, sorting, etc without being hacky)
-
 ## Internals
 
 ### Dashboard
 
-All the data is stored on redis. The first render shows dummy data. As soon as liveview connection is established, we fetch data from redis, and current user on the website count(using Presence) and update the client. Liveview also subscribes(through Phoenix PubSub) to a particular topic(with "update:" prefix) to get some updates.
+All the data is stored on Postgres. The first render shows dummy data. As soon as liveview connection is established, we fetch data from postgres, and current user on the website count(using Presence) and update the client. Liveview also subscribes(through Phoenix PubSub) to a particular topic(with "update:" prefix) to get some updates.
 
 Whenever data is updated(a new user visits my website/blog), we send a pubsub message to a that "update:<topic>" topic. The liveview gets a message on this topic, fetches latest data from redis and presence count, and updates the liveview.
 
 High overview on how everything fits together:
 
 ![Illustration](dashboard-working.png)
+
+## TODO:
+
+- Think about settings up a "demo" page for view only access
+- Move get and check calls to "upsert"(but will this incur more complexity?).
+- Add admin tool(https://github.com/tfwright/live_admin or https://github.com/mojotech/torch or kaffy)
+- Move dashboard and spotify data into stream(currently stream doesn't support filtering, sorting, etc without being hacky)
