@@ -56,6 +56,9 @@ defmodule AccumulatorWeb do
         layout: {AccumulatorWeb.Layouts, :app}
 
       unquote(html_helpers())
+
+      # LiveView native
+      use LiveViewNative.LiveView
     end
   end
 
@@ -64,6 +67,9 @@ defmodule AccumulatorWeb do
       use Phoenix.LiveComponent
 
       unquote(html_helpers())
+
+      # LiveView native
+      use LiveViewNative.LiveComponent
     end
   end
 
