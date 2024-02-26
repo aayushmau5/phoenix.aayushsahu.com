@@ -7,7 +7,7 @@ defmodule Accumulator.Application do
 
   @impl true
   def start(_type, _args) do
-    topologies = [
+    _topologies = [
       dns_poll: [
         strategy: Cluster.Strategy.DNSPoll,
         config: [
@@ -26,7 +26,7 @@ defmodule Accumulator.Application do
       # Start Finch
       {Finch, name: Accumulator.Finch},
       # Start libcluster
-      {Cluster.Supervisor, [topologies, [name: Accumulator.ClusterSupervisor]]},
+      # {Cluster.Supervisor, [topologies, [name: Accumulator.ClusterSupervisor]]},
       # Start the Endpoint (http/https)
       AccumulatorWeb.Endpoint,
       AccumulatorWeb.Presence,
