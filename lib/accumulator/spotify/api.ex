@@ -15,7 +15,7 @@ defmodule Accumulator.Spotify.API do
           client_id :: String.t(),
           client_secret :: String.t(),
           refresh_token :: String.t()
-        ) :: {:ok, Req.Response.t()} | {:error, any()}
+        ) :: any() | nil
   def refresh_access_token(client_id, client_secret, refresh_token) do
     encoded_token = Base.encode64("#{client_id}:#{client_secret}")
 
@@ -26,6 +26,7 @@ defmodule Accumulator.Spotify.API do
         {"Authorization", "Basic #{encoded_token}"}
       ]
     )
+    |> return_response_or_nil()
   end
 
   @doc """
@@ -61,5 +62,15 @@ defmodule Accumulator.Spotify.API do
       params: [limit: @top_artists_limit, offset: @top_artists_offset],
       headers: [{"Authorization", "Bearer #{access_token}"}]
     )
+  end
+
+  defp return_response_or_nil(response_tuple) do
+    case response_tuple do
+      {:ok, response} ->
+        if response.status == 200, do: response.body, else: nil
+
+      _ ->
+        nil
+    end
   end
 end

@@ -63,7 +63,7 @@ defmodule Accumulator.Spotify do
   Get cached now playing data
   """
   def get_cached_now_playing() do
-    case get_data(@now_playing_key) do
+    case get_data(@now_playing_key, false) do
       nil -> {:not_playing, "Nothing playing at the moment"}
       %{data: data} -> {:ok, Jason.decode!(data)}
     end
@@ -173,27 +173,21 @@ defmodule Accumulator.Spotify do
 
     response = API.refresh_access_token(client_id, client_secret, refresh_token)
 
-    case response do
-      {:ok, response} ->
-        if response.status == 200 do
-          access_token = response.body["access_token"]
-          expire_seconds = response.body["expires_in"]
+    if response != nil do
+      access_token = response["access_token"]
+      expire_seconds = response["expires_in"]
 
-          {:ok, _} =
-            %Schema{
-              type: @access_token_key,
-              data: access_token,
-              expire_at: Accumulator.Helpers.get_future_time(expire_seconds)
-            }
-            |> Repo.insert()
+      {:ok, _} =
+        %Schema{
+          type: @access_token_key,
+          data: access_token,
+          expire_at: Accumulator.Helpers.get_future_time(expire_seconds)
+        }
+        |> Repo.insert()
 
-          {:ok, access_token}
-        else
-          {:error, "Cannot refresh access token"}
-        end
-
-      error ->
-        error
+      {:ok, access_token}
+    else
+      {:error, "Cannot refresh access token"}
     end
   end
 
@@ -214,8 +208,8 @@ defmodule Accumulator.Spotify do
     {id, secret}
   end
 
-  defp get_data(type) do
-    remove_expired_data()
+  defp get_data(type, remove_expired? \\ true) do
+    if remove_expired?, do: remove_expired_data()
 
     from(s in Schema, where: s.type == ^type)
     |> Repo.one()
