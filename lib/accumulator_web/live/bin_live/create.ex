@@ -85,6 +85,8 @@ defmodule AccumulatorWeb.BinLive.Create do
           </.button>
         </:actions>
       </.simple_form>
+
+      <div phx-hook="editor" id="editor" class="border p-2"></div>
     </div>
     """
   end

@@ -61,18 +61,16 @@ defmodule AccumulatorWeb.Router do
   end
 
   scope "/", AccumulatorWeb do
-    pipe_through [:browser, :require_authenticated_user]
+    # pipe_through [:browser, :require_authenticated_user]
+    pipe_through [:browser]
 
     live_dashboard "/livedashboard", metrics: AccumulatorWeb.Telemetry
 
-    live_session :require_authenticated_user,
-      on_mount: [{AccumulatorWeb.UserAuth, :ensure_authenticated}] do
-      live "/bin", BinLive.Home
-      live "/bin/create", BinLive.Create
-      live "/bin/:id/show", BinLive.Show
-      live "/bin/:id/edit", BinLive.Edit
+    live "/bin", BinLive.Home
+    live "/bin/create", BinLive.Create
+    live "/bin/:id/show", BinLive.Show
+    live "/bin/:id/edit", BinLive.Edit
 
-      live "/sessions", SessionsLive
-    end
+    live "/sessions", SessionsLive
   end
 end
