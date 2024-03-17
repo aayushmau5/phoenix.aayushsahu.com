@@ -396,16 +396,16 @@ defmodule AccumulatorWeb.CoreComponents do
         <tbody
           id={@id}
           phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
-          class="relative divide-y divide-gray-800 border-t border-gray-800 text-sm leading-6 text-white"
+          class="relative divide-y divide-zinc-800 border-t border-zinc-800 text-sm leading-6 text-white"
         >
-          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-slate-800">
+          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-[#324B4A]">
             <td
               :for={{col, i} <- Enum.with_index(@col)}
               phx-click={@row_click && @row_click.(row)}
               class={["relative p-0", @row_click && "hover:cursor-pointer"]}
             >
               <div class="block py-4 pr-6">
-                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-slate-800" />
+                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-[#324B4A]" />
                 <span class={["relative", i == 0 && "font-semibold"]}>
                   <%= render_slot(col, @row_item.(row)) %>
                 </span>
