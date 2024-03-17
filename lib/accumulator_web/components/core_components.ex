@@ -141,7 +141,7 @@ defmodule AccumulatorWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
+        "phx-submit-loading:opacity-75 rounded-lg bg-[#36B5C1] hover:bg-opacity-90 py-2 px-3",
         "text-sm font-semibold leading-6 text-white active:text-white/80",
         @class
       ]}
@@ -209,7 +209,7 @@ defmodule AccumulatorWeb.CoreComponents do
           name={@name}
           value="true"
           checked={@checked}
-          class="rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900"
+          class="rounded border-zinc-300 text-[#36B5C1]"
           {@rest}
         />
         <%= @label %>
@@ -376,15 +376,15 @@ defmodule AccumulatorWeb.CoreComponents do
               class="p-0 pb-4 pr-6 font-normal cursor-pointer"
             >
               <div class="flex items-center gap-1">
-                <span :if={@sort_key == col[:name]} class="text-sky-400 text-sm">
+                <span :if={@sort_key == col[:name]} class="text-[#158582] text-sm">
                   <%= col[:label] %>
                 </span>
                 <span :if={@sort_key != col[:name]} class="text-sm"><%= col[:label] %></span>
                 <%= if @sort_key == col[:name] do %>
                   <%= if @sort_order == "asc" do %>
-                    <Heroicons.arrow_up_circle class="w-5 h-5 inline text-sky-400" />
+                    <Heroicons.arrow_up_circle class="w-5 h-5 inline text-[#158582]" />
                   <% else %>
-                    <Heroicons.arrow_down_circle class="w-5 h-5 inline text-sky-400" />
+                    <Heroicons.arrow_down_circle class="w-5 h-5 inline text-[#158582]" />
                   <% end %>
                 <% else %>
                   <div class="w-5 h-5 inline-block"></div>
@@ -441,7 +441,7 @@ defmodule AccumulatorWeb.CoreComponents do
 
   def back(assigns) do
     ~H"""
-    <.link navigate={@navigate} class="text-sm font-semibold leading-6 text-white">
+    <.link navigate={@navigate} class="bg-white bg-opacity-10 p-2 rounded-md text-md inline-block mb-4 font-semibold leading-6 hover:bg-opacity-20">
       <Heroicons.arrow_left solid class="w-3 h-3 stroke-current inline" />
       <%= render_slot(@inner_block) %>
     </.link>

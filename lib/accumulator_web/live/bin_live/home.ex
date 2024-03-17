@@ -10,21 +10,21 @@ defmodule AccumulatorWeb.BinLive.Home do
       <h1 class="mb-5 text-xl font-bold">LiveBin</h1>
 
       <.link
-        class="flex items-center gap-1 w-max mb-5 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
+        class="flex items-center gap-1 w-max mb-5 py-2 px-4 rounded-md bg-opacity-80 bg-[#36B5C1] hover:bg-opacity-70"
         navigate={~p"/bin/create"}
       >
-        <Heroicons.plus class="h-5" /> Create
+        <Heroicons.plus class="h-5" />
       </.link>
 
       <%= case @pastes do %>
         <% nil -> %>
           <div>Loading...</div>
         <% [] -> %>
-          <div>No pastes present</div>
+          <div>No pastes present.</div>
         <% pastes -> %>
           <.link
             :for={paste <- pastes}
-            class="block mb-2 p-2 rounded-md hover:bg-slate-800"
+            class="block mb-2 p-2 rounded-md hover:bg-[#373739]"
             navigate={~p"/bin/#{paste.id}/show"}
           >
             <div><%= paste.title %></div>

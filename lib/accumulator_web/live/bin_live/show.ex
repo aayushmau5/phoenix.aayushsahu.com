@@ -23,26 +23,26 @@ defmodule AccumulatorWeb.BinLive.Show do
             <button
               disabled={!@enable_edit}
               phx-click="edit"
-              class="flex w-max items-center gap-1 mt-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 disabled:opacity-30"
+              class="flex w-max items-center gap-1 mt-2 px-2 py-1 rounded-md bg-[#158582] hover:bg-opacity-80 disabled:opacity-30"
             >
               <Heroicons.pencil_square class="h-5" /> Edit
             </button>
             <button
               phx-click="delete"
-              class="flex w-max items-center gap-1 mt-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
+              class="flex w-max items-center gap-1 mt-2 px-2 py-1 rounded-md bg-[#158582] hover:bg-opacity-80"
             >
               <Heroicons.trash class="h-5" /> Delete
             </button>
           </div>
           <button
             phx-click={JS.dispatch("phx:copy", to: "#copy-content")}
-            class="flex w-max items-center gap-1 text-sm ml-auto my-2 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
+            class="flex w-max items-center gap-1 text-sm ml-auto my-2 px-2 py-1 rounded-md bg-[#158582] hover:bg-opacity-80"
           >
             <Heroicons.clipboard class="h-5" /> <span id="copy-button-text">Copy</span>
           </button>
           <pre
             id="copy-content"
-            class="overflow-auto font-inherit max-h-96 mb-5 bg-slate-800 p-2 rounded-md"
+            class="overflow-auto font-inherit max-h-96 mb-5 bg-[#00C6C2] bg-opacity-10 p-2 rounded-md"
           ><%= @paste.content %></pre>
           <div :if={@paste.files != []}>
             <p>Files:</p>

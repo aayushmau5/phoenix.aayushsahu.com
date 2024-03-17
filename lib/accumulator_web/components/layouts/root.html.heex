@@ -15,28 +15,41 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
   </head>
-  <body class="bg-slate-900 text-white antialiased">
+  <body class="bg-[#1f1f1f] text-white antialiased">
     <div class="flex flex-wrap bg-slate-500 m-2 rounded-md bg-opacity-10 p-2 justify-between items-center">
       <div class="flex flex-wrap items-center gap-2">
-        <.link class="font-bold" navigate={~p"/"}>
+        <.link class="font-bold text-md" navigate={~p"/"}>
           phoenix.aayushsahu.com
         </.link>
-        <.link :if={@current_user} navigate={~p"/bin"} class="hover:bg-slate-800 p-2 rounded-md">
-          /bin
+        <.link navigate={~p"/dashboard"} class="text-sm hover:bg-[#373739] p-2 rounded-md">
+          dashboard
+        </.link>
+        <.link navigate={~p"/spotify"} class="text-sm hover:bg-[#373739] p-2 rounded-md">
+          spotify
+        </.link>
+        <.link navigate={~p"/redirect"} class="text-sm hover:bg-[#373739] p-2 rounded-md">
+          redirect
+        </.link>
+        <.link
+          :if={@current_user}
+          navigate={~p"/bin"}
+          class="text-sm hover:bg-[#373739] p-2 rounded-md"
+        >
+          bin
         </.link>
         <.link
           :if={@current_user}
           navigate={~p"/sessions"}
-          class="hover:bg-slate-800 p-2 rounded-md"
+          class="text-sm hover:bg-[#373739] p-2 rounded-md"
         >
-          /sessions
+          sessions
         </.link>
         <.link
           :if={@current_user}
           navigate={~p"/livedashboard"}
-          class="hover:bg-slate-800 p-2 rounded-md"
+          class="text-sm hover:bg-[#373739] p-2 rounded-md"
         >
-          /livedashboard
+          livedashboard
         </.link>
       </div>
       <ul class="text-right ml-auto">
@@ -48,14 +61,14 @@
             <.link
               href={~p"/logout"}
               method="delete"
-              class="text-white font-semibold hover:text-sky-300"
+              class="text-white font-semibold hover:text-[#6CFACD]"
             >
               Log out
             </.link>
           </li>
         <% else %>
           <li>
-            <.link href={~p"/login"} class="text-white font-semibold hover:text-sky-300">
+            <.link href={~p"/login"} class="text-white font-semibold hover:text-[#6CFACD]">
               Log in
             </.link>
           </li>
