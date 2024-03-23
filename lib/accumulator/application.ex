@@ -33,7 +33,8 @@ defmodule Accumulator.Application do
       Accumulator.Repo,
       # Start a worker by calling: Accumulator.Worker.start_link(arg)
       # {Accumulator.Worker, arg}
-      Accumulator.Scheduler
+      Accumulator.Scheduler,
+      {Task.Supervisor, name: Accumulator.TaskRunner},
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
