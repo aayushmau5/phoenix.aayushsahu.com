@@ -58,7 +58,11 @@ defmodule Accumulator.MixProject do
       {:finch, "~> 0.16"},
       {:resend, "~> 0.4.1"},
       {:ecto_psql_extras, "~> 0.6"},
-      {:libcluster, "~> 3.3"}
+      {:libcluster, "~> 3.3"},
+
+      # For Livebook
+      {:kino, "~> 0.12.0"},
+      {:vega_lite, "~> 0.1.8"}
     ]
   end
 
