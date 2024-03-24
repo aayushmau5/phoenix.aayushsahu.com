@@ -74,7 +74,7 @@ echo Attempting to connect to $full_node_name
 # export ERL_AFLAGS="-kernel shell_history enabled -proto_dist inet6_tcp"
 
 # Toggles on IPv6 support for the local node being started.
-iex --erl "-proto_dist inet6_tcp" --sname local --cookie ${release_cookie} --hidden -e "IO.inspect(Node.connect(:'${full_node_name}'), label: \"Node Connected?\"); IO.inspect(Node.list(:hidden), label: \"Connected Nodes\")"
+iex --erl "-proto_dist inet6_tcp" --sname local-phoenix --cookie ${release_cookie} -e "IO.inspect(Node.connect(:'${full_node_name}'), label: \"Node Connected?\"); IO.inspect(Node.list(), label: \"Connected Nodes\")"
 
 # Does NOT toggle on IPv6 support, assuming it is enabled some other way.
 # iex --sname local --cookie ${release_cookie} --hidden -e "IO.inspect(Node.connect(:'${full_node_name}'), label: \"Node Connected?\"); IO.inspect(Node.list(:hidden), label: \"Connected Nodes\")" -S mix phx.server
