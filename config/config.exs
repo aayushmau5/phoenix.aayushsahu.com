@@ -56,11 +56,13 @@ config :accumulator, Accumulator.Scheduler,
     spotify: [
       # Every 1 minute
       schedule: "* * * * *",
+      run_strategy: Quantum.RunStrategy.Local,
       task: {Accumulator.Scheduler, :spotify_now_playing_job, []}
     ],
     pastes_cleanup: [
       # Every hour
       schedule: "0 * * * *",
+      run_strategy: Quantum.RunStrategy.Local,
       task: {Accumulator.Scheduler, :cleanup_expired_pastes, []}
     ]
   ]
