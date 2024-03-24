@@ -16,10 +16,16 @@ defmodule AccumulatorWeb.DashboardLive do
         assign(socket,
           total_page_views: main_stats.views,
           current_page_view_count: get_presence_count("user-join"),
-          blogs_data: generate_blog_data() |> sort_blog_data("slug", "asc")
+          blogs_data: generate_blog_data() |> sort_blog_data("slug", "asc"),
+          battleship: Stats.get_blog_data("battleship").views
         )
       else
-        assign(socket, total_page_views: 0, blogs_data: [], current_page_view_count: 0)
+        assign(socket,
+          total_page_views: 0,
+          blogs_data: [],
+          current_page_view_count: 0,
+          battleship: 0
+        )
       end
 
     {:ok,
@@ -35,6 +41,12 @@ defmodule AccumulatorWeb.DashboardLive do
   def handle_info(%{event: :main_page_view_count}, socket) do
     main_stats = Stats.get_main_data()
     {:noreply, assign(socket, total_page_views: main_stats.views)}
+  end
+
+  @impl true
+  def handle_info(%{event: :battleship_view_count}, socket) do
+    stats = Stats.get_blog_data("battleship")
+    {:noreply, assign(socket, battleship: stats.views)}
   end
 
   @impl true
