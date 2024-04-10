@@ -31,9 +31,8 @@ defmodule Accumulator.Application do
       AccumulatorWeb.Endpoint,
       AccumulatorWeb.Presence,
       Accumulator.Repo,
-      # Start a worker by calling: Accumulator.Worker.start_link(arg)
-      # {Accumulator.Worker, arg}
-      Accumulator.Scheduler,
+      {Accumulator.Scheduler.Spotify, interval: 60000},
+      {Accumulator.Scheduler.Pastes, interval: 3_600_000},
       {Task.Supervisor, name: Accumulator.TaskRunner}
     ]
 

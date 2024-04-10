@@ -49,24 +49,6 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-# Scheduler config
-config :accumulator, Accumulator.Scheduler,
-  timeout: 10_000,
-  jobs: [
-    spotify: [
-      # Every 1 minute
-      schedule: "* * * * *",
-      run_strategy: Quantum.RunStrategy.Local,
-      task: {Accumulator.Scheduler, :spotify_now_playing_job, []}
-    ],
-    pastes_cleanup: [
-      # Every hour
-      schedule: "0 * * * *",
-      run_strategy: Quantum.RunStrategy.Local,
-      task: {Accumulator.Scheduler, :cleanup_expired_pastes, []}
-    ]
-  ]
-
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

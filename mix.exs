@@ -49,7 +49,6 @@ defmodule Accumulator.MixProject do
       {:castore, "~> 1.0"},
       {:req, "~> 0.3"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:quantum, "~> 3.0"},
       {:ecto_sql, "~> 3.0"},
       {:phoenix_ecto, "~> 4.0"},
       {:postgrex, "~> 0.17"},
@@ -58,7 +57,7 @@ defmodule Accumulator.MixProject do
       {:finch, "~> 0.16"},
       {:resend, "~> 0.4.1"},
       {:ecto_psql_extras, "~> 0.6"},
-      {:libcluster, "~> 3.3"},
+      {:libcluster, "~> 3.3"}
     ]
   end
 
