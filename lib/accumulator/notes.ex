@@ -3,6 +3,12 @@ defmodule Accumulator.Notes do
   alias Accumulator.Repo
   import Ecto.Query
 
+  def get_by_ascending_order() do
+    # TODO: Pagination?
+    from(n in Note, order_by: [asc: n.id])
+    |> Repo.all()
+  end
+
   def get_by_descending_order() do
     # TODO: Pagination?
     from(n in Note, order_by: [desc: n.id])
@@ -12,10 +18,7 @@ defmodule Accumulator.Notes do
   def insert(params) do
     changeset = Note.changeset(%Note{}, params)
 
-    case Repo.insert(changeset) do
-      {:ok, note} -> note
-      {:error, changeset} -> changeset
-    end
+    Repo.insert(changeset)
   end
 
   def update(id, params) do

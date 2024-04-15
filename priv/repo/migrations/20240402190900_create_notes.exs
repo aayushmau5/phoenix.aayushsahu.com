@@ -7,7 +7,7 @@ defmodule Accumulator.Repo.Migrations.CreateNotes do
     create table(:notes) do
       add(:heading, :string)
       add(:text, :text)
-      add(:images, {:array, :string})
+      add(:files, {:array, :string})
       timestamps()
     end
   end

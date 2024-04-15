@@ -5,13 +5,13 @@ defmodule Accumulator.Notes.Note do
   schema "notes" do
     field(:heading, :string)
     field(:text, :string)
-    field(:images, {:array, :string}, default: [])
+    field(:files, {:array, :string}, default: [])
     timestamps()
   end
 
   def changeset(note, params \\ %{}) do
     note
-    |> cast(params, [:heading, :text, :images])
+    |> cast(params, [:heading, :text, :files])
     |> validate_length(:heading, max: 200)
   end
 end
