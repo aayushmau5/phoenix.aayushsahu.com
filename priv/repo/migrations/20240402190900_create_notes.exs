@@ -5,9 +5,8 @@ defmodule Accumulator.Repo.Migrations.CreateNotes do
 
   def change do
     create table(:notes) do
-      add(:heading, :string)
       add(:text, :text)
-      add(:files, {:array, :string})
+      add(:files, :map)
       timestamps()
     end
   end

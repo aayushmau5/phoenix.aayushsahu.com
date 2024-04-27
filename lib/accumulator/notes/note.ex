@@ -3,15 +3,15 @@ defmodule Accumulator.Notes.Note do
   import Ecto.Changeset
 
   schema "notes" do
-    field(:heading, :string)
     field(:text, :string)
-    field(:files, {:array, :string}, default: [])
     timestamps()
+
+    embeds_many(:files, Accumulator.Notes.File, on_replace: :delete)
   end
 
   def changeset(note, params \\ %{}) do
     note
-    |> cast(params, [:heading, :text, :files])
-    |> validate_length(:heading, max: 200)
+    |> cast(params, [:text])
+    |> cast_embed(:files)
   end
 end
