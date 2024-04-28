@@ -26,7 +26,6 @@ defmodule AccumulatorWeb.Router do
     live "/dashboard", DashboardLive
     live "/spotify", SpotifyLive
     delete "/logout", UserSessionController, :delete
-    live "/notes", NotesLive
   end
 
   # Other scopes may use custom stacks.
@@ -74,6 +73,7 @@ defmodule AccumulatorWeb.Router do
       live "/bin/:id/edit", BinLive.Edit
 
       live "/sessions", SessionsLive
+      live "/notes", NotesLive
     end
   end
 end
