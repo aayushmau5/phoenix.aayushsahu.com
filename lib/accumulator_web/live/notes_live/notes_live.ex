@@ -149,22 +149,4 @@ defmodule AccumulatorWeb.NotesLive do
       x -> "#{x} days ago"
     end
   end
-
-  def todos() do
-    ~S"""
-    TODOs:
-     - need to think about the way to show datewise data. How to query such that the results come in a sorted way grouped by date?
-     - Using form or file uploads: drop/click + input + enter to save
-     - File and text UI
-     - better UI(with custom components and stuff)
-     - Infinite scroll for loading previous notes
-     - on page load, the notes list should should from bottom instead of up. How to achieve this?
-
-
-     For today:
-     - Work: try to finish up the UI - 3 hours
-     - Personal: Notes project - 2 hours
-     - DSP - 2 hours
-    """
-  end
 end
