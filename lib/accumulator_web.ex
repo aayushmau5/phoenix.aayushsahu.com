@@ -91,6 +91,7 @@ defmodule AccumulatorWeb do
       import AccumulatorWeb.DashboardComponents
       import AccumulatorWeb.SpotifyComponents
       import AccumulatorWeb.BinComponents
+      import AccumulatorWeb.NotesComponents
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
