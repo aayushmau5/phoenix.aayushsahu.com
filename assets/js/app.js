@@ -35,6 +35,13 @@ Hooks.LocalTime = {
 	}
 }
 
+Hooks.ScrollToBottom = {
+	mounted() {
+		this.handleEvent("new-note-scroll", () => this.el.scrollTo(0, this.el.scrollHeight));
+		this.el.scrollTo(0, this.el.scrollHeight);
+	}
+}
+
 Hooks.MaintainAttrs = {
 	attrs() { return this.el.getAttribute("data-attrs").split(", ") },
 	beforeUpdate() { this.prevAttrs = this.attrs().map(name => [name, this.el.getAttribute(name)]) },
@@ -44,7 +51,6 @@ Hooks.MaintainAttrs = {
 window.addEventListener("phx:copy", (event) => {
 	const text = event.target.innerText;
 	navigator.clipboard.writeText(text).then(() => {
-		console.log("Content copied");
 		const copyButtonTextEl = document.getElementById("copy-button-text");
 		copyButtonTextEl.innerText = "Copied!";
 		setTimeout(() => {

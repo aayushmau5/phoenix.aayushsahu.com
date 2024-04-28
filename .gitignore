@@ -38,3 +38,6 @@ npm-debug.log
 .env.fish
 .lexical/
 .elixir-tools/
+
+# Ignore the local uploads/ dir
+priv/uploads/

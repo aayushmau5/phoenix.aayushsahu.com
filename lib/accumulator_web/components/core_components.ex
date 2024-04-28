@@ -441,7 +441,10 @@ defmodule AccumulatorWeb.CoreComponents do
 
   def back(assigns) do
     ~H"""
-    <.link navigate={@navigate} class="bg-white bg-opacity-10 p-2 rounded-md text-md inline-block mb-4 font-semibold leading-6 hover:bg-opacity-20">
+    <.link
+      navigate={@navigate}
+      class="bg-white bg-opacity-10 p-2 rounded-md text-md inline-block mb-4 font-semibold leading-6 hover:bg-opacity-20"
+    >
       <Heroicons.arrow_left solid class="w-3 h-3 stroke-current inline" />
       <%= render_slot(@inner_block) %>
     </.link>
