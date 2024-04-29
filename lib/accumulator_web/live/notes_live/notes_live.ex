@@ -117,6 +117,17 @@ defmodule AccumulatorWeb.NotesLive do
     {:noreply, socket}
   end
 
+  def handle_event("edit", %{"id" => _id} = _params, socket) do
+    # TODO: implement this
+    {:noreply, socket}
+  end
+
+  def handle_event("delete", %{"id" => id} = _params, socket) do
+    {:ok, _} = Notes.delete(id)
+    notes = Notes.get_notes_grouped_and_ordered_till_date(socket.assigns.pagination_date)
+    {:noreply, stream(socket, :notes, notes, reset: true)}
+  end
+
   def handle_event("search-change", _params, socket) do
     # Do nothing with the search bar change rn
     {:noreply, socket}

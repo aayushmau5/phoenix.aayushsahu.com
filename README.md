@@ -37,10 +37,3 @@ Whenever data is updated(a new user visits my website/blog), we send a pubsub me
 High overview on how everything fits together:
 
 ![Illustration](dashboard-working.png)
-
-## TODO:
-
-- Think about settings up a "demo" page for view only access
-- Move get and check calls to "upsert"(but will this incur more complexity?).
-- Add admin tool(https://github.com/tfwright/live_admin or https://github.com/mojotech/torch or kaffy)
-- Move dashboard and spotify data into stream(currently stream doesn't support filtering, sorting, etc without being hacky)

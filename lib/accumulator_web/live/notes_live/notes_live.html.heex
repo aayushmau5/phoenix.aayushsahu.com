@@ -8,6 +8,8 @@
   <button phx-click="more-notes" class="text-sm opacity-60 text-right w-full">
     Load more
   </button>
+
+  <%!-- Notes UI --%>
   <div
     class="bg-black bg-opacity-20 p-2 rounded-md max-h-[500px] overflow-y-scroll"
     id="notes"
@@ -24,9 +26,13 @@
         <div :for={file <- note.files}>
           <%= file.name %>
         </div>
+        <button phx-click="delete" phx-value-id={note.id}>Delete</button>
+        <button phx-click="edit" phx-value-id={note.id}>Edit</button>
       </div>
     </div>
   </div>
+
+  <%!-- Submission form --%>
   <div>
     <.notes_form for={@form} phx-change="validate" phx-submit="save">
       <div class="flex gap-2 border rounded-lg border-zinc-700 focus:border-zinc-600 focus:ring-zinc-800/5">
