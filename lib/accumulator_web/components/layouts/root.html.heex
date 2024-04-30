@@ -41,6 +41,13 @@
         </.link>
         <.link
           :if={@current_user}
+          navigate={~p"/notes"}
+          class="text-sm hover:bg-[#373739] p-2 rounded-md"
+        >
+          notes
+        </.link>
+        <.link
+          :if={@current_user}
           navigate={~p"/sessions"}
           class="text-sm hover:bg-[#373739] p-2 rounded-md"
         >
