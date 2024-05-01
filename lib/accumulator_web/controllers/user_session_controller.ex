@@ -15,8 +15,10 @@ defmodule AccumulatorWeb.UserSessionController do
     if user = Auth.get_user_by_email_and_password(email, password) do
       connection_info = Accumulator.Auth.Info.connection_info(conn)
 
-      # TODO: run this async using a task
-      # Accumulator.Mailer.send_login_email(connection_info)
+      Task.Supervisor.async_nolink(Accumulator.TaskRunner, fn ->
+        Accumulator.Mailer.send_login_email(connection_info)
+        raise("hello world")
+      end)
 
       conn
       |> put_flash(:info, info)
