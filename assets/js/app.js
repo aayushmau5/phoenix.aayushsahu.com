@@ -49,7 +49,8 @@ Hooks.NotesInput = {
 		this.el.addEventListener("keydown", this.handleKeyDown);
 	},
 	handleKeyDown(event) {
-		if (event.key === "Enter" && !event.shiftKey) {
+		const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+		if (!isMobile && event.key === "Enter" && !event.shiftKey) {
 			const notesForm = document.getElementById("notes-form");
 			notesForm.dispatchEvent(
 				new Event("submit", { bubbles: true, cancelable: true })
