@@ -18,72 +18,16 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
   </head>
   <body class="bg-[#1f1f1f] text-white antialiased">
-    <div class="flex flex-wrap bg-slate-500 m-2 rounded-md bg-opacity-10 p-2 justify-between items-center">
-      <div class="flex flex-wrap items-center gap-2">
-        <.link class="font-bold text-md" navigate={~p"/"}>
-          phoenix.aayushsahu.com
-        </.link>
-        <.link navigate={~p"/dashboard"} class="text-sm hover:bg-[#373739] p-2 rounded-md">
-          dashboard
-        </.link>
-        <.link navigate={~p"/spotify"} class="text-sm hover:bg-[#373739] p-2 rounded-md">
-          spotify
-        </.link>
-        <.link navigate={~p"/redirect"} class="text-sm hover:bg-[#373739] p-2 rounded-md">
-          redirect
-        </.link>
-        <.link
-          :if={@current_user}
-          navigate={~p"/bin"}
-          class="text-sm hover:bg-[#373739] p-2 rounded-md"
-        >
-          bin
-        </.link>
-        <.link
-          :if={@current_user}
-          navigate={~p"/notes"}
-          class="text-sm hover:bg-[#373739] p-2 rounded-md"
-        >
-          notes
-        </.link>
-        <.link
-          :if={@current_user}
-          navigate={~p"/sessions"}
-          class="text-sm hover:bg-[#373739] p-2 rounded-md"
-        >
-          sessions
-        </.link>
-        <.link
-          :if={@current_user}
-          navigate={~p"/livedashboard"}
-          class="text-sm hover:bg-[#373739] p-2 rounded-md"
-        >
-          livedashboard
-        </.link>
-      </div>
-      <ul class="text-right ml-auto">
-        <%= if @current_user do %>
-          <li class="text-white">
-            <%= @current_user.email %>
-          </li>
-          <li>
-            <.link
-              href={~p"/logout"}
-              method="delete"
-              class="text-white font-semibold hover:text-[#6CFACD]"
-            >
-              Log out
-            </.link>
-          </li>
-        <% else %>
-          <li>
-            <.link href={~p"/login"} class="text-white font-semibold hover:text-[#6CFACD]">
-              Log in
-            </.link>
-          </li>
-        <% end %>
-      </ul>
-    </div>
+    <.navbar current_user={@current_user}>
+      <.navbar_link to={~p"/"} label="phoenix.aayushsahu.com" />
+      <.navbar_link to={~p"/dashboard"} label="dashboard" />
+      <.navbar_link to={~p"/spotify"} label="spotify" />
+      <.navbar_link to={~p"/redirect"} label="redirect" />
+      <.navbar_link :if={@current_user} to={~p"/bin"} label="bin" />
+      <.navbar_link :if={@current_user} to={~p"/notes"} label="notes" />
+      <.navbar_link :if={@current_user} to={~p"/sessions"} label="session" />
+      <.navbar_link :if={@current_user} to={~p"/livedashboard"} label="livedashboard" />
+    </.navbar>
 
     <%= @inner_content %>
   </body>

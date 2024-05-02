@@ -35,10 +35,26 @@ Hooks.LocalTime = {
 	}
 }
 
+// For notes
 Hooks.ScrollToBottom = {
 	mounted() {
 		this.handleEvent("new-note-scroll", () => this.el.scrollTo(0, this.el.scrollHeight));
 		this.el.scrollTo(0, this.el.scrollHeight);
+	}
+}
+
+// For notes
+Hooks.NotesInput = {
+	mounted() {
+		this.el.addEventListener("keydown", this.handleKeyDown);
+	},
+	handleKeyDown(event) {
+		if (event.key === "Enter" && !event.shiftKey) {
+			const notesForm = document.getElementById("notes-form");
+			notesForm.dispatchEvent(
+				new Event("submit", { bubbles: true, cancelable: true })
+			)
+		}
 	}
 }
 

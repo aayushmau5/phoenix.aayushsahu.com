@@ -15,7 +15,7 @@ defmodule AccumulatorWeb.NotesComponents do
   def notes_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="space-y-8 mt-10">
+      <div>
         <%= render_slot(@inner_block, f) %>
       </div>
     </.form>

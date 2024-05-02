@@ -451,6 +451,98 @@ defmodule AccumulatorWeb.CoreComponents do
     """
   end
 
+  @doc """
+  Converts UTC time to local time
+  """
+  attr :date, :string, required: true
+  attr :id, :string, required: true
+
+  def local_time(assigns) do
+    ~H"""
+    <time phx-hook="LocalTime" id={@id} class="invisible"><%= @date %></time>
+    """
+  end
+
+  @doc """
+  Navbar component
+  """
+  slot :inner_block, required: true
+  attr :current_user, :any
+
+  def navbar(assigns) do
+    ~H"""
+    <nav class="bg-slate-500 bg-opacity-10 rounded">
+      <div class="flex flex-wrap items-center justify-between mx-auto">
+        <button
+          phx-click={JS.toggle(to: "#navbar")}
+          type="button"
+          class="inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden focus:outline-none"
+          aria-controls="navbar"
+          aria-expanded="false"
+        >
+          <svg
+            class="w-6 h-6"
+            aria-hidden="true"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+              clip-rule="evenodd"
+            >
+            </path>
+          </svg>
+        </button>
+
+        <div class="hidden w-full md:block md:w-auto" id="navbar">
+          <ul class="flex flex-col p-4 rounded-lg md:flex-row md:mt-0 md:text-sm md:font-medium">
+            <%= render_slot(@inner_block) %>
+          </ul>
+        </div>
+
+        <ul class="text-right ml-auto mr-2 py-2">
+          <%= if @current_user do %>
+            <li class="text-white">
+              <%= @current_user.email %>
+            </li>
+            <li>
+              <.link
+                href="/logout"
+                method="delete"
+                class="text-white font-semibold hover:text-[#6CFACD]"
+              >
+                Log out
+              </.link>
+            </li>
+          <% else %>
+            <li>
+              <.link href="/login" class="text-white font-semibold hover:text-[#6CFACD]">
+                Log in
+              </.link>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </nav>
+    """
+  end
+
+  @doc """
+  Navbar link
+  """
+  attr :to, :string, required: true
+  attr :label, :string, required: true
+
+  def navbar_link(assigns) do
+    ~H"""
+    <.link navigate={@to} class="block p-2 text-gray-400 rounded hover:bg-[#373739]">
+      <%= @label %>
+    </.link>
+    """
+  end
+
   ## JS Commands
 
   def show(js \\ %JS{}, selector) do
@@ -521,17 +613,5 @@ defmodule AccumulatorWeb.CoreComponents do
   """
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
-  end
-
-  @doc """
-  Converts UTC time to local time
-  """
-  attr :date, :string, required: true
-  attr :id, :string, required: true
-
-  def local_time(assigns) do
-    ~H"""
-    <time phx-hook="LocalTime" id={@id} class="invisible"><%= @date %></time>
-    """
   end
 end

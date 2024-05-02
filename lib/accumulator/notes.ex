@@ -10,6 +10,10 @@ defmodule Accumulator.Notes do
     |> Repo.all()
   end
 
+  def get_by_id(id) do
+    Repo.get!(Note, id)
+  end
+
   def get_notes_grouped_and_ordered_by_date(ending_date) do
     date_tuple = ending_date |> Date.add(1) |> Date.to_erl()
 

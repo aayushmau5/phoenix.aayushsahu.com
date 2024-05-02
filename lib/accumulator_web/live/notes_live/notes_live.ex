@@ -39,7 +39,7 @@ defmodule AccumulatorWeb.NotesLive do
        accept: :any,
        max_entries: @max_file_entries,
        max_file_size: @max_file_size
-     )}
+     ), layout: {AccumulatorWeb.Layouts, :note}}
   end
 
   @impl true
@@ -118,7 +118,8 @@ defmodule AccumulatorWeb.NotesLive do
   end
 
   def handle_event("edit", %{"id" => _id} = _params, socket) do
-    # TODO: implement this
+    # note_form = Notes.get_by_id(id) |> Note.changeset() |> to_form()
+    # {:noreply, assign(socket, form: note_form)}
     {:noreply, socket}
   end
 
