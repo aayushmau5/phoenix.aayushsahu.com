@@ -1,0 +1,16 @@
+/* @font-face {
+	font-family: "Overpass Mono";
+	src: url("/fonts/OverpassMono-Regular.ttf"),
+		url("/fonts/OverpassMono-Light.ttf"),
+		url("/fonts/OverpassMono-Medium.ttf"),
+		url("/fonts/OverpassMono-Bold.ttf"),
+		url("/fonts/OverpassMono-SemiBold.ttf");
+} */
+
+@font-face {
+	font-family: "Input";
+	src: url("/fonts/Input-Regular.ttf"),
+		url("/fonts/Input-Italic.ttf"),
+		url("/fonts/Input-Bold.ttf"),
+		url("/fonts/Input-BoldItalic.ttf");
+}

@@ -57,7 +57,8 @@ defmodule Accumulator.MixProject do
       {:finch, "~> 0.16"},
       {:resend, "~> 0.4.1"},
       {:ecto_psql_extras, "~> 0.6"},
-      {:libcluster, "~> 3.3"}
+      {:libcluster, "~> 3.3"},
+      {:earmark, "~> 1.4"}
     ]
   end
 

@@ -1,4 +1,4 @@
-<div class="w-full">
+<div class="w-full font-note">
   <div class="mb-2">
     <%!-- <.simple_form for={@search} phx-change="search-change" phx-submit="search-submit">
       <.input field={@search[:search]} class="bg-transparent" />
@@ -11,7 +11,7 @@
 
   <%!-- Notes UI --%>
   <div
-    class="bg-black bg-opacity-20 p-2 rounded-md max-h-[500px] overflow-y-scroll"
+    class="bg-black bg-opacity-20 p-2 rounded-md max-h-[520px] overflow-y-scroll"
     id="notes"
     phx-update="stream"
     phx-hook="ScrollToBottom"
@@ -19,7 +19,10 @@
     <div :for={{dom_id, [date, notes]} <- @streams.notes} id={dom_id}>
       <div class="leading-10 font-bold"><%= date %> (<%= days_ago(date) %>)</div>
       <div :for={note <- notes} class="my-1 bg-[#3d3d3d] p-2 rounded-md">
-        <div :if={note.text}><%= note.text %></div>
+        <div :if={note.text}>
+          <%= Earmark.as_html!(note.text, escape: false, compact_output: false, inner_html: true)
+          |> Phoenix.HTML.raw() %>
+        </div>
         <div class="flex mt-2 justify-between">
           <div class="text-xs opacity-40">
             <.local_time id={"note-#{note.id}-date"} date={note.updated_at} />

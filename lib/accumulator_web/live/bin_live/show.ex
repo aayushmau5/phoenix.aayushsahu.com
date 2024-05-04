@@ -42,7 +42,7 @@ defmodule AccumulatorWeb.BinLive.Show do
           </button>
           <pre
             id="copy-content"
-            class="overflow-auto font-inherit max-h-96 mb-5 bg-[#00C6C2] bg-opacity-10 p-2 rounded-md"
+            class="overflow-auto font-note max-h-96 mb-5 bg-[#00C6C2] bg-opacity-10 p-2 rounded-md"
           ><%= @paste.content %></pre>
           <div :if={@paste.files != []}>
             <p>Files:</p>
