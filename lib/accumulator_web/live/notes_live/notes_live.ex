@@ -104,7 +104,7 @@ defmodule AccumulatorWeb.NotesLive do
 
           socket
           |> stream(:notes, notes, reset: true)
-          |> assign(is_editing: true, form: empty_form())
+          |> assign(is_editing: false, form: empty_form(), editing_note_id: nil)
 
         {:error, changeset} ->
           assign(socket, form: to_form(changeset))
