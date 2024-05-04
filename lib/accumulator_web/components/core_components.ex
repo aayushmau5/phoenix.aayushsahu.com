@@ -141,7 +141,7 @@ defmodule AccumulatorWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-[#36B5C1] hover:bg-opacity-90 py-2 px-3",
+        "phx-submit-loading:opacity-75 rounded-md bg-[#36B5C1] hover:bg-opacity-90 py-2 px-3",
         "text-sm font-semibold leading-6 text-white active:text-white/80",
         @class
       ]}
