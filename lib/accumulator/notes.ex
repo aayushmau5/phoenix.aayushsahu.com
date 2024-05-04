@@ -57,12 +57,12 @@ defmodule Accumulator.Notes do
 
   def update(id, params) do
     note = Repo.get(Note, id)
-    changeset = Note.changeset(note, params) |> dbg()
+    changeset = Note.changeset(note, params)
 
-    case Repo.update(changeset) do
-      {:ok, note} -> note
-      {:error, changeset} -> changeset
-    end
+    Repo.insert(changeset,
+      on_conflict: :replace_all,
+      conflict_target: [:id]
+    )
   end
 
   def delete(id) do
