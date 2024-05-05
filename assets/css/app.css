@@ -20,10 +20,10 @@
 }
 
 .note-text h1,
-h2,
-h3,
-h4,
-h5 {
+.note-text h2,
+.note-text h3,
+.note-text h4,
+.note-text h5 {
 	font-weight: bold;
 	font-size: 1.2rem;
 	border-bottom: 1px solid rgb(100, 100, 100);
