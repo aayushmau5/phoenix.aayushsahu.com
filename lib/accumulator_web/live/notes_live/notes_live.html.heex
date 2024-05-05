@@ -43,7 +43,7 @@
   <%!-- New note submission form --%>
   <div :if={!@is_editing} class="my-2">
     <.notes_form for={@form} phx-change="validate" phx-submit="save" id="notes-form">
-      <div class="flex gap-2 border rounded-lg border-zinc-700 focus:border-zinc-600 focus:ring-zinc-800/5">
+      <div class="flex gap-2 border rounded-lg border-zinc-700 focus-within:border-zinc-600">
         <.note_input type="textarea" field={@form[:text]} id="notes_text" phx-hook="NotesInput" />
         <div class="mt-auto mb-1 mr-1">
           <.button>
@@ -57,7 +57,7 @@
   <%!-- Note editing form --%>
   <div :if={@is_editing} class="mt-2">
     <.notes_form for={@form} phx-change="validate" phx-submit="update-note" id="notes-form">
-      <div class="flex gap-2 border rounded-lg border-zinc-700 focus:border-zinc-600 focus:ring-zinc-800/5">
+      <div class="flex gap-2 border rounded-lg border-zinc-700 focus-within:border-zinc-600">
         <.note_input type="textarea" field={@form[:text]} id="notes_text" phx-hook="NotesInput" />
         <div class="mt-auto mb-1 mr-1">
           <.button>

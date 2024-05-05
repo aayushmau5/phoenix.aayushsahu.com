@@ -26,4 +26,31 @@ h4,
 h5 {
 	font-weight: bold;
 	font-size: 1.2rem;
+	border-bottom: 1px solid rgb(100, 100, 100);
+}
+
+.note-text :not(pre)>code {
+	background-color: rgba(0, 0, 0, 0.224);
+	font: inherit;
+	padding: 2px;
+}
+
+.note-text pre {
+	background-color: rgba(0, 0, 0, 0.224);
+	font: inherit;
+	padding: 4px;
+}
+
+.note-text pre>code {
+	font: inherit;
+}
+
+.note-text blockquote {
+	border-left: 5px solid gray;
+	padding-left: 5px;
+	background-color: rgba(0, 0, 0, 0.2);
+}
+
+.note-text hr {
+	margin: 2px 0;
 }

@@ -75,6 +75,7 @@ defmodule AccumulatorWeb.NotesComponents do
           "block min-h-[6rem] w-full py-[7px] px-[11px] text-white border-none resize-none bg-transparent focus:outline-none",
           @errors != [] && "border-rose-400 focus:border-rose-400 focus:ring-rose-400/10"
         ]}
+        style="box-shadow: none;"
         {@rest}
       ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
       <.error :for={msg <- @errors}><%= msg %></.error>
