@@ -5,3 +5,25 @@
 @import "font";
 
 /* This file is for your main application CSS */
+
+.note-text ul {
+	list-style: disc;
+}
+
+.note-text ul li {
+	margin-left: 20px;
+}
+
+.note-text a {
+	text-decoration: underline;
+	color: skyblue;
+}
+
+.note-text h1,
+h2,
+h3,
+h4,
+h5 {
+	font-weight: bold;
+	font-size: 1.2rem;
+}

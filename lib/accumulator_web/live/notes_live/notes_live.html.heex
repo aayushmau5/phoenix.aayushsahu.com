@@ -18,11 +18,11 @@
   >
     <div :for={{dom_id, [date, notes]} <- @streams.notes} id={dom_id}>
       <div class="leading-10 font-bold"><%= date %> (<%= days_ago(date) %>)</div>
-      <div :for={note <- notes} class="my-1 bg-[#3d3d3d] p-2 rounded-md">
-        <div :if={note.text}>
-          <%= Earmark.as_html!(note.text, escape: false, compact_output: false, inner_html: true)
+      <div :for={note <- notes} class="my-1 bg-[#3d3d3d] p-2 rounded-md" id={"note-#{note.id}"}>
+        <article :if={note.text} class="note-text">
+          <%= Earmark.as_html!(note.text, escape: false, compact_output: false)
           |> Phoenix.HTML.raw() %>
-        </div>
+        </article>
         <div class="flex mt-2 justify-between">
           <div class="text-xs opacity-40">
             <.local_time id={"note-#{note.id}-date"} date={note.updated_at} />
