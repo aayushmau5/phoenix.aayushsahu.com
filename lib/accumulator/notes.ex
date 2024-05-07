@@ -70,6 +70,17 @@ defmodule Accumulator.Notes do
     |> Repo.delete()
   end
 
+  def search(search_term) do
+    like = "%#{search_term}%"
+
+    query =
+      from(n in Note,
+        where: like(n.text, ^like)
+      )
+
+    Repo.all(query) |> group_and_sort_notes()
+  end
+
   defp group_and_sort_notes(notes) do
     notes
     |> Enum.group_by(fn %{inserted_at: inserted_at} ->
