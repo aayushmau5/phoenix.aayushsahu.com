@@ -131,8 +131,24 @@ defmodule AccumulatorWeb.NotesLive do
   end
 
   def handle_event("search-submit", %{"search" => search} = _params, socket) do
-    # TODO: implement search functionality
-    IO.inspect(search, label: "Search")
+    search_term = String.trim(search)
+    search_term_length = String.length(search_term)
+
+    socket =
+      if search_term_length != 0 do
+        notes = Notes.search(search_term)
+
+        socket |> stream(:notes, notes, reset: true) |> push_event("new-note-scroll", %{})
+      else
+        {notes, pagination_date} =
+          Notes.get_notes_grouped_and_ordered_by_date(Date.utc_today())
+
+        socket
+        |> stream(:notes, notes, reset: true)
+        |> assign(pagination_date: pagination_date)
+        |> push_event("new-note-scroll", %{})
+      end
+
     {:noreply, socket}
   end
 

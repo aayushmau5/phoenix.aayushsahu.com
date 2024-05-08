@@ -1,11 +1,18 @@
 <div class="w-full font-note">
   <div class="mb-2">
-    <%!-- <.simple_form for={@search} phx-change="search-change" phx-submit="search-submit">
-      <.input field={@search[:search]} class="bg-transparent" />
-    </.simple_form> --%>
-    Search bar(TODO)
+    <.simple_form for={@search} phx-change="search-change" phx-submit="search-submit">
+      <div class="flex items-center gap-2">
+        <.note_input
+          label="Search"
+          field={@search[:search]}
+          class="bg-transparent bg-green-400"
+          id="search-input"
+        />
+      </div>
+    </.simple_form>
   </div>
-  <button phx-click="more-notes" class="text-sm opacity-60 text-right w-full">
+
+  <button phx-click="more-notes" class="block text-sm opacity-60 ml-auto">
     Load more
   </button>
 

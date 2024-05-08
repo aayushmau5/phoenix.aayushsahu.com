@@ -82,4 +82,27 @@ defmodule AccumulatorWeb.NotesComponents do
     </div>
     """
   end
+
+  def note_input(assigns) do
+    ~H"""
+    <div phx-feedback-for={@name} class="w-full">
+      <label class="flex gap-2 items-center">
+        <%= @label %>
+        <input
+          type={@type}
+          name={@name}
+          id={@id || @name}
+          value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+          class={[
+            "block flex-1 text-white border-zinc-700 focus:border-zinc-600 rounded-md bg-transparent focus:outline-none",
+            @errors != [] && "border-rose-400 focus:border-rose-400 focus:ring-rose-400/10"
+          ]}
+          style="box-shadow: none !important;"
+          {@rest}
+        />
+      </label>
+      <.error :for={msg <- @errors}><%= msg %></.error>
+    </div>
+    """
+  end
 end
