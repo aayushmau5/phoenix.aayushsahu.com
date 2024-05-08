@@ -39,6 +39,7 @@
 	background-color: rgba(0, 0, 0, 0.224);
 	font: inherit;
 	padding: 4px;
+	overflow-x: scroll;
 }
 
 .note-text pre>code {
