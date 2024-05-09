@@ -52,7 +52,7 @@ config :accumulator, AccumulatorWeb.Endpoint,
     ],
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"lib/accumulator_web/(controllers|live|components)/.*(ex|heex)$"
+      ~r"lib/accumulator_web/controllers/.*(ex|heex)$"
     ]
   ]
 
