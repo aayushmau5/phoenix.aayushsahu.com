@@ -45,6 +45,11 @@ config :accumulator, AccumulatorWeb.Endpoint,
 # Watch static and templates for browser reloading.
 config :accumulator, AccumulatorWeb.Endpoint,
   live_reload: [
+    notify: [
+      live_view: [
+        ~r"lib/accumulator_web/(live|components)/.*(ex|heex)$"
+      ]
+    ],
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"lib/accumulator_web/(controllers|live|components)/.*(ex|heex)$"
