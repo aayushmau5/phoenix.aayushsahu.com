@@ -1,20 +1,13 @@
 defmodule Accumulator.Notes do
-  alias Accumulator.Notes.Note
+  alias Accumulator.Notes.{Note, Workspace}
   alias Accumulator.Repo
   import Ecto.Query
 
-  # TODO: check if this is needed
-  def get_by_ascending_order() do
-    # TODO: Pagination?
-    from(n in Note, order_by: [asc: n.id])
-    |> Repo.all()
+  def get_note_by_id(id) do
+    Repo.get(Note, id)
   end
 
-  def get_by_id(id) do
-    Repo.get!(Note, id)
-  end
-
-  def get_notes_grouped_and_ordered_by_date(ending_date) do
+  def get_notes_grouped_and_ordered_by_date(workspace_id, ending_date) do
     date_tuple = ending_date |> Date.add(1) |> Date.to_erl()
 
     ending_date_time =
@@ -29,6 +22,7 @@ defmodule Accumulator.Notes do
       from(n in Note,
         where: n.inserted_at >= ^starting_date_time,
         where: n.inserted_at <= ^ending_date_time,
+        where: n.workspace_id == ^workspace_id,
         order_by: [asc: n.id]
       )
       |> Repo.all()
@@ -37,7 +31,7 @@ defmodule Accumulator.Notes do
     {result, NaiveDateTime.to_date(starting_date_time)}
   end
 
-  def get_notes_grouped_and_ordered_till_date(date) do
+  def get_notes_grouped_and_ordered_till_date(workspace_id, date) do
     date_tuple = date |> Date.add(1) |> Date.to_erl()
 
     date =
@@ -45,6 +39,7 @@ defmodule Accumulator.Notes do
 
     from(n in Note,
       where: n.inserted_at >= ^date,
+      where: n.workspace_id == ^workspace_id,
       order_by: [asc: n.id]
     )
     |> Repo.all()
@@ -55,7 +50,7 @@ defmodule Accumulator.Notes do
     Repo.insert(changeset)
   end
 
-  def update(id, params) do
+  def update_note(id, params) do
     note = Repo.get(Note, id)
     changeset = Note.changeset(note, params)
 
@@ -65,17 +60,18 @@ defmodule Accumulator.Notes do
     )
   end
 
-  def delete(id) do
+  def delete_note(id) do
     Repo.get!(Note, id)
     |> Repo.delete()
   end
 
-  def search(search_term) do
+  def search_notes(workspace_id, search_term) do
     like = "%#{search_term}%"
 
     query =
       from(n in Note,
-        where: like(n.text, ^like)
+        where: like(n.text, ^like),
+        where: n.workspace_id == ^workspace_id
       )
 
     Repo.all(query) |> group_and_sort_notes()
@@ -89,4 +85,63 @@ defmodule Accumulator.Notes do
     |> Enum.map(fn {date, notes} -> [date, notes] end)
     |> Enum.sort_by(fn [date, _] -> date end)
   end
+
+  # Workspace stuff
+
+  # TODOs:
+  # Handling pagination in workspace through dates while getting notes in a workspace
+
+  def get_all_workspaces() do
+    Repo.all(Workspace)
+  end
+
+  def get_workspace_by_id(id) do
+    # Workspace or nil
+    Repo.get(Workspace, id)
+  end
+
+  def create_new_workspace(params) do
+    %Workspace{} |> Workspace.changeset(params) |> Repo.insert()
+  end
+
+  def rename_workspace(id, params) do
+    # TODO: think about writing a query instead that changes the name without getting the workspace by its id first
+    get_workspace_by_id(id)
+    |> Workspace.changeset(params)
+    |> Repo.update()
+  end
+
+  def delete_workspace(id) do
+    case get_workspace_by_id(id) do
+      nil ->
+        nil
+
+      workspace ->
+        Repo.delete(workspace)
+    end
+  end
+
+  def create_note(workspace_id, note_params) do
+    get_workspace_by_id(workspace_id)
+    |> Ecto.build_assoc(:notes)
+    |> Note.changeset(note_params)
+    |> Repo.insert()
+  end
+
+  def update_note_workspace(note_id, workspace_id) do
+    get_note_by_id(note_id)
+    |> Note.changeset(%{workspace_id: workspace_id})
+    |> Repo.update()
+  end
+
+  def get_notes_in_workspace(workspace_id) do
+    from(n in Note, where: n.workspace_id == ^workspace_id, order_by: [asc: n.id])
+    |> Repo.all()
+  end
+
+  # def assign_default_workspace_to_every_note() do
+  #   from(n in Note, where: is_nil(n.workspace_id))
+  #   |> Repo.all()
+  #   |> Enum.map(fn n -> Note.changeset(n, %{workspace_id: 4}) |> Repo.update!() end)
+  # end
 end

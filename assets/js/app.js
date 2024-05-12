@@ -76,6 +76,13 @@ window.addEventListener("phx:copy", (event) => {
 	})
 })
 
+window.addEventListener("phx:notes-workspace-modal", ({ detail }) => {
+	// https://fly.io/phoenix-files/server-triggered-js/
+	const modalId = detail.modal_id;
+	const modalEl = document.getElementById(modalId);
+	window.liveSocket.execJS(modalEl, modalEl.getAttribute(detail.attr));
+})
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks, params: { _csrf_token: csrfToken } })
 

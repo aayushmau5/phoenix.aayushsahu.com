@@ -1,4 +1,51 @@
-<div class="w-full font-note">
+<div class="w-full font-note relative p-4">
+  <div>
+    Workspaces
+    <div id="workspaces" class="flex gap-2 mt-2 flex-wrap">
+      <div
+        :for={workspace <- @workspaces}
+        id={"workspace-#{workspace.id}"}
+        class="flex gap-2 items-center"
+      >
+        <button
+          class="rounded-md text-sm p-2 bg-gray-600 hover:bg-opacity-80 disabled:bg-opacity-20"
+          phx-click="change-workspace"
+          phx-value-id={workspace.id}
+          disabled={workspace.id == @selected_workspace.id}
+        >
+          <%= workspace.title %>
+        </button>
+        <button
+          :if={workspace.title !== "default"}
+          phx-click="edit-workspace"
+          phx-value-id={workspace.id}
+        >
+          <Heroicons.pencil class="h-5 w-5" />
+        </button>
+        <button
+          :if={workspace.title !== "default"}
+          phx-click="delete-workspace"
+          phx-value-id={workspace.id}
+        >
+          <Heroicons.trash class="h-5 w-5" />
+        </button>
+      </div>
+    </div>
+    <button phx-click="new-workspace" class="mt-2">Create New Workspace</button>
+  </div>
+
+  <.modal id="workspace-modal">
+    <.simple_form
+      :if={@workspace_form != nil}
+      for={@workspace_form}
+      phx-change="workspace-form-change"
+      phx-submit="workspace-form-submit"
+    >
+      <.input label="Title" field={@workspace_form[:title]} />
+      <.button>Save</.button>
+    </.simple_form>
+  </.modal>
+
   <div class="mb-2">
     <.simple_form for={@search} phx-change="search-change" phx-submit="search-submit">
       <div class="flex items-center gap-2">
@@ -67,7 +114,15 @@
       <div class="flex gap-2 border rounded-lg border-zinc-700 focus-within:border-zinc-600">
         <.note_input type="textarea" field={@form[:text]} id="notes_text" phx-hook="NotesInput" />
         <div class="mt-auto mb-1 mr-1">
-          <.button>
+          <.input
+            type="select"
+            prompt="Workspace"
+            id="workspace"
+            name="workspace"
+            options={Enum.map(@workspaces, fn workspace -> {workspace.title, workspace.id} end)}
+            value=""
+          />
+          <.button class="mt-2">
             Save
           </.button>
           <.button type="button" phx-click="cancel-edit" class="bg-zinc-500">
