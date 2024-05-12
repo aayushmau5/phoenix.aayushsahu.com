@@ -2,6 +2,7 @@ defmodule AccumulatorWeb.NotesComponents do
   use Phoenix.Component
 
   import AccumulatorWeb.CoreComponents
+  alias Phoenix.LiveView.JS
 
   attr :for, :any, required: true, doc: "the datastructure for the form"
   attr :as, :any, default: nil, doc: "the server side parameter to collect all input under"
@@ -102,6 +103,58 @@ defmodule AccumulatorWeb.NotesComponents do
         />
       </label>
       <.error :for={msg <- @errors}><%= msg %></.error>
+    </div>
+    """
+  end
+
+  attr :id, :string, required: true
+  attr :show, :boolean, default: false
+  attr :on_cancel, JS, default: %JS{}
+  slot :inner_block, required: true
+
+  def modal(assigns) do
+    ~H"""
+    <div
+      id={@id}
+      phx-mounted={@show && show_modal(@id)}
+      phx-remove={hide_modal(@id)}
+      data-cancel={JS.exec(@on_cancel, "phx-remove")}
+      data-show-modal={show_modal(@id)}
+      data-hide-modal={hide_modal(@id)}
+      class="relative z-50 hidden"
+    >
+      <div
+        id={"#{@id}-bg"}
+        class="bg-[#191919]/60 fixed inset-0 transition-opacity"
+        aria-hidden="true"
+      />
+      <div class="fixed inset-0 overflow-y-auto" role="dialog" aria-modal="true" tabindex="0">
+        <div class="flex min-h-full items-center justify-center">
+          <div class="w-full max-w-3xl p-4 sm:p-6 lg:py-8">
+            <.focus_wrap
+              id={"#{@id}-container"}
+              phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}
+              phx-key="escape"
+              phx-click-away={JS.exec("data-cancel", to: "##{@id}")}
+              class="relative hidden rounded-2xl bg-[#3d3d3d] p-14 shadow-lg transition"
+            >
+              <div class="absolute top-6 right-5">
+                <button
+                  id={"close_modal_btn_" <> @id}
+                  phx-click={JS.exec("data-cancel", to: "##{@id}")}
+                  type="button"
+                  class="-m-3 flex-none p-3 opacity-20 hover:opacity-40"
+                >
+                  <Heroicons.x_mark class="h-5 w-5" />
+                </button>
+              </div>
+              <div id={"#{@id}-content"}>
+                <%= render_slot(@inner_block) %>
+              </div>
+            </.focus_wrap>
+          </div>
+        </div>
+      </div>
     </div>
     """
   end

@@ -11,5 +11,6 @@ defmodule Accumulator.Notes.Workspace do
   def changeset(workspace, params \\ %{}) do
     workspace
     |> cast(params, [:title])
+    |> validate_length(:title, min: 2)
   end
 end

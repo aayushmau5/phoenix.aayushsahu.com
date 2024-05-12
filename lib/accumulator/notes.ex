@@ -104,16 +104,11 @@ defmodule Accumulator.Notes do
     %Workspace{} |> Workspace.changeset(params) |> Repo.insert()
   end
 
-  def rename_workspace(id, new_title) do
+  def rename_workspace(id, params) do
     # TODO: think about writing a query instead that changes the name without getting the workspace by its id first
-    case get_workspace_by_id(id) do
-      nil ->
-        nil
-
-      workspace ->
-        updated_workspace_changeset = Workspace.changeset(workspace, %{title: new_title})
-        Repo.update!(updated_workspace_changeset)
-    end
+    get_workspace_by_id(id)
+    |> Workspace.changeset(params)
+    |> Repo.update()
   end
 
   def delete_workspace(id) do

@@ -229,7 +229,7 @@ defmodule AccumulatorWeb.CoreComponents do
       <select
         id={@id}
         name={@name}
-        class="mt-1 text-black block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 sm:text-sm"
+        class="mt-1 text-black block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 sm:text-sm w-[140px]"
         multiple={@multiple}
         {@rest}
       >
@@ -479,7 +479,7 @@ defmodule AccumulatorWeb.CoreComponents do
       <button
         phx-click={JS.toggle(to: "#navbar")}
         type="button"
-        class="absolute right-2 p-2 ml-3 text-sm text-gray-500 rounded-lg focus:outline-none"
+        class="absolute right-2 p-2 ml-3 text-sm text-gray-500 rounded-lg focus:outline-none z-20"
         aria-controls="navbar"
         aria-expanded="false"
       >
