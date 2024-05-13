@@ -8,7 +8,7 @@
         class="flex gap-2 items-center"
       >
         <button
-          class="rounded-md text-sm p-2 bg-gray-600 hover:bg-opacity-80 disabled:bg-opacity-20"
+          class="rounded-md text-sm p-2 bg-zinc-600 hover:bg-opacity-80 disabled:bg-opacity-20"
           phx-click="change-workspace"
           phx-value-id={workspace.id}
           disabled={workspace.id == @selected_workspace.id}
@@ -17,6 +17,7 @@
         </button>
         <button
           :if={workspace.title !== "default"}
+          class="edit-workspace-btn hidden hover:opacity-80"
           phx-click="edit-workspace"
           phx-value-id={workspace.id}
         >
@@ -24,6 +25,7 @@
         </button>
         <button
           :if={workspace.title !== "default"}
+          class="delete-workspace-btn hidden hover:opacity-80"
           phx-click="delete-workspace"
           phx-value-id={workspace.id}
         >
@@ -31,7 +33,26 @@
         </button>
       </div>
     </div>
-    <button phx-click="new-workspace" class="mt-2">Create New Workspace</button>
+    <div class="mt-3">
+      <button
+        phx-click="new-workspace"
+        class="border text-sm px-2 py-1 rounded-md hover:opacity-80"
+      >
+        Create New Workspace
+      </button>
+      <button
+        class="border text-sm px-2 py-1 rounded-md hover:opacity-80"
+        phx-click={JS.toggle(to: ".edit-workspace-btn") |> JS.toggle(to: ".delete-workspace-btn")}
+      >
+        Edit Workspaces
+      </button>
+      <button
+        class="border text-sm px-2 py-1 rounded-md hover:opacity-80"
+        phx-click={JS.toggle(to: "#search-container")}
+      >
+        Toggle Search
+      </button>
+    </div>
   </div>
 
   <.modal id="workspace-modal">
@@ -46,7 +67,7 @@
     </.simple_form>
   </.modal>
 
-  <div class="mb-2">
+  <div class="mb-2 hidden -mt-7" id="search-container">
     <.simple_form for={@search} phx-change="search-change" phx-submit="search-submit">
       <div class="flex items-center gap-2">
         <.note_input
