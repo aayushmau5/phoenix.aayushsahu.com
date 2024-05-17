@@ -3,42 +3,35 @@ defmodule Accumulator.Notes do
   alias Accumulator.Repo
   import Ecto.Query
 
+  @timezone "Asia/Kolkata"
+
   def get_note_by_id(id) do
-    Repo.get(Note, id)
+    Repo.get!(Note, id)
   end
 
-  def get_notes_grouped_and_ordered_by_date(workspace_id, ending_date) do
-    date_tuple = ending_date |> Date.add(1) |> Date.to_erl()
-
-    ending_date_time =
-      NaiveDateTime.from_erl!({date_tuple, {0, 0, 0}}) |> NaiveDateTime.truncate(:second)
-
-    starting_date_time =
-      NaiveDateTime.add(ending_date_time, -10, :day) |> NaiveDateTime.truncate(:second)
+  def get_notes_grouped_and_ordered_by_date(workspace_id, ending_datetime) do
+    ending_datetime = ending_datetime |> DateTime.add(1)
+    starting_datetime = DateTime.add(ending_datetime, -10, :day)
 
     # [ [date, [notes]], [date, [notes]] ]
-    # TODO: think about how to store date
     result =
       from(n in Note,
-        where: n.inserted_at >= ^starting_date_time,
-        where: n.inserted_at <= ^ending_date_time,
+        where: n.inserted_at >= ^starting_datetime,
+        where: n.inserted_at <= ^ending_datetime,
         where: n.workspace_id == ^workspace_id,
         order_by: [asc: n.id]
       )
       |> Repo.all()
       |> group_and_sort_notes()
 
-    {result, NaiveDateTime.to_date(starting_date_time)}
+    {result, starting_datetime}
   end
 
-  def get_notes_grouped_and_ordered_till_date(workspace_id, date) do
-    date_tuple = date |> Date.add(1) |> Date.to_erl()
-
-    date =
-      NaiveDateTime.from_erl!({date_tuple, {0, 0, 0}}) |> NaiveDateTime.truncate(:second)
+  def get_notes_grouped_and_ordered_till_date(workspace_id, datetime) do
+    datetime = datetime |> DateTime.add(1)
 
     from(n in Note,
-      where: n.inserted_at >= ^date,
+      where: n.inserted_at >= ^datetime,
       where: n.workspace_id == ^workspace_id,
       order_by: [asc: n.id]
     )
@@ -61,7 +54,7 @@ defmodule Accumulator.Notes do
   end
 
   def delete_note(id) do
-    Repo.get!(Note, id)
+    get_note_by_id(id)
     |> Repo.delete()
   end
 
@@ -79,8 +72,9 @@ defmodule Accumulator.Notes do
 
   defp group_and_sort_notes(notes) do
     notes
+    |> Enum.map(&convert_timestamps_tz/1)
     |> Enum.group_by(fn %{inserted_at: inserted_at} ->
-      inserted_at |> NaiveDateTime.to_date() |> Date.to_string()
+      inserted_at |> DateTime.to_date() |> Date.to_string()
     end)
     |> Enum.map(fn {date, notes} -> [date, notes] end)
     |> Enum.sort_by(fn [date, _] -> date end)
@@ -88,16 +82,12 @@ defmodule Accumulator.Notes do
 
   # Workspace stuff
 
-  # TODOs:
-  # Handling pagination in workspace through dates while getting notes in a workspace
-
   def get_all_workspaces() do
-    Repo.all(Workspace)
+    Repo.all(Workspace) |> Enum.map(&convert_timestamps_tz/1)
   end
 
   def get_workspace_by_id(id) do
-    # Workspace or nil
-    Repo.get(Workspace, id)
+    Repo.get!(Workspace, id)
   end
 
   def create_new_workspace(params) do
@@ -112,13 +102,7 @@ defmodule Accumulator.Notes do
   end
 
   def delete_workspace(id) do
-    case get_workspace_by_id(id) do
-      nil ->
-        nil
-
-      workspace ->
-        Repo.delete(workspace)
-    end
+    get_workspace_by_id(id) |> Repo.delete()
   end
 
   def create_note(workspace_id, note_params) do
@@ -134,14 +118,21 @@ defmodule Accumulator.Notes do
     |> Repo.update()
   end
 
-  def get_notes_in_workspace(workspace_id) do
-    from(n in Note, where: n.workspace_id == ^workspace_id, order_by: [asc: n.id])
-    |> Repo.all()
+  defp convert_timestamps_tz(map) do
+    map
+    |> Map.update!(:inserted_at, fn utc_timestamp ->
+      DateTime.shift_zone!(utc_timestamp, @timezone)
+    end)
+    |> Map.update!(:updated_at, fn utc_timestamp ->
+      DateTime.shift_zone!(utc_timestamp, @timezone)
+    end)
   end
 
-  # def assign_default_workspace_to_every_note() do
-  #   from(n in Note, where: is_nil(n.workspace_id))
-  #   |> Repo.all()
-  #   |> Enum.map(fn n -> Note.changeset(n, %{workspace_id: 4}) |> Repo.update!() end)
-  # end
+  def get_utc_datetime_from_date(date \\ Date.utc_today()) do
+    date_tuple = date |> Date.to_erl()
+
+    NaiveDateTime.from_erl!({date_tuple, {0, 0, 0}})
+    |> NaiveDateTime.add(1, :day)
+    |> DateTime.from_naive!("Etc/UTC")
+  end
 end

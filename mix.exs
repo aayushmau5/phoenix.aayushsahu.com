@@ -58,7 +58,8 @@ defmodule Accumulator.MixProject do
       {:resend, "~> 0.4.1"},
       {:ecto_psql_extras, "~> 0.6"},
       {:libcluster, "~> 3.3"},
-      {:earmark, "~> 1.4"}
+      {:earmark, "~> 1.4"},
+      {:time_zone_info, "~> 0.7"}
     ]
   end
 

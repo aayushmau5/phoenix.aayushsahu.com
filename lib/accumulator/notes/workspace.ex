@@ -5,7 +5,7 @@ defmodule Accumulator.Notes.Workspace do
   schema "workspaces" do
     field(:title, :string)
     has_many(:notes, Accumulator.Notes.Note)
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(workspace, params \\ %{}) do

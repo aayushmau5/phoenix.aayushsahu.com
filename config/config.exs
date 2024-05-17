@@ -7,6 +7,9 @@
 # General application configuration
 import Config
 
+# Timezone config
+config :elixir, :time_zone_database, TimeZoneInfo.TimeZoneDatabase
+
 # Configures the endpoint
 config :accumulator, AccumulatorWeb.Endpoint,
   url: [host: "localhost"],

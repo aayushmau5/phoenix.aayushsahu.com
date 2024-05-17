@@ -15,10 +15,11 @@ defmodule AccumulatorWeb.NotesLive do
         workspaces = Notes.get_all_workspaces()
         default_workspace = get_default_workspace(workspaces)
 
-        start_date = Date.utc_today()
-
         {notes, pagination_date} =
-          Notes.get_notes_grouped_and_ordered_by_date(default_workspace.id, start_date)
+          Notes.get_notes_grouped_and_ordered_by_date(
+            default_workspace.id,
+            Notes.get_utc_datetime_from_date()
+          )
 
         socket
         |> stream_configure(:notes, dom_id: &Enum.at(&1, 0))
@@ -68,7 +69,11 @@ defmodule AccumulatorWeb.NotesLive do
     socket =
       case Notes.insert(note_changeset) do
         {:ok, _note} ->
-          {notes, _} = Notes.get_notes_grouped_and_ordered_by_date(workspace_id, Date.utc_today())
+          {notes, _} =
+            Notes.get_notes_grouped_and_ordered_by_date(
+              workspace_id,
+              Notes.get_utc_datetime_from_date()
+            )
 
           socket
           |> assign(form: empty_form())
@@ -122,7 +127,10 @@ defmodule AccumulatorWeb.NotesLive do
       with {:ok, _} <- Notes.update_note(note_id, note_params),
            :ok <- update_note_workspace(note_id, new_workspace_id) do
         {notes, _} =
-          Notes.get_notes_grouped_and_ordered_by_date(workspace_id, Date.utc_today())
+          Notes.get_notes_grouped_and_ordered_by_date(
+            workspace_id,
+            Notes.get_utc_datetime_from_date()
+          )
 
         socket
         |> stream(:notes, notes, reset: true)
@@ -166,7 +174,10 @@ defmodule AccumulatorWeb.NotesLive do
         socket |> stream(:notes, notes, reset: true) |> push_event("new-note-scroll", %{})
       else
         {notes, pagination_date} =
-          Notes.get_notes_grouped_and_ordered_by_date(workspace_id, Date.utc_today())
+          Notes.get_notes_grouped_and_ordered_by_date(
+            workspace_id,
+            Notes.get_utc_datetime_from_date()
+          )
 
         socket
         |> stream(:notes, notes, reset: true)
@@ -183,7 +194,10 @@ defmodule AccumulatorWeb.NotesLive do
     workspace = Notes.get_workspace_by_id(id)
 
     {notes, pagination_date} =
-      Notes.get_notes_grouped_and_ordered_by_date(workspace.id, Date.utc_today())
+      Notes.get_notes_grouped_and_ordered_by_date(
+        workspace.id,
+        Notes.get_utc_datetime_from_date()
+      )
 
     socket =
       socket
@@ -210,22 +224,16 @@ defmodule AccumulatorWeb.NotesLive do
   end
 
   def handle_event("edit-workspace", %{"id" => id} = _params, socket) do
-    workspace = Notes.get_workspace_by_id(id)
+    workspace_form = Notes.get_workspace_by_id(id) |> Workspace.changeset() |> to_form()
 
     socket =
-      if workspace != nil do
-        workspace_form = workspace |> Workspace.changeset() |> to_form()
-
-        socket
-        |> assign(workspace_edit_id: id)
-        |> assign(workspace_form: workspace_form)
-        |> push_event("notes-workspace-modal", %{
-          modal_id: "workspace-modal",
-          attr: "data-show-modal"
-        })
-      else
-        socket
-      end
+      socket
+      |> assign(workspace_edit_id: id)
+      |> assign(workspace_form: workspace_form)
+      |> push_event("notes-workspace-modal", %{
+        modal_id: "workspace-modal",
+        attr: "data-show-modal"
+      })
 
     {:noreply, socket}
   end
@@ -306,7 +314,10 @@ defmodule AccumulatorWeb.NotesLive do
     workspace = get_default_workspace(socket.assigns.workspaces)
 
     {notes, pagination_date} =
-      Notes.get_notes_grouped_and_ordered_by_date(workspace.id, Date.utc_today())
+      Notes.get_notes_grouped_and_ordered_by_date(
+        workspace.id,
+        Notes.get_utc_datetime_from_date()
+      )
 
     socket =
       socket
