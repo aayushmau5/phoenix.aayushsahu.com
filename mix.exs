@@ -59,7 +59,7 @@ defmodule Accumulator.MixProject do
       {:ecto_psql_extras, "~> 0.6"},
       {:libcluster, "~> 3.3"},
       {:earmark, "~> 1.4"},
-      {:time_zone_info, "~> 0.7"}
+      {:tz, "~> 0.26.5"}
     ]
   end
 

@@ -8,7 +8,7 @@
 import Config
 
 # Timezone config
-config :elixir, :time_zone_database, TimeZoneInfo.TimeZoneDatabase
+config :elixir, :time_zone_database, Tz.TimeZoneDatabase
 
 # Configures the endpoint
 config :accumulator, AccumulatorWeb.Endpoint,
