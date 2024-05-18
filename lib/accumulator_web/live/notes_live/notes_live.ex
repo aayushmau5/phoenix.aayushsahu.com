@@ -71,6 +71,7 @@ defmodule AccumulatorWeb.NotesLive do
         |> assign(pagination_date: pagination_date)
         |> assign(selected_workspace: workspace)
         |> assign(page_error: nil)
+        |> push_event("new-note-scroll", %{})
     end
   end
 
