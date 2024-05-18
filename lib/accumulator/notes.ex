@@ -90,6 +90,11 @@ defmodule Accumulator.Notes do
     Repo.get!(Workspace, id)
   end
 
+  # TODO: refactor
+  def get_workspace(id) do
+    Repo.get(Workspace, id)
+  end
+
   def create_new_workspace(params) do
     %Workspace{} |> Workspace.changeset(params) |> Repo.insert()
   end

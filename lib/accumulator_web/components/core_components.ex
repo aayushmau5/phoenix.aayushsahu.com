@@ -463,7 +463,7 @@ defmodule AccumulatorWeb.CoreComponents do
 
   def local_time(assigns) do
     ~H"""
-    <time phx-hook="LocalTime" id={@id} class="invisible"><%= @date %></time>
+    <time phx-hook="LocalTime" id={@id}><%= @date %></time>
     """
   end
 

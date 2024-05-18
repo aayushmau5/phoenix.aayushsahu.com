@@ -5,46 +5,73 @@ defmodule AccumulatorWeb.NotesLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    notes_form =
-      %Note{}
-      |> Note.changeset()
-      |> to_form()
-
-    socket =
-      if connected?(socket) do
-        workspaces = Notes.get_all_workspaces()
-        default_workspace = get_default_workspace(workspaces)
-
-        {notes, pagination_date} =
-          Notes.get_notes_grouped_and_ordered_by_date(
-            default_workspace.id,
-            Notes.get_utc_datetime_from_date()
-          )
-
-        socket
-        |> stream_configure(:notes, dom_id: &Enum.at(&1, 0))
-        |> stream(:notes, notes)
-        |> assign(:workspaces, workspaces)
-        |> assign(pagination_date: pagination_date)
-        |> assign(selected_workspace: default_workspace)
-      else
-        socket
-        |> stream(:notes, [])
-        |> assign(:workspaces, [])
-        |> assign(selected_workspace: nil)
-      end
-
     {:ok,
      socket
+     |> stream_configure(:notes, dom_id: &Enum.at(&1, 0))
+     |> stream(:notes, [])
      |> assign(page_title: "Notes")
+     |> assign(workspaces: Notes.get_all_workspaces())
+     |> assign(selected_workspace: nil)
      # Note submission form
-     |> assign(form: notes_form)
+     |> assign(form: create_empty_form(:note))
      |> assign(workspace_form: nil)
      |> assign(editing_note_id: nil)
      |> assign(uploaded_files: [])
      |> assign(search: to_form(%{"search" => ""}))
+     |> assign(page_error: nil)
      # Existing note editing state
      |> assign(is_editing: false), layout: {AccumulatorWeb.Layouts, :note}}
+  end
+
+  @impl true
+  def handle_params(params, _uri, socket) do
+    workspace_id = Map.get(params, "id")
+
+    socket = handle_workspace(workspace_id, socket)
+
+    {:noreply, socket}
+  end
+
+  def handle_workspace(nil, socket) do
+    default_workspace = get_default_workspace(socket.assigns.workspaces)
+
+    {notes, pagination_date} =
+      Notes.get_notes_grouped_and_ordered_by_date(
+        default_workspace.id,
+        Notes.get_utc_datetime_from_date()
+      )
+
+    socket
+    |> stream(:notes, notes)
+    |> assign(pagination_date: pagination_date)
+    |> assign(selected_workspace: default_workspace)
+  end
+
+  def handle_workspace(workspace_id, socket) do
+    workspace =
+      case Integer.parse(workspace_id) do
+        {id, ""} -> Notes.get_workspace(id)
+        {_, _} -> nil
+        :error -> nil
+      end
+
+    case workspace do
+      nil ->
+        assign(socket, page_error: :no_workspace)
+
+      workspace ->
+        {notes, pagination_date} =
+          Notes.get_notes_grouped_and_ordered_by_date(
+            workspace.id,
+            Notes.get_utc_datetime_from_date()
+          )
+
+        socket
+        |> stream(:notes, notes, reset: true)
+        |> assign(pagination_date: pagination_date)
+        |> assign(selected_workspace: workspace)
+        |> assign(page_error: nil)
+    end
   end
 
   # Note submission handlers
@@ -190,31 +217,10 @@ defmodule AccumulatorWeb.NotesLive do
 
   # Workspace stuff
 
-  def handle_event("change-workspace", %{"id" => id} = _params, socket) do
-    workspace = Notes.get_workspace_by_id(id)
-
-    {notes, pagination_date} =
-      Notes.get_notes_grouped_and_ordered_by_date(
-        workspace.id,
-        Notes.get_utc_datetime_from_date()
-      )
-
-    socket =
-      socket
-      |> assign(selected_workspace: workspace)
-      |> assign(pagination_date: pagination_date)
-      |> stream(:notes, notes, reset: true)
-      |> push_event("new-note-scroll", %{})
-
-    {:noreply, socket}
-  end
-
   def handle_event("new-workspace", _params, socket) do
-    workspace_form = %Workspace{} |> Workspace.changeset() |> to_form()
-
     socket =
       socket
-      |> assign(workspace_form: workspace_form)
+      |> assign(workspace_form: create_empty_form(:workspace))
       |> push_event("notes-workspace-modal", %{
         modal_id: "workspace-modal",
         attr: "data-show-modal"
@@ -321,10 +327,11 @@ defmodule AccumulatorWeb.NotesLive do
 
     socket =
       socket
+      |> stream(:notes, notes, reset: true)
       |> assign(selected_workspace: workspace)
       |> assign(pagination_date: pagination_date)
-      |> stream(:notes, notes, reset: true)
       |> push_event("new-note-scroll", %{})
+      |> push_patch(to: "/notes/#{workspace.id}")
 
     {:noreply, socket}
   end
@@ -363,11 +370,6 @@ defmodule AccumulatorWeb.NotesLive do
     end
   end
 
-  # defp assign_form(socket, %Ecto.Changeset{} = changeset, :note) do
-  #   assign(socket, :form, to_form(changeset))
-  # end
-
-  # defp assign_form(socket, %Ecto.Changeset{} = changeset, :workspace) do
-  #   assign(socket, :workspace_form, to_form(changeset))
-  # end
+  defp create_empty_form(:note), do: %Note{} |> Note.changeset() |> to_form()
+  defp create_empty_form(:workspace), do: %Workspace{} |> Workspace.changeset() |> to_form()
 end

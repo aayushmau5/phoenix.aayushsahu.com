@@ -9,9 +9,8 @@
       >
         <button
           class="rounded-md text-sm p-2 bg-zinc-600 hover:bg-opacity-80 disabled:bg-opacity-20"
-          phx-click="change-workspace"
-          phx-value-id={workspace.id}
-          disabled={workspace.id == @selected_workspace.id}
+          phx-click={JS.patch("/notes/#{workspace.id}")}
+          disabled={@selected_workspace && workspace.id == @selected_workspace.id}
         >
           <%= workspace.title %>
         </button>
@@ -80,12 +79,21 @@
     </.simple_form>
   </div>
 
-  <button phx-click="more-notes" class="block text-sm opacity-60 ml-auto">
+  <div :if={!@selected_workspace && @page_error} class="mt-40 text-center text-lg text-red-400">
+    Requested workspace doesn't exist!
+  </div>
+
+  <button
+    :if={@selected_workspace}
+    phx-click="more-notes"
+    class="block text-sm opacity-60 ml-auto"
+  >
     Load more
   </button>
 
   <%!-- Notes UI --%>
   <div
+    :if={@selected_workspace}
     class="bg-black bg-opacity-20 p-2 rounded-md max-h-[520px] overflow-y-scroll"
     id="notes"
     phx-update="stream"
@@ -116,7 +124,7 @@
   </div>
 
   <%!-- New note submission form --%>
-  <div :if={!@is_editing} class="my-2">
+  <div :if={!@is_editing && @selected_workspace} class="my-2">
     <.notes_form for={@form} phx-change="validate" phx-submit="save" id="notes-form">
       <div class="flex gap-2 border rounded-lg border-zinc-700 focus-within:border-zinc-600">
         <.note_input type="textarea" field={@form[:text]} id="notes_text" phx-hook="NotesInput" />

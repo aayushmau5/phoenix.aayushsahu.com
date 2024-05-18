@@ -67,13 +67,17 @@ defmodule AccumulatorWeb.Router do
 
     live_session :require_authenticated_user,
       on_mount: [{AccumulatorWeb.UserAuth, :ensure_authenticated}] do
+      # LiveBin
       live "/bin", BinLive.Home
       live "/bin/create", BinLive.Create
       live "/bin/:id/show", BinLive.Show
       live "/bin/:id/edit", BinLive.Edit
 
       live "/sessions", SessionsLive
+
+      # Notes
       live "/notes", NotesLive
+      live "/notes/:id", NotesLive
     end
   end
 end
