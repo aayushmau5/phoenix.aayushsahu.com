@@ -19,13 +19,15 @@ defmodule AccumulatorWeb.Router do
   end
 
   scope "/", AccumulatorWeb do
-    pipe_through :browser
+    pipe_through [:browser]
 
     get "/", PageController, :home
     get "/redirect", PageController, :redirect
     live "/dashboard", DashboardLive
     live "/spotify", SpotifyLive
     delete "/logout", UserSessionController, :delete
+
+    live "/notes/public/:id", NotesPublicLive
   end
 
   # Other scopes may use custom stacks.

@@ -19,7 +19,6 @@ defmodule AccumulatorWeb.NotesLive do
        form: create_empty_form(:note),
        workspace_form: nil,
        editing_note_id: nil,
-       uploaded_files: [],
        search: to_form(%{"search" => ""}),
        page_error: nil,
        # Existing note editing state
@@ -269,7 +268,7 @@ defmodule AccumulatorWeb.NotesLive do
 
     socket =
       if workspace_edit_id != nil do
-        case Notes.rename_workspace(workspace_edit_id, workspace_params) do
+        case Notes.update_workspace(workspace_edit_id, workspace_params) do
           {:ok, _} ->
             workspaces = Notes.get_all_workspaces()
 

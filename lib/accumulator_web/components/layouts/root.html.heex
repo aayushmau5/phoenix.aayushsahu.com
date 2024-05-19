@@ -25,6 +25,7 @@
       <.navbar_link to={~p"/redirect"} label="redirect" />
       <.navbar_link :if={@current_user} to={~p"/bin"} label="bin" />
       <.navbar_link :if={@current_user} to={~p"/notes"} label="notes" />
+      <.navbar_link :if={!@current_user} to={~p"/notes/public/default"} label="notes" />
       <.navbar_link :if={@current_user} to={~p"/sessions"} label="session" />
       <.navbar_link :if={@current_user} to={~p"/livedashboard"} label="livedashboard" />
     </.navbar>

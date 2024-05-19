@@ -86,6 +86,12 @@ defmodule Accumulator.Notes do
     Repo.all(Workspace) |> Enum.map(&convert_timestamps_tz/1)
   end
 
+  def get_public_workspaces() do
+    from(w in Workspace, where: w.is_public == true)
+    |> Repo.all()
+    |> Enum.map(&convert_timestamps_tz/1)
+  end
+
   def get_workspace_by_id(id) do
     Repo.get!(Workspace, id)
   end
@@ -99,8 +105,7 @@ defmodule Accumulator.Notes do
     %Workspace{} |> Workspace.changeset(params) |> Repo.insert()
   end
 
-  def rename_workspace(id, params) do
-    # TODO: think about writing a query instead that changes the name without getting the workspace by its id first
+  def update_workspace(id, params) do
     get_workspace_by_id(id)
     |> Workspace.changeset(params)
     |> Repo.update()

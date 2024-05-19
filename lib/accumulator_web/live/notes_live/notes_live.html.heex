@@ -62,6 +62,7 @@
       phx-submit="workspace-form-submit"
     >
       <.input label="Title" field={@workspace_form[:title]} />
+      <.input type="checkbox" label="Public?" field={@workspace_form[:is_public]} />
       <.button>Save</.button>
     </.simple_form>
   </.modal>

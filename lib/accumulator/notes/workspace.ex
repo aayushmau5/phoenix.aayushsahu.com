@@ -4,13 +4,14 @@ defmodule Accumulator.Notes.Workspace do
 
   schema "workspaces" do
     field(:title, :string)
+    field(:is_public, :boolean)
     has_many(:notes, Accumulator.Notes.Note)
     timestamps(type: :utc_datetime)
   end
 
   def changeset(workspace, params \\ %{}) do
     workspace
-    |> cast(params, [:title])
+    |> cast(params, [:title, :is_public])
     |> validate_length(:title, min: 2)
   end
 end
