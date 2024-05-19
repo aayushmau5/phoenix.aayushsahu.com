@@ -13,7 +13,7 @@ defmodule AccumulatorWeb.NotesLive do
      |> stream(:notes, [])
      |> assign(
        page_title: "Notes",
-       workspaces: Notes.get_public_workspaces(),
+       workspaces: Notes.get_all_workspaces(),
        selected_workspace: nil,
        # Note submission form
        form: create_empty_form(:note),
@@ -351,17 +351,6 @@ defmodule AccumulatorWeb.NotesLive do
   end
 
   # Private functions
-
-  defp days_ago(date_string) do
-    date = Date.from_iso8601!(date_string)
-    today = Date.utc_today()
-
-    case Date.diff(today, date) do
-      0 -> "today"
-      1 -> "yesterday"
-      x -> "#{x} days ago"
-    end
-  end
 
   defp empty_form() do
     %Note{} |> Note.changeset() |> to_form()

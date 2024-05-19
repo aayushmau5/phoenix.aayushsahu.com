@@ -100,7 +100,9 @@
     phx-hook="ScrollToBottom"
   >
     <div :for={{dom_id, [date, notes]} <- @streams.notes} id={dom_id}>
-      <div class="leading-10 font-bold"><%= date %> (<%= days_ago(date) %>)</div>
+      <div class="leading-10 font-bold">
+        <%= date %> (<%= Accumulator.Helpers.days_ago(date) %>)
+      </div>
       <div :for={note <- notes} class="my-1 bg-[#3d3d3d] p-2 rounded-md" id={"note-#{note.id}"}>
         <article :if={note.text} class="note-text break-words">
           <%= Earmark.as_html!(note.text, escape: false, compact_output: false)
