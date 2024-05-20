@@ -1,7 +1,7 @@
 defmodule AccumulatorWeb.NotesLive do
   use AccumulatorWeb, :live_view
 
-  alias Accumulator.{Notes, Notes.Note, Notes.Workspace}
+  alias Accumulator.{Notes, Notes.Note, Notes.Workspace, Helpers}
 
   # TODO: edit workspace has "public" slider
 
@@ -41,7 +41,7 @@ defmodule AccumulatorWeb.NotesLive do
     {notes, pagination_date} =
       Notes.get_notes_grouped_and_ordered_by_date(
         default_workspace.id,
-        Notes.get_utc_datetime_from_date()
+        Helpers.get_utc_datetime_from_date()
       )
 
     socket
@@ -67,7 +67,7 @@ defmodule AccumulatorWeb.NotesLive do
         {notes, pagination_date} =
           Notes.get_notes_grouped_and_ordered_by_date(
             workspace.id,
-            Notes.get_utc_datetime_from_date()
+            Helpers.get_utc_datetime_from_date()
           )
 
         socket
@@ -106,7 +106,7 @@ defmodule AccumulatorWeb.NotesLive do
           {notes, _} =
             Notes.get_notes_grouped_and_ordered_by_date(
               workspace_id,
-              Notes.get_utc_datetime_from_date()
+              Helpers.get_utc_datetime_from_date()
             )
 
           Notes.broadcast!(%{type: :new_note, workspace_id: note.workspace_id})
@@ -165,7 +165,7 @@ defmodule AccumulatorWeb.NotesLive do
         {notes, _} =
           Notes.get_notes_grouped_and_ordered_by_date(
             workspace_id,
-            Notes.get_utc_datetime_from_date()
+            Helpers.get_utc_datetime_from_date()
           )
 
         Notes.broadcast!(%{type: :update_note, workspace_id: workspace_id})
@@ -217,7 +217,7 @@ defmodule AccumulatorWeb.NotesLive do
         {notes, pagination_date} =
           Notes.get_notes_grouped_and_ordered_by_date(
             workspace_id,
-            Notes.get_utc_datetime_from_date()
+            Helpers.get_utc_datetime_from_date()
           )
 
         socket
@@ -339,7 +339,7 @@ defmodule AccumulatorWeb.NotesLive do
     {notes, pagination_date} =
       Notes.get_notes_grouped_and_ordered_by_date(
         workspace.id,
-        Notes.get_utc_datetime_from_date()
+        Helpers.get_utc_datetime_from_date()
       )
 
     socket =

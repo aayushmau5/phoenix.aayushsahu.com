@@ -219,7 +219,7 @@ defmodule AccumulatorWeb.NotesPublicLive do
     {notes, pagination_date} =
       Notes.get_notes_grouped_and_ordered_by_date(
         workspace_id,
-        Notes.get_utc_datetime_from_date()
+        Accumulator.Helpers.get_utc_datetime_from_date()
       )
 
     socket
