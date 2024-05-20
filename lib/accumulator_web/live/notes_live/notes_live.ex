@@ -161,7 +161,7 @@ defmodule AccumulatorWeb.NotesLive do
 
     socket =
       with {:ok, _} <- Notes.update_note(note_id, note_params),
-           {:ok, _} <- update_note_workspace(note_id, new_workspace_id) do
+           :ok <- update_note_workspace(note_id, new_workspace_id) do
         {notes, _} =
           Notes.get_notes_grouped_and_ordered_by_date(
             workspace_id,
@@ -370,7 +370,7 @@ defmodule AccumulatorWeb.NotesLive do
 
     if change_workspace? do
       case Notes.update_note_workspace(note_id, new_workspace_id) do
-        {:ok, note} -> {:ok, note}
+        {:ok, _} -> :ok
         {:error, changeset} -> {:error, changeset}
       end
     else
