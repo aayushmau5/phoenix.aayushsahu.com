@@ -1,7 +1,7 @@
 defmodule AccumulatorWeb.NotesPublicLive do
   use AccumulatorWeb, :live_view
 
-  alias Accumulator.{Notes}
+  alias Accumulator.{Notes, Notes.Workspace}
 
   @impl true
   def render(assigns) do
@@ -67,6 +67,10 @@ defmodule AccumulatorWeb.NotesPublicLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    if connected?(socket) do
+      Notes.subscribe()
+    end
+
     {:ok,
      socket
      |> stream_configure(:notes, dom_id: &Enum.at(&1, 0))
@@ -103,7 +107,7 @@ defmodule AccumulatorWeb.NotesPublicLive do
 
       workspace ->
         socket
-        |> assign_notes(workspace)
+        |> assign_notes(workspace.id)
         |> assign(
           selected_workspace: workspace,
           page_error: nil
@@ -125,7 +129,7 @@ defmodule AccumulatorWeb.NotesPublicLive do
       workspace ->
         if workspace.is_public do
           socket
-          |> assign_notes(workspace)
+          |> assign_notes(workspace.id)
           |> assign(
             selected_workspace: workspace,
             page_error: nil
@@ -152,10 +156,69 @@ defmodule AccumulatorWeb.NotesPublicLive do
     {:noreply, socket}
   end
 
-  defp assign_notes(socket, workspace) do
+  @impl true
+  def handle_info(%{type: event_type, workspace_id: workspace_id}, socket) do
+    workspace_id =
+      if is_binary(workspace_id), do: String.to_integer(workspace_id), else: workspace_id
+
+    socket =
+      if public_workspace?(workspace_id, socket) do
+        handle_changes(event_type, workspace_id, socket)
+      else
+        socket
+      end
+
+    {:noreply, socket}
+  end
+
+  defp handle_changes(event_type, workspace_id, socket)
+       when event_type in [:new_note, :update_note, :delete_note] do
+    if selected_workspace?(workspace_id, socket) do
+      notes =
+        Notes.get_notes_grouped_and_ordered_till_date(
+          workspace_id,
+          socket.assigns.pagination_date
+        )
+
+      socket
+      |> stream(:notes, notes, reset: true)
+    else
+      socket
+    end
+  end
+
+  defp handle_changes(:new_workspace, _workspace_id, socket) do
+    assign(socket, workspaces: Notes.get_public_workspaces())
+  end
+
+  defp handle_changes(:update_workspace, workspace_id, socket) do
+    workspaces = Notes.get_public_workspaces()
+    socket = assign(socket, workspaces: workspaces)
+
+    if not public_workspace?(workspace_id, socket) do
+      push_patch(socket, to: "/notes/public/default")
+    else
+      socket
+    end
+  end
+
+  defp handle_changes(:delete_workspace, workspace_id, socket) do
+    workspaces = Notes.get_public_workspaces()
+    socket = assign(socket, workspaces: workspaces)
+
+    if selected_workspace?(workspace_id, socket) do
+      selected_workspace = Enum.random(workspaces)
+
+      push_patch(socket, to: "/notes/public/#{selected_workspace.id}")
+    else
+      socket
+    end
+  end
+
+  defp assign_notes(socket, workspace_id) do
     {notes, pagination_date} =
       Notes.get_notes_grouped_and_ordered_by_date(
-        workspace.id,
+        workspace_id,
         Notes.get_utc_datetime_from_date()
       )
 
@@ -163,5 +226,25 @@ defmodule AccumulatorWeb.NotesPublicLive do
     |> stream(:notes, notes, reset: true)
     |> assign(pagination_date: pagination_date)
     |> push_event("new-note-scroll", %{})
+  end
+
+  defp public_workspace?(workspace_id, socket) do
+    # Look for workspace in assign. if not found, check the db.
+    workspaces = socket.assigns.workspaces
+
+    with nil <- Enum.find(workspaces, &(&1.id == workspace_id)),
+         %Workspace{} = workspace <- Notes.get_workspace(workspace_id) do
+      workspace.is_public
+    else
+      # handles 2nd clause
+      nil -> false
+      # handles 1st clause
+      _workspace -> true
+    end
+  end
+
+  defp selected_workspace?(workspace_id, socket) do
+    selected_workspace_id = socket.assigns.selected_workspace.id
+    selected_workspace_id == workspace_id
   end
 end

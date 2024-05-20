@@ -102,12 +102,14 @@ defmodule AccumulatorWeb.NotesLive do
 
     socket =
       case Notes.insert(note_changeset) do
-        {:ok, _note} ->
+        {:ok, note} ->
           {notes, _} =
             Notes.get_notes_grouped_and_ordered_by_date(
               workspace_id,
               Notes.get_utc_datetime_from_date()
             )
+
+          Notes.broadcast!(%{type: :new_note, workspace_id: note.workspace_id})
 
           socket
           |> assign(form: empty_form())
@@ -159,12 +161,14 @@ defmodule AccumulatorWeb.NotesLive do
 
     socket =
       with {:ok, _} <- Notes.update_note(note_id, note_params),
-           :ok <- update_note_workspace(note_id, new_workspace_id) do
+           {:ok, _} <- update_note_workspace(note_id, new_workspace_id) do
         {notes, _} =
           Notes.get_notes_grouped_and_ordered_by_date(
             workspace_id,
             Notes.get_utc_datetime_from_date()
           )
+
+        Notes.broadcast!(%{type: :update_note, workspace_id: workspace_id})
 
         socket
         |> stream(:notes, notes, reset: true)
@@ -185,6 +189,9 @@ defmodule AccumulatorWeb.NotesLive do
     {:ok, _} = Notes.delete_note(id)
     pagination_date = socket.assigns.pagination_date
     workspace_id = socket.assigns.selected_workspace.id
+
+    Notes.broadcast!(%{type: :delete_note, workspace_id: workspace_id})
+
     notes = Notes.get_notes_grouped_and_ordered_till_date(workspace_id, pagination_date)
     {:noreply, stream(socket, :notes, notes, reset: true)}
   end
@@ -272,6 +279,8 @@ defmodule AccumulatorWeb.NotesLive do
           {:ok, _} ->
             workspaces = Notes.get_all_workspaces()
 
+            Notes.broadcast!(%{type: :update_workspace, workspace_id: workspace_edit_id})
+
             socket
             |> assign(
               workspaces: workspaces,
@@ -287,8 +296,10 @@ defmodule AccumulatorWeb.NotesLive do
         end
       else
         case Notes.create_new_workspace(workspace_params) do
-          {:ok, _} ->
+          {:ok, workspace} ->
             workspaces = Notes.get_all_workspaces()
+
+            Notes.broadcast!(%{type: :new_workspace, workspace_id: workspace.id})
 
             socket
             |> assign(workspaces: workspaces)
@@ -308,22 +319,17 @@ defmodule AccumulatorWeb.NotesLive do
   def handle_event("delete-workspace", %{"id" => workspace_id} = _params, socket) do
     workspace_id = String.to_integer(workspace_id)
 
-    socket =
-      case Notes.delete_workspace(workspace_id) do
-        nil ->
-          socket
+    {:ok, _} = Notes.delete_workspace(workspace_id)
 
-        _ ->
-          workspaces = Notes.get_all_workspaces()
-          selected_workspace_id = socket.assigns.selected_workspace.id
+    Notes.broadcast!(%{type: :delete_workspace, workspace_id: workspace_id})
 
-          if selected_workspace_id == workspace_id,
-            do: Process.send(self(), :change_to_default_workspace, [])
+    workspaces = Notes.get_all_workspaces()
+    selected_workspace_id = socket.assigns.selected_workspace.id
 
-          assign(socket, workspaces: workspaces)
-      end
+    if selected_workspace_id == workspace_id,
+      do: Process.send(self(), :change_to_default_workspace, [])
 
-    {:noreply, socket}
+    {:noreply, assign(socket, workspaces: workspaces)}
   end
 
   @impl true
@@ -364,7 +370,7 @@ defmodule AccumulatorWeb.NotesLive do
 
     if change_workspace? do
       case Notes.update_note_workspace(note_id, new_workspace_id) do
-        {:ok, _} -> :ok
+        {:ok, note} -> {:ok, note}
         {:error, changeset} -> {:error, changeset}
       end
     else

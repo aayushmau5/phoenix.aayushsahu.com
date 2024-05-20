@@ -3,6 +3,8 @@ defmodule Accumulator.Notes do
   alias Accumulator.Repo
   import Ecto.Query
 
+  @pubsub Accumulator.PubSub
+  @pubsub_topic "notes-pubsub-event"
   @timezone "Asia/Kolkata"
 
   def get_note_by_id(id) do
@@ -83,11 +85,13 @@ defmodule Accumulator.Notes do
   # Workspace stuff
 
   def get_all_workspaces() do
-    Repo.all(Workspace) |> Enum.map(&convert_timestamps_tz/1)
+    from(w in Workspace, order_by: [asc: w.id])
+    |> Repo.all()
+    |> Enum.map(&convert_timestamps_tz/1)
   end
 
   def get_public_workspaces() do
-    from(w in Workspace, where: w.is_public == true)
+    from(w in Workspace, where: w.is_public == true, order_by: [asc: w.id])
     |> Repo.all()
     |> Enum.map(&convert_timestamps_tz/1)
   end
@@ -115,19 +119,13 @@ defmodule Accumulator.Notes do
     get_workspace_by_id(id) |> Repo.delete()
   end
 
-  def create_note(workspace_id, note_params) do
-    get_workspace_by_id(workspace_id)
-    |> Ecto.build_assoc(:notes)
-    |> Note.changeset(note_params)
-    |> Repo.insert()
-  end
-
   def update_note_workspace(note_id, workspace_id) do
     get_note_by_id(note_id)
     |> Note.changeset(%{workspace_id: workspace_id})
     |> Repo.update()
   end
 
+  # TODO: move to helpers
   defp convert_timestamps_tz(map) do
     map
     |> Map.update!(:inserted_at, fn utc_timestamp ->
@@ -138,11 +136,20 @@ defmodule Accumulator.Notes do
     end)
   end
 
+  # TODO: move to helpers
   def get_utc_datetime_from_date(date \\ Date.utc_today()) do
     date_tuple = date |> Date.to_erl()
 
     NaiveDateTime.from_erl!({date_tuple, {0, 0, 0}})
     |> NaiveDateTime.add(1, :day)
     |> DateTime.from_naive!("Etc/UTC")
+  end
+
+  def subscribe() do
+    Phoenix.PubSub.subscribe(@pubsub, @pubsub_topic)
+  end
+
+  def broadcast!(message) do
+    Phoenix.PubSub.broadcast!(@pubsub, @pubsub_topic, message)
   end
 end

@@ -10,7 +10,7 @@ defmodule Accumulator.Helpers do
 
   def days_ago(date_string) do
     date = Date.from_iso8601!(date_string)
-    today = Date.utc_today()
+    today = DateTime.now!("Asia/Kolkata") |> DateTime.to_date()
 
     case Date.diff(today, date) do
       0 -> "today"
