@@ -106,7 +106,7 @@
       </div>
       <div :for={note <- notes} class="my-1 bg-[#3d3d3d] p-2 rounded-md" id={"note-#{note.id}"}>
         <article :if={note.text} class="note-text break-words">
-          <%= Earmark.as_html!(note.text, escape: false, compact_output: false)
+          <%= Accumulator.Markdown.to_html(note.text)
           |> Phoenix.HTML.raw() %>
         </article>
         <div class="flex mt-2 justify-between">

@@ -66,7 +66,7 @@ defmodule Accumulator.Pastes do
     current_date_time = DateTime.utc_now() |> DateTime.truncate(:second)
 
     get_expired_pastes_dir(current_date_time)
-    |> Enum.map(fn dir ->
+    |> Enum.each(fn dir ->
       if dir != nil, do: cleanup_dir(dir)
     end)
 
