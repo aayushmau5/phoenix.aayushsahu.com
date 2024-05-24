@@ -12,7 +12,7 @@ defmodule Accumulator.Notes do
 
   def get_notes_grouped_and_ordered_by_date(workspace_id, ending_datetime) do
     ending_datetime = ending_datetime |> DateTime.add(1)
-    starting_datetime = DateTime.add(ending_datetime, -10, :day)
+    starting_datetime = DateTime.add(ending_datetime, -30, :day)
 
     # [ [date, [notes]], [date, [notes]] ]
     result =
