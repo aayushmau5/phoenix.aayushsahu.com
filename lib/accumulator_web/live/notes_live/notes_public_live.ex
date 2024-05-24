@@ -48,7 +48,9 @@ defmodule AccumulatorWeb.NotesPublicLive do
       >
         <div :for={{dom_id, [date, notes]} <- @streams.notes} id={dom_id}>
           <div class="leading-10 font-bold">
-            <%= date %> (<%= Accumulator.Helpers.days_ago(date) %>)
+            <%= Accumulator.Helpers.day_of_week_string(date) %> <%= date %> (<%= Accumulator.Helpers.days_ago(
+              date
+            ) %>)
           </div>
           <div :for={note <- notes} class="my-1 bg-[#3d3d3d] p-2 rounded-md" id={"note-#{note.id}"}>
             <article :if={note.text} class="note-text break-words">
@@ -56,7 +58,7 @@ defmodule AccumulatorWeb.NotesPublicLive do
               |> Phoenix.HTML.raw() %>
             </article>
             <div class="text-xs opacity-40 mt-2">
-              <.local_time id={"note-#{note.id}-date"} date={note.updated_at} />
+              <.local_time id={"note-#{note.id}-date"} date={note.inserted_at} />
             </div>
           </div>
         </div>

@@ -38,4 +38,12 @@ defmodule Accumulator.Helpers do
     |> NaiveDateTime.add(1, :day)
     |> DateTime.from_naive!("Etc/UTC")
   end
+
+  def day_of_week_string(date_string) do
+    day = Date.from_iso8601!(date_string) |> Date.day_of_week()
+    index = day - 1
+
+    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    |> Enum.at(index)
+  end
 end
