@@ -18,7 +18,8 @@ config :accumulator, AccumulatorWeb.Endpoint,
   check_origin: [
     "https://aayushsahu.com",
     "https://phoenix-aayushsahu-com.fly.dev",
-    "https://phoenix.aayushsahu.com/"
+    "https://phoenix.aayushsahu.com/",
+    "moz-extension://*"
   ]
 
 # Do not print debug messages in production
