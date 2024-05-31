@@ -57,4 +57,8 @@ defmodule AccumulatorWeb.Endpoint do
   socket "/socket", AccumulatorWeb.UserSocket,
     websocket: [connect_info: [session: @session_options]],
     longpoll: false
+
+  socket "/extension", AccumulatorWeb.ExtensionSocket,
+    websocket: true,
+    longpoll: false
 end

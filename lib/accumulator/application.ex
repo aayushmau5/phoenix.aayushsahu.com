@@ -33,7 +33,8 @@ defmodule Accumulator.Application do
       Accumulator.Repo,
       {Accumulator.Scheduler.Spotify, interval: 60000},
       {Accumulator.Scheduler.Pastes, interval: 3_600_000},
-      {Task.Supervisor, name: Accumulator.TaskRunner}
+      {Task.Supervisor, name: Accumulator.TaskRunner},
+      Accumulator.Extension
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
