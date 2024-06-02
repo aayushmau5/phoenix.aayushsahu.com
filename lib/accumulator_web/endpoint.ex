@@ -60,6 +60,5 @@ defmodule AccumulatorWeb.Endpoint do
 
   socket "/extension", AccumulatorWeb.ExtensionSocket,
     websocket: true,
-    longpoll: false,
-    check_origin: false
+    longpoll: false
 end
