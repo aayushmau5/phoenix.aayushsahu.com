@@ -11,6 +11,7 @@ config :accumulator, AccumulatorWeb.Endpoint,
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {0, 0, 0, 0}, port: 4000],
   https: [
+    ip: {0, 0, 0, 0},
     port: 4001,
     cipher_suite: :strong,
     certfile: "priv/cert/selfsigned.pem",
@@ -58,7 +59,10 @@ config :accumulator, AccumulatorWeb.Endpoint,
     ],
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"lib/accumulator_web/controllers/.*(ex|heex)$"
+      ~r"lib/accumulator_web/controllers/.*(ex|heex)$",
+      ~r"lib/accumulator_web/(live|components)/.*neex$",
+      ~r"lib/accumulator_web/styles/.*ex$",
+      ~r"priv/static/*.styles$"
     ]
   ]
 
@@ -96,3 +100,7 @@ config :accumulator,
 # at the `config/runtime.exs`.
 config :accumulator, Accumulator.Mailer, adapter: Swoosh.Adapters.Local
 config :swoosh, :api_client, false
+
+config :live_view_native_stylesheet,
+  annotations: true,
+  pretty: true
