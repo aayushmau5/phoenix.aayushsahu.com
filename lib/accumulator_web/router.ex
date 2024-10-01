@@ -5,10 +5,15 @@ defmodule AccumulatorWeb.Router do
   import Phoenix.LiveDashboard.Router
 
   pipeline :browser do
-    plug :accepts, ["html"]
+    plug :accepts, [
+      "html",
+      "swiftui"
+    ]
     plug :fetch_session
     plug :fetch_live_flash
-    plug :put_root_layout, {AccumulatorWeb.Layouts, :root}
+    plug :put_root_layout,
+      html: {AccumulatorWeb.Layouts, :root},
+      swiftui: {AccumulatorWeb.Layouts.SwiftUI, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_user
@@ -26,6 +31,7 @@ defmodule AccumulatorWeb.Router do
     live "/dashboard", DashboardLive
     live "/spotify", SpotifyLive
     delete "/logout", UserSessionController, :delete
+    live "/native", NativeLive
 
     live "/notes/public/:id", NotesPublicLive
   end

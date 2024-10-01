@@ -59,7 +59,11 @@ defmodule Accumulator.MixProject do
       {:ecto_psql_extras, "~> 0.6"},
       {:libcluster, "~> 3.3"},
       {:earmark, "~> 1.4"},
-      {:tz, "~> 0.26.5"}
+      {:tz, "~> 0.26.5"},
+      {:live_view_native, "~> 0.3.0"},
+      {:live_view_native_stylesheet, "~> 0.3.0"},
+      {:live_view_native_swiftui, "~> 0.3.0"},
+      {:live_view_native_live_form, "~> 0.3.0"}
     ]
   end
 
