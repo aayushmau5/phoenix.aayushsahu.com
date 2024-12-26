@@ -50,9 +50,9 @@ defmodule AccumulatorWeb.BinLive.Edit do
                 href={file.access_path}
                 class={"#{if Map.get(file, :deleted) == true, do: "opacity-30", else: ""}"}
               >
-                <%= file.name %>
+                {file.name}
               </a>
-              <div class="text-sm opacity-40"><%= file.type %></div>
+              <div class="text-sm opacity-40">{file.type}</div>
               <%= if Map.get(file, :deleted) == true do %>
                 <div class="flex items-center justify-between gap-2">
                   <p class="text-sm opacity-50">Deleted</p>
@@ -78,8 +78,8 @@ defmodule AccumulatorWeb.BinLive.Edit do
           <.live_file_input style="margin-top:10px;" upload={@uploads.files} />
           <div :for={entry <- @uploads.files.entries} class="flex justify-between">
             <div>
-              <div><%= entry.client_name %></div>
-              <div class="text-sm opacity-30"><%= entry.client_type %></div>
+              <div>{entry.client_name}</div>
+              <div class="text-sm opacity-30">{entry.client_type}</div>
               <button
                 type="button"
                 phx-click="cancel-upload"
@@ -89,13 +89,13 @@ defmodule AccumulatorWeb.BinLive.Edit do
                 Cancel
               </button>
               <%= for err <- upload_errors(@uploads.files, entry) do %>
-                <p class="text-sm text-red-500"><%= error_to_string(err) %></p>
+                <p class="text-sm text-red-500">{error_to_string(err)}</p>
               <% end %>
             </div>
 
             <div>
               <progress class="rounded-md" value={entry.progress} max="100">
-                <%= entry.progress %>%
+                {entry.progress}%
               </progress>
             </div>
           </div>
@@ -105,7 +105,7 @@ defmodule AccumulatorWeb.BinLive.Edit do
           </div>
 
           <%= for err <- upload_errors(@uploads.files) do %>
-            <p class="text-sm text-red-500"><%= error_to_string(err) %></p>
+            <p class="text-sm text-red-500">{error_to_string(err)}</p>
           <% end %>
 
           <div>Expires at: <.local_time id="paste-expire-time" date={@paste.expire_at} /></div>

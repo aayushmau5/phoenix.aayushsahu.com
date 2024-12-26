@@ -10,7 +10,7 @@ defmodule AccumulatorWeb.DashboardComponents do
   def square(assigns) do
     ~H"""
     <div class={["p-3 border border-2 border-zinc-600 rounded-lg", @class]}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -22,7 +22,7 @@ defmodule AccumulatorWeb.DashboardComponents do
   def external_link(assigns) do
     ~H"""
     <a class={@class} href={@href} target="_blank" rel="noreferrer">
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </a>
     """
   end

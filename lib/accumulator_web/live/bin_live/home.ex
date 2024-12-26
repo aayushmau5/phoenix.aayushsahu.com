@@ -27,7 +27,7 @@ defmodule AccumulatorWeb.BinLive.Home do
             class="block mb-2 p-2 rounded-md hover:bg-[#373739]"
             navigate={~p"/bin/#{paste.id}/show"}
           >
-            <div><%= paste.title %></div>
+            <div>{paste.title}</div>
             <div>
               Expires at: <.local_time id={"paste-expire-time-#{paste.id}"} date={paste.expire_at} />
             </div>

@@ -49,9 +49,9 @@ defmodule AccumulatorWeb.CoreComponents do
       <p :if={@title} class="flex items-center gap-1.5 text-[0.8125rem] font-semibold leading-6">
         <Heroicons.information_circle :if={@kind == :info} mini class="h-4 w-4" />
         <Heroicons.exclamation_circle :if={@kind == :error} mini class="h-4 w-4" />
-        <%= @title %>
+        {@title}
       </p>
-      <p class="mt-2 text-[0.8125rem] leading-5"><%= msg %></p>
+      <p class="mt-2 text-[0.8125rem] leading-5">{msg}</p>
       <button :if={@close} type="button" class="group absolute top-2 right-1 p-2" aria-label="close">
         <Heroicons.x_mark solid class="h-5 w-5 stroke-current opacity-40 group-hover:opacity-70" />
       </button>
@@ -114,9 +114,9 @@ defmodule AccumulatorWeb.CoreComponents do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
       <div class="space-y-8 mt-10">
-        <%= render_slot(@inner_block, f) %>
+        {render_slot(@inner_block, f)}
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
-          <%= render_slot(action, f) %>
+          {render_slot(action, f)}
         </div>
       </div>
     </.form>
@@ -148,7 +148,7 @@ defmodule AccumulatorWeb.CoreComponents do
       ]}
       {@rest}
     >
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </button>
     """
   end
@@ -215,9 +215,9 @@ defmodule AccumulatorWeb.CoreComponents do
           class="rounded border-zinc-300 text-[#36B5C1]"
           {@rest}
         />
-        <%= @label %>
+        {@label}
       </label>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -225,7 +225,7 @@ defmodule AccumulatorWeb.CoreComponents do
   def input(%{type: "select"} = assigns) do
     ~H"""
     <div phx-feedback-for={@name}>
-      <.label for={@id}><%= @label %></.label>
+      <.label for={@id}>{@label}</.label>
       <select
         id={@id}
         name={@name}
@@ -233,10 +233,10 @@ defmodule AccumulatorWeb.CoreComponents do
         multiple={@multiple}
         {@rest}
       >
-        <option :if={@prompt} value=""><%= @prompt %></option>
-        <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+        <option :if={@prompt} value="">{@prompt}</option>
+        {Phoenix.HTML.Form.options_for_select(@options, @value)}
       </select>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -244,7 +244,7 @@ defmodule AccumulatorWeb.CoreComponents do
   def input(%{type: "textarea"} = assigns) do
     ~H"""
     <div phx-feedback-for={@name}>
-      <.label for={@id}><%= @label %></.label>
+      <.label for={@id}>{@label}</.label>
       <textarea
         id={@id || @name}
         name={@name}
@@ -256,8 +256,8 @@ defmodule AccumulatorWeb.CoreComponents do
           @errors != [] && "border-rose-400 focus:border-rose-400 focus:ring-rose-400/10"
         ]}
         {@rest}
-      ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      >{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -265,7 +265,7 @@ defmodule AccumulatorWeb.CoreComponents do
   def input(assigns) do
     ~H"""
     <div phx-feedback-for={@name}>
-      <.label for={@id}><%= @label %></.label>
+      <.label for={@id}>{@label}</.label>
       <input
         type={@type}
         name={@name}
@@ -280,7 +280,7 @@ defmodule AccumulatorWeb.CoreComponents do
         ]}
         {@rest}
       />
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -294,7 +294,7 @@ defmodule AccumulatorWeb.CoreComponents do
   def label(assigns) do
     ~H"""
     <label for={@for} class="block text-sm font-semibold leading-6 text-white">
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </label>
     """
   end
@@ -308,7 +308,7 @@ defmodule AccumulatorWeb.CoreComponents do
     ~H"""
     <p class="phx-no-feedback:hidden mt-3 flex gap-3 text-sm leading-6 text-rose-600">
       <Heroicons.exclamation_circle mini class="mt-0.5 h-5 w-5 flex-none fill-rose-500" />
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </p>
     """
   end
@@ -326,7 +326,7 @@ defmodule AccumulatorWeb.CoreComponents do
     <header class={["flex items-center justify-between gap-6", @class]}>
       <div>
         <h1 class={["font-semibold leading-8", @h1_class || "text-lg"]}>
-          <%= render_slot(@inner_block) %>
+          {render_slot(@inner_block)}
         </h1>
       </div>
     </header>
@@ -339,8 +339,8 @@ defmodule AccumulatorWeb.CoreComponents do
   ## Examples
 
       <.table id="users" rows={@users}>
-        <:col :let={user} label="id"><%= user.id %></:col>
-        <:col :let={user} label="username"><%= user.username %></:col>
+        <:col :let={user} label="id">{user.id}</:col>
+        <:col :let={user} label="username">{user.username}</:col>
       </.table>
   """
   attr(:id, :string, required: true)
@@ -381,9 +381,9 @@ defmodule AccumulatorWeb.CoreComponents do
             >
               <div class="flex items-center gap-1">
                 <span :if={@sort_key == col[:name]} class="text-[#158582] text-sm">
-                  <%= col[:label] %>
+                  {col[:label]}
                 </span>
-                <span :if={@sort_key != col[:name]} class="text-sm"><%= col[:label] %></span>
+                <span :if={@sort_key != col[:name]} class="text-sm">{col[:label]}</span>
                 <%= if @sort_key == col[:name] do %>
                   <%= if @sort_order == "asc" do %>
                     <Heroicons.arrow_up_circle class="w-5 h-5 inline text-[#158582]" />
@@ -411,7 +411,7 @@ defmodule AccumulatorWeb.CoreComponents do
               <div class="block py-4 pr-6">
                 <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-[#324B4A]" />
                 <span class={["relative", i == 0 && "font-semibold"]}>
-                  <%= render_slot(col, @row_item.(row)) %>
+                  {render_slot(col, @row_item.(row))}
                 </span>
               </div>
             </td>
@@ -422,7 +422,7 @@ defmodule AccumulatorWeb.CoreComponents do
                   :for={action <- @action}
                   class="relative ml-4 font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
                 >
-                  <%= render_slot(action, @row_item.(row)) %>
+                  {render_slot(action, @row_item.(row))}
                 </span>
               </div>
             </td>
@@ -450,7 +450,7 @@ defmodule AccumulatorWeb.CoreComponents do
       class="bg-white bg-opacity-10 p-2 rounded-md text-md inline-block mb-4 font-semibold leading-6 hover:bg-opacity-20"
     >
       <Heroicons.arrow_left solid class="w-3 h-3 stroke-current inline" />
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </.link>
     """
   end
@@ -463,7 +463,7 @@ defmodule AccumulatorWeb.CoreComponents do
 
   def local_time(assigns) do
     ~H"""
-    <time phx-hook="LocalTime" id={@id}><%= @date %></time>
+    <time phx-hook="LocalTime" id={@id}>{@date}</time>
     """
   end
 
@@ -495,13 +495,13 @@ defmodule AccumulatorWeb.CoreComponents do
 
       <div class="hidden w-full bg-slate-500 bg-opacity-10" id="navbar">
         <ul class="flex flex-col p-4 rounded-lg md:flex-row md:mt-0 md:text-sm md:font-medium">
-          <%= render_slot(@inner_block) %>
+          {render_slot(@inner_block)}
         </ul>
 
         <ul class="text-right ml-auto mr-2 py-2">
           <%= if @current_user do %>
             <li class="text-white">
-              <%= @current_user.email %>
+              {@current_user.email}
             </li>
             <li>
               <.link
@@ -534,7 +534,7 @@ defmodule AccumulatorWeb.CoreComponents do
   def navbar_link(assigns) do
     ~H"""
     <.link navigate={@to} class="block p-2 text-gray-400 rounded hover:bg-[#373739]">
-      <%= @label %>
+      {@label}
     </.link>
     """
   end

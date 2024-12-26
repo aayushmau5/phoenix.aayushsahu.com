@@ -20,7 +20,7 @@ defmodule AccumulatorWeb.NotesPublicLive do
               phx-click={JS.patch("/notes/public/#{workspace.id}")}
               disabled={@selected_workspace && workspace.id == @selected_workspace.id}
             >
-              <%= workspace.title %>
+              {workspace.title}
             </button>
           </div>
         </div>
@@ -48,14 +48,12 @@ defmodule AccumulatorWeb.NotesPublicLive do
       >
         <div :for={{dom_id, [date, notes]} <- @streams.notes} id={dom_id}>
           <div class="leading-10 font-bold">
-            <%= Accumulator.Helpers.day_of_week_string(date) %> <%= date %> (<%= Accumulator.Helpers.days_ago(
-              date
-            ) %>)
+            {Accumulator.Helpers.day_of_week_string(date)} {date} ({Accumulator.Helpers.days_ago(date)})
           </div>
           <div :for={note <- notes} class="my-1 bg-[#3d3d3d] p-2 rounded-md" id={"note-#{note.id}"}>
             <article :if={note.text} class="note-text break-words">
-              <%= Earmark.as_html!(note.text, escape: false, compact_output: false)
-              |> Phoenix.HTML.raw() %>
+              {Earmark.as_html!(note.text, escape: false, compact_output: false)
+              |> Phoenix.HTML.raw()}
             </article>
             <div class="text-xs opacity-40 mt-2">
               <.local_time id={"note-#{note.id}-date"} date={note.inserted_at} />

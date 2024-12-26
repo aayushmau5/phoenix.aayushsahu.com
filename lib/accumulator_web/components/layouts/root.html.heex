@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#1f1f1f" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <.live_title suffix=" · phoenix.aayushsahu.com">
-      <%= assigns[:page_title] || "Home" %>
+      {assigns[:page_title] || "Home"}
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
@@ -30,6 +30,6 @@
       <.navbar_link :if={@current_user} to={~p"/livedashboard"} label="livedashboard" />
     </.navbar>
 
-    <%= @inner_content %>
+    {@inner_content}
   </body>
 </html>

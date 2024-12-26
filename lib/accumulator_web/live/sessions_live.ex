@@ -16,9 +16,9 @@ defmodule AccumulatorWeb.SessionsLive do
             id={"time-#{session.id}"}
           />
         </div>
-        <div>IP: <%= session.ip_address %></div>
-        <div>Location: <%= session.location %></div>
-        <div>Device: <%= session.device_info %></div>
+        <div>IP: {session.ip_address}</div>
+        <div>Location: {session.location}</div>
+        <div>Device: {session.device_info}</div>
         <button
           phx-click="delete-session"
           phx-value-id={session.id}

@@ -12,7 +12,7 @@
           phx-click={JS.patch("/notes/#{workspace.id}")}
           disabled={@selected_workspace && workspace.id == @selected_workspace.id}
         >
-          <%= workspace.title %>
+          {workspace.title}
         </button>
         <button
           :if={workspace.title !== "default"}
@@ -102,14 +102,12 @@
   >
     <div :for={{dom_id, [date, notes]} <- @streams.notes} id={dom_id}>
       <div class="leading-10 font-bold">
-        <%= Accumulator.Helpers.day_of_week_string(date) %> <%= date %> (<%= Accumulator.Helpers.days_ago(
-          date
-        ) %>)
+        {Accumulator.Helpers.day_of_week_string(date)} {date} ({Accumulator.Helpers.days_ago(date)})
       </div>
       <div :for={note <- notes} class="my-1 bg-[#3d3d3d] p-2 rounded-md" id={"note-#{note.id}"}>
         <article :if={note.text} class="note-text break-words">
-          <%= Earmark.as_html!(note.text, escape: false, compact_output: false)
-          |> Phoenix.HTML.raw() %>
+          {Earmark.as_html!(note.text, escape: false, compact_output: false)
+          |> Phoenix.HTML.raw()}
         </article>
         <div class="flex mt-2 justify-between">
           <div class="text-xs opacity-40">

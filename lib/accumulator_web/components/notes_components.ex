@@ -17,7 +17,7 @@ defmodule AccumulatorWeb.NotesComponents do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
       <div>
-        <%= render_slot(@inner_block, f) %>
+        {render_slot(@inner_block, f)}
       </div>
     </.form>
     """
@@ -78,8 +78,8 @@ defmodule AccumulatorWeb.NotesComponents do
         ]}
         style="box-shadow: none;"
         {@rest}
-      ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      >{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -88,7 +88,7 @@ defmodule AccumulatorWeb.NotesComponents do
     ~H"""
     <div phx-feedback-for={@name} class="w-full">
       <label class="flex gap-2 items-center">
-        <%= @label %>
+        {@label}
         <input
           type={@type}
           name={@name}
@@ -102,7 +102,7 @@ defmodule AccumulatorWeb.NotesComponents do
           {@rest}
         />
       </label>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -149,7 +149,7 @@ defmodule AccumulatorWeb.NotesComponents do
                 </button>
               </div>
               <div id={"#{@id}-content"}>
-                <%= render_slot(@inner_block) %>
+                {render_slot(@inner_block)}
               </div>
             </.focus_wrap>
           </div>

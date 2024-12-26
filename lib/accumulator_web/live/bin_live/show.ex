@@ -17,7 +17,7 @@ defmodule AccumulatorWeb.BinLive.Show do
 
       <.render_or_show_error :if={!@is_loading} paste={@paste}>
         <div>
-          <div class="mt-4 text-xl font-bold"><%= @paste.title %></div>
+          <div class="mt-4 text-xl font-bold">{@paste.title}</div>
           <div>Expires at: <.local_time id="paste-expire-time" date={@paste.expire_at} /></div>
           <div class="flex gap-2">
             <button
@@ -43,14 +43,14 @@ defmodule AccumulatorWeb.BinLive.Show do
           <pre
             id="copy-content"
             class="overflow-auto font-note max-h-96 mb-5 bg-[#00C6C2] bg-opacity-10 p-2 rounded-md"
-          ><%= @paste.content %></pre>
+          >{@paste.content}</pre>
           <div :if={@paste.files != []}>
             <p>Files:</p>
             <div :for={file <- @paste.files} class="mt-2 bg-white bg-opacity-5 p-2 rounded-md">
               <a href={file.access_path} target="_blank">
-                <%= file.name %>
+                {file.name}
               </a>
-              <div class="text-sm opacity-40"><%= file.type %></div>
+              <div class="text-sm opacity-40">{file.type}</div>
             </div>
           </div>
         </div>

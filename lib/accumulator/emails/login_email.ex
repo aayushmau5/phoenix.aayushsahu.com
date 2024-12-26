@@ -20,9 +20,9 @@ defmodule Accumulator.Emails.LoginEmail do
     <div>
       Login detected!
       <p>Info:</p>
-      <p>IP: <%= @ip_address %></p>
-      <p>Location: <%= @location %></p>
-      <p>Device: <%= @device_info %></p>
+      <p>IP: {@ip_address}</p>
+      <p>Location: {@location}</p>
+      <p>Device: {@device_info}</p>
     </div>
     """
   end

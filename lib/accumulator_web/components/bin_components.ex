@@ -15,7 +15,7 @@ defmodule AccumulatorWeb.BinComponents do
         <div class="text-xl text-center font-bold">Invalid paste id provided.</div>
       <% _paste -> %>
         <div>
-          <%= render_slot(@inner_block) %>
+          {render_slot(@inner_block)}
         </div>
     <% end %>
     """

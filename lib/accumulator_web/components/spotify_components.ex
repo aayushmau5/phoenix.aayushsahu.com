@@ -19,7 +19,7 @@ defmodule AccumulatorWeb.SpotifyComponents do
 
     ~H"""
     <div>
-      <%= @message %>
+      {@message}
     </div>
     """
   end
@@ -46,9 +46,9 @@ defmodule AccumulatorWeb.SpotifyComponents do
         <.spotify_logo height="40px" width="auto" />
       </div>
       <div>
-        <p class=""><%= @track["name"] %></p>
-        <p class="text-sm text-gray-400 my-1"><%= @track["artists"] %></p>
-        <p class="text-sm text-gray-400"><%= @track["album_name"] %></p>
+        <p class="">{@track["name"]}</p>
+        <p class="text-sm text-gray-400 my-1">{@track["artists"]}</p>
+        <p class="text-sm text-gray-400">{@track["album_name"]}</p>
       </div>
     </a>
     """
@@ -86,9 +86,9 @@ defmodule AccumulatorWeb.SpotifyComponents do
         >
           <div class="p-3 w-max">
             <img class="h-48 w-auto" src={track["album_image_url"]} />
-            <p class="mt-2"><%= track["name"] %></p>
-            <p class="text-sm text-gray-400 my-1"><%= track["artists"] %></p>
-            <p class="text-sm text-gray-400"><%= track["album_name"] %></p>
+            <p class="mt-2">{track["name"]}</p>
+            <p class="text-sm text-gray-400 my-1">{track["artists"]}</p>
+            <p class="text-sm text-gray-400">{track["album_name"]}</p>
           </div>
         </a>
       <% end %>
@@ -128,7 +128,7 @@ defmodule AccumulatorWeb.SpotifyComponents do
         >
           <div class="p-3 w-max">
             <img class="h-48 w-auto" src={artist["image_url"]} />
-            <p class="mt-2"><%= artist["name"] %></p>
+            <p class="mt-2">{artist["name"]}</p>
           </div>
         </a>
       <% end %>
