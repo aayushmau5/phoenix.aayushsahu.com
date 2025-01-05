@@ -475,11 +475,15 @@ defmodule AccumulatorWeb.CoreComponents do
 
   def navbar(assigns) do
     ~H"""
-    <nav class="relative">
+    <nav class="relative z-50">
       <button
-        phx-click={JS.toggle(to: "#navbar")}
+        phx-click={
+          JS.toggle_attribute({"style", "display: flex;", "display: none;"},
+            to: "#navbar"
+          )
+        }
         type="button"
-        class="absolute right-2 p-2 ml-3 text-sm text-gray-500 rounded-lg focus:outline-none z-20"
+        class="fixed top-0 p-2 ml-3 text-sm text-gray-500 rounded-lg focus:outline-none z-10"
         aria-controls="navbar"
         aria-expanded="false"
       >
@@ -493,33 +497,31 @@ defmodule AccumulatorWeb.CoreComponents do
         </svg>
       </button>
 
-      <div class="hidden w-full bg-slate-500 bg-opacity-10" id="navbar">
-        <ul class="flex flex-col p-4 rounded-lg md:flex-row md:mt-0 md:text-sm md:font-medium">
+      <div
+        class="bg-[#26282a] w-content h-screen fixed flex-col overflow-y-auto justify-between"
+        style="display: none;"
+        id="navbar"
+      >
+        <ul class="p-4 mt-5">
           {render_slot(@inner_block)}
         </ul>
 
-        <ul class="text-right ml-auto mr-2 py-2">
+        <div class="text-right mr-4 mt-auto mb-4">
           <%= if @current_user do %>
-            <li class="text-white">
-              {@current_user.email}
-            </li>
-            <li>
-              <.link
-                href="/logout"
-                method="delete"
-                class="text-white font-semibold hover:text-[#6CFACD]"
-              >
-                Log out
-              </.link>
-            </li>
+            <div>{@current_user.email}</div>
+            <.link
+              href="/logout"
+              method="delete"
+              class="text-white font-semibold hover:text-[#6CFACD]"
+            >
+              Log out
+            </.link>
           <% else %>
-            <li>
-              <.link href="/login" class="text-white font-semibold hover:text-[#6CFACD]">
-                Log in
-              </.link>
-            </li>
+            <.link href="/login" class="text-white font-semibold hover:text-[#6CFACD]">
+              Log in
+            </.link>
           <% end %>
-        </ul>
+        </div>
       </div>
     </nav>
     """
