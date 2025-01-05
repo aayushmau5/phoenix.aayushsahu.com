@@ -15,7 +15,11 @@ defmodule AccumulatorWeb.NativeLive.SwiftUI do
     # }
 
     ~LVN"""
-    <Text>Hello from phoenix.aayushsahu.com</Text>
+    <VStack>
+      <Text>
+        Hello from phoenix.aayushsahu.com
+      </Text>
+    </VStack>
     """
   end
 end

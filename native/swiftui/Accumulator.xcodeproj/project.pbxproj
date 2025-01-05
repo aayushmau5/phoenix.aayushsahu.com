@@ -474,7 +474,7 @@
 			repositoryURL = "https://github.com/liveview-native/liveview-native-live-form";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.3.0;
+				minimumVersion = "0.4.0-rc.0";
 			};
 		};
 		6795AE277B50FD34D2ADA6CB /* XCRemoteSwiftPackageReference "liveview-client-swiftui" */ = {
@@ -482,7 +482,7 @@
 			repositoryURL = "https://github.com/liveview-native/liveview-client-swiftui";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.3.0;
+				minimumVersion = "0.4.0-rc.0";
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

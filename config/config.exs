@@ -57,8 +57,7 @@ config :phoenix_template, :format_encoders, [
 ]
 
 config :mime, :types, %{
-  "text/styles" => ["styles"],
-  "text/swiftui" => ["swiftui"]
+  "text/swiftui" => [:swiftui]
 }
 
 config :live_view_native, plugins: [
@@ -72,7 +71,6 @@ config :phoenix, :template_engines, [
 config :live_view_native_stylesheet,
   content: [
     swiftui: [
-      "lib/**/swiftui/*",
       "lib/**/*swiftui*"
     ]
   ],

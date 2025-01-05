@@ -39,7 +39,8 @@ defmodule AccumulatorNative do
         ],
         layouts: [
           swiftui: {AccumulatorWeb.Layouts.SwiftUI, :app}
-        ]
+        ],
+        dispatch_to: &Module.concat/2
 
       unquote(verified_routes())
     end

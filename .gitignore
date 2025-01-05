@@ -41,3 +41,5 @@ npm-debug.log
 
 # Ignore the local uploads/ dir
 priv/uploads/
+
+**/.DS_Store

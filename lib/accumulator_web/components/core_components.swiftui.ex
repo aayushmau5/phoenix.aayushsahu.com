@@ -81,20 +81,28 @@ defmodule AccumulatorWeb.CoreComponents.SwiftUI do
   slot :inner_block
 
   def input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    assigns
-    |> assign(field: nil, id: assigns.id || field.id)
-    |> assign(:errors, Enum.map(field.errors, &translate_error(&1)))
-    |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
-    |> assign_new(:value, fn -> field.value end)
-    |> assign(
-      :rest,
-      Map.put(assigns.rest, :style, [
-        Map.get(assigns.rest, :style, ""),
-        (if assigns.readonly or Map.get(assigns.rest, :disabled, false), do: "disabled(true)", else: ""),
-        (if assigns.autocomplete == "off", do: "textInputAutocapitalization(.never) autocorrectionDisabled()", else: "")
-      ] |> Enum.join(" "))
-    )
-    |> input()
+    assigns =
+      assigns
+      |> assign(field: nil, id: assigns.id || field.id)
+      |> assign(:errors, Enum.map(field.errors, &translate_error(&1)))
+      |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
+      |> assign_new(:value, fn -> field.value end)
+
+    styles =
+      [{:readonly, assigns.readonly} , {:autocomplete, assigns.autocomplete}]
+      |> Enum.reduce([], fn
+        {:readyonly, true}, styles -> ["disabled(true)" | styles]
+        {:autocomplete, "off"}, styles -> ["textInputAutocapitalization(.never)", "autocorrectionDisabled()" | styles]
+        _, styles -> styles
+      end)
+
+    style =
+      Map.get(assigns.rest, :style, "")
+      |> String.split(";")
+      |> Kernel.++(Enum.reverse(styles))
+      |> Enum.join(";")
+
+    input(put_in(assigns, [:rest, :style], style))
   end
 
   def input(%{type: "hidden"} = assigns) do
@@ -107,12 +115,12 @@ defmodule AccumulatorWeb.CoreComponents.SwiftUI do
     ~LVN"""
     <VStack alignment="leading">
       <LabeledContent>
-        <Text template="label"><%= @label %></Text>
+        <Text template="label">{@label}</Text>
         <TextFieldLink id={@id} name={@name} value={@value} prompt={@prompt} {@rest}>
-          <%= @label %>
+          {@label}
         </TextFieldLink>
       </LabeledContent>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </VStack>
     """
   end
@@ -121,9 +129,9 @@ defmodule AccumulatorWeb.CoreComponents.SwiftUI do
     ~LVN"""
     <VStack alignment="leading">
       <DatePicker id={@id} name={@name} selection={@value} {@rest}>
-        <%= @label %>
+        {@label}
       </DatePicker>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </VStack>
     """
   end
@@ -132,10 +140,10 @@ defmodule AccumulatorWeb.CoreComponents.SwiftUI do
     ~LVN"""
     <VStack alignment="leading">
       <LabeledContent>
-        <Text template="label"><%= @label %></Text>
-        <MultiDatePicker id={@id} name={@name} selection={@value} {@rest}><%= @label %></MultiDatePicker>
+        <Text template="label">{@label}</Text>
+        <MultiDatePicker id={@id} name={@name} selection={@value} {@rest}>{@label}</MultiDatePicker>
       </LabeledContent>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </VStack>
     """
   end
@@ -144,15 +152,15 @@ defmodule AccumulatorWeb.CoreComponents.SwiftUI do
     ~LVN"""
     <VStack alignment="leading">
       <Picker id={@id} name={@name} selection={@value} {@rest}>
-        <Text template="label"><%= @label %></Text>
+        <Text template="label">{@label}</Text>
         <Text
           :for={{name, value} <- @options}
           tag={value}
         >
-          <%= name %>
+          {name}
         </Text>
       </Picker>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </VStack>
     """
   end
@@ -161,10 +169,10 @@ defmodule AccumulatorWeb.CoreComponents.SwiftUI do
     ~LVN"""
     <VStack alignment="leading">
       <LabeledContent>
-        <Text template="label"><%= @label %></Text>
-        <Slider id={@id} name={@name} value={@value} lowerBound={@min} upperBound={@max} {@rest}><%= @label %></Slider>
+        <Text template="label">{@label}</Text>
+        <Slider id={@id} name={@name} value={@value} lowerBound={@min} upperBound={@max} {@rest}>{@label}</Slider>
       </LabeledContent>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </VStack>
     """
   end
@@ -173,10 +181,10 @@ defmodule AccumulatorWeb.CoreComponents.SwiftUI do
     ~LVN"""
     <VStack alignment="leading">
       <LabeledContent>
-        <Text template="label"><%= @label %></Text>
+        <Text template="label">{@label}</Text>
         <Stepper id={@id} name={@name} value={@value} {@rest}></Stepper>
       </LabeledContent>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </VStack>
     """
   end
@@ -185,10 +193,10 @@ defmodule AccumulatorWeb.CoreComponents.SwiftUI do
     ~LVN"""
     <VStack alignment="leading">
       <LabeledContent>
-        <Text template="label"><%= @label %></Text>
+        <Text template="label">{@label}</Text>
         <TextEditor id={@id} name={@name} text={@value} {@rest} />
       </LabeledContent>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </VStack>
     """
   end
@@ -197,7 +205,7 @@ defmodule AccumulatorWeb.CoreComponents.SwiftUI do
     ~LVN"""
     <VStack alignment="leading">
       <TextField id={@id} name={@name} text={@value} prompt={@prompt} {@rest}><%= @placeholder || @label %></TextField>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </VStack>
     """
   end
@@ -206,7 +214,7 @@ defmodule AccumulatorWeb.CoreComponents.SwiftUI do
     ~LVN"""
     <VStack alignment="leading">
       <SecureField id={@id} name={@name} text={@value} prompt={@prompt} {@rest}><%= @placeholder || @label %></SecureField>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </VStack>
     """
   end
@@ -215,10 +223,10 @@ defmodule AccumulatorWeb.CoreComponents.SwiftUI do
     ~LVN"""
     <VStack alignment="leading">
       <LabeledContent>
-        <Text template="label"><%= @label %></Text>
+        <Text template="label">{@label}</Text>
         <Toggle id={@id} name={@name} isOn={Map.get(assigns, :checked, Map.get(assigns, :value))} {@rest}></Toggle>
       </LabeledContent>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </VStack>
     """
   end
@@ -338,7 +346,7 @@ defmodule AccumulatorWeb.CoreComponents.SwiftUI do
       id={@id}
       {@rest}
     >
-      <Text template="message"><%= msg %></Text>
+      <Text template="message">{msg}</Text>
       <Button template="actions" phx-click="lv:clear-flash" phx-value-key={@kind}>OK</Button>
     </VStack>
     """
@@ -369,8 +377,8 @@ defmodule AccumulatorWeb.CoreComponents.SwiftUI do
   ## Examples
 
       <.simple_form for={@form} phx-change="validate" phx-submit="save">
-        <.input field={@form[:email]} label="Email"/>
-        <.input field={@form[:username]} label="Username" />
+        <.input type="TextField" field={@form[:email]} label="Email"/>
+        <.input type="TextField" field={@form[:username]} label="Username" />
         <:actions>
           <.button type="submit">Save</.button>
         </:actions>
@@ -387,15 +395,31 @@ defmodule AccumulatorWeb.CoreComponents.SwiftUI do
     include: ~w(autocomplete name rel action enctype method novalidate target multipart),
     doc: "the arbitrary attributes to apply to the form tag"
 
-  slot :inner_block, required: true
+  slot :inner_block, required: true, doc: "won't be rendered if section slots are passed in"
   slot :actions, doc: "the slot for form actions, such as a submit button"
+  slot :section, required: false, doc: "slot for creating sections inside the form" do
+    attr :is_expanded, :boolean, doc: "a boolean value that determines the section’s expansion state (expanded or collapsed)"
+    attr :header, :string, doc: "text to use as a section's header"
+    attr :footer, :string, doc: "text to use as a section's footer"
+  end
 
   def simple_form(assigns) do
     ~LVN"""
     <.form :let={f} for={@for} as={@as} {@rest}>
       <Form>
-        <%= render_slot(@inner_block, f) %>
-        <Section>
+        <%= if @section == [] do %>
+          <%= render_slot(@inner_block, f) %>
+        <% else %>
+          <%= for section <- @section do %>
+            <Section>
+              <Text :if={not is_nil(Map.get(section, :header))} template={:header} content={Map.get(section, :header)} />
+
+              <%= render_slot(section) %>
+              <Text :if={not is_nil(Map.get(section, :footer))} template={:footer} content={Map.get(section, :footer)} />
+            </Section>
+          <% end %>
+        <% end %>
+        <Section :if={@actions != []}>
           <%= for action <- @actions do %>
             <%= render_slot(action, f) %>
           <% end %>
