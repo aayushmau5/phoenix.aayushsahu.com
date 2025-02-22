@@ -34,8 +34,15 @@ defmodule AccumulatorWeb.TUISocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   @impl true
-  def connect(_params, socket, _connect_info) do
-    {:ok, socket}
+  def connect(params, socket, _connect_info) do
+    secret = Map.get(params, "secret")
+    meowui_secret = Application.get_env(:accumulator, :meowui_secret)
+
+    if secret == meowui_secret do
+      {:ok, socket}
+    else
+      :error
+    end
   end
 
   # Socket IDs are topics that allow you to identify all sockets for a given user:

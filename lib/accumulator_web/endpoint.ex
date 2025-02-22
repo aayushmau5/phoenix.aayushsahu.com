@@ -56,7 +56,10 @@ defmodule AccumulatorWeb.Endpoint do
 
   # A socket route
   socket "/socket", AccumulatorWeb.UserSocket,
-    websocket: [connect_info: [session: @session_options]],
+    websocket: [
+      connect_info: [session: @session_options],
+      check_origin: {Accumulator.Origin, :my_check_origin?, []}
+    ],
     longpoll: false
 
   socket "/tui", AccumulatorWeb.TUISocket,

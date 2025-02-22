@@ -23,7 +23,8 @@ end
 config :accumulator,
   client_id: System.get_env("SPOTIFY_CLIENT_ID"),
   client_secret: System.get_env("SPOTIFY_CLIENT_SECRET"),
-  admin_email: System.get_env("ADMIN_EMAIL")
+  admin_email: System.get_env("ADMIN_EMAIL"),
+  meowui_secret: System.get_env("MEOWUI_SECRET")
 
 if config_env() == :prod do
   # The secret key base is used to sign/encrypt cookies and other secrets.
