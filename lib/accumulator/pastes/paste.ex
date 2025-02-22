@@ -2,6 +2,8 @@ defmodule Accumulator.Pastes.Paste do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder,
+           only: [:id, :title, :content, :expire_at, :time_duration, :time_type, :files]}
   schema "pastes" do
     field(:title, :string)
     field(:content, :string)
