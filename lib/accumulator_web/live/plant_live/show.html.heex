@@ -1,0 +1,76 @@
+<.back navigate={~p"/plants"}>Back to plants</.back>
+
+<.header class="text-green-400">
+  {@plant.name}
+</.header>
+
+<img src={@plant.image} class="max-h-96 w-auto mx-auto" />
+<div class="flex flex-col justify-between gap-2 mt-5">
+  <div>
+    <p class="text-sm">
+      Last Watered on: <span class="text-sky-300">{@plant.watered_on}</span>
+    </p>
+    <p class="text-sm">
+      Next water on: <span class="text-sky-300">{@plant.next_water_on || "NOT YET"}</span>
+    </p>
+  </div>
+  <div>
+    <p class="text-sm">
+      Watering Frequency: <span class="text-sky-500">{@plant.watering_frequency}</span>
+    </p>
+    <p class="text-sm">
+      Info: <span class="text-sky-300">{@plant.info}</span>
+    </p>
+    <p class="text-sm">
+      Care: <span class="text-sky-300">{@plant.care}</span>
+    </p>
+    <p :if={@plant.potting_notes} class="text-sm">
+      Potting: <span class="text-sky-300">{@plant.potting_notes}</span>
+    </p>
+  </div>
+</div>
+
+<div class="flex flex-col gap-1 items-start my-5">
+  <button class="text-sm underline italic hover:opacity-80" phx-click="log-today-entry">
+    Log water entry for today
+  </button>
+  <button class="text-sm underline italic hover:opacity-80" phx-click="enable-date-edit">
+    Log water entry
+  </button>
+
+  <.link patch={~p"/plants/#{@plant}/edit"} phx-click={JS.push_focus()}>
+    <button class="text-sm underline italic hover:opacity-80">Edit plant</button>
+  </.link>
+
+  <.link phx-click="delete-plant">
+    <button class="text-sm underline italic hover:opacity-80">Delete plant</button>
+  </.link>
+</div>
+
+<.modal
+  :if={@live_action == :edit}
+  id="plant-modal"
+  show
+  on_cancel={JS.patch(~p"/plants/#{@plant}")}
+>
+  <.live_component
+    module={AccumulatorWeb.PlantLive.FormComponent}
+    id={@plant.id}
+    title={@page_title}
+    action={@live_action}
+    plant={@plant}
+    patch={~p"/plants/#{@plant}"}
+  />
+</.modal>
+
+<.modal :if={@edit_date} id="date-edit-modal" show on_cancel={JS.push("cancel-date-edit")}>
+  <div>
+    <.simple_form for={@form} id="plant-form" phx-change="validate" phx-submit="save">
+      <.input type="date" field={@form[:watered_on]} label="Watered On" />
+
+      <:actions>
+        <.button phx-disable-with="Saving...">Save date</.button>
+      </:actions>
+    </.simple_form>
+  </div>
+</.modal>

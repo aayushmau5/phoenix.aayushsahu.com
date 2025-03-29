@@ -9,11 +9,14 @@ defmodule AccumulatorWeb.Router do
       "html",
       "swiftui"
     ]
+
     plug :fetch_session
     plug :fetch_live_flash
+
     plug :put_root_layout,
       html: {AccumulatorWeb.Layouts, :root},
       swiftui: {AccumulatorWeb.Layouts.SwiftUI, :root}
+
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_user
@@ -86,6 +89,12 @@ defmodule AccumulatorWeb.Router do
       # Notes
       live "/notes", NotesLive
       live "/notes/:id", NotesLive
+
+      # Plants
+      live "/plants", PlantLive.Index, :index
+      live "/plants/new", PlantLive.Index, :new
+      live "/plants/:id", PlantLive.Show, :show
+      live "/plants/:id/edit", PlantLive.Show, :edit
     end
   end
 end

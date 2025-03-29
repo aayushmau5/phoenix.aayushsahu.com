@@ -37,6 +37,7 @@ npm-debug.log
 .env
 .env.fish
 .lexical/
+.elixir_ls/
 .elixir-tools/
 
 # Ignore the local uploads/ dir

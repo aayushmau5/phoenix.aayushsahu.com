@@ -1,0 +1,50 @@
+<.header>
+  🪴 Plants
+</.header>
+
+<.link
+  class="flex items-center gap-1 w-max py-2 px-4 rounded-md bg-opacity-80 bg-[#36B5C1] hover:bg-opacity-70 my-3"
+  patch={~p"/plants/new"}
+>
+  <Heroicons.plus class="h-5" />
+</.link>
+
+<.link
+  :for={{_id, plant} <- @streams.plants}
+  class="mb-2 p-2 rounded-md hover:bg-[#373739] flex"
+  navigate={~p"/plants/#{plant}"}
+>
+  <img src={plant.image} class="h-36 w-auto mr-5" />
+  <div class="flex flex-col justify-between">
+    <div>
+      <p class="font-bold text-green-300">{plant.name}</p>
+      <p class="text-sm">
+        Watering Frequency: <span class="text-sky-500">{plant.watering_frequency}</span>
+      </p>
+    </div>
+    <div>
+      <p class="text-sm">
+        Last Watered on: <span class="text-sky-300">{plant.watered_on}</span>
+      </p>
+      <p class="text-sm">
+        Next water on: <span class="text-sky-300">TO BE CALCULATED</span>
+      </p>
+    </div>
+  </div>
+</.link>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="plant-modal"
+  show
+  on_cancel={JS.patch(~p"/plants")}
+>
+  <.live_component
+    module={AccumulatorWeb.PlantLive.FormComponent}
+    id={@plant.id || :new}
+    title={@page_title}
+    action={@live_action}
+    plant={@plant}
+    patch={~p"/plants"}
+  />
+</.modal>
