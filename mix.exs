@@ -55,7 +55,7 @@ defmodule Accumulator.MixProject do
       {:zarex, "~> 1.0"},
       {:swoosh, "~> 1.11"},
       {:finch, "~> 0.16"},
-      {:resend, "~> 0.4.1"},
+      {:resend, "~> 0.4"},
       {:ecto_psql_extras, "~> 0.6"},
       {:libcluster, "~> 3.3"},
       {:earmark, "~> 1.4"},

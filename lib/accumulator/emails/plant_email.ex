@@ -1,14 +1,15 @@
-defmodule Accumulator.Emails.LoginEmail do
+defmodule Accumulator.Emails.PlantEmail do
   use AccumulatorWeb, :html
 
-  def generate_template(connection_info) do
+  def generate_template(plants) do
     admin_email = Application.get_env(:accumulator, :admin_email)
 
     %{
       from: "phoenix@resend.dev",
       to: admin_email,
-      subject: "phoenix.aayushsahu.com: login detected",
-      html: body(connection_info)
+      subject: "🪴 Your plants need some care!",
+      html:
+        body(plants)
         |> Phoenix.HTML.html_escape()
         |> Phoenix.HTML.safe_to_string()
     }
@@ -17,11 +18,7 @@ defmodule Accumulator.Emails.LoginEmail do
   defp body(assigns) do
     ~H"""
     <div>
-      Login detected!
-      <p>Info:</p>
-      <p>IP: {@ip_address}</p>
-      <p>Location: {@location}</p>
-      <p>Device: {@device_info}</p>
+      TODO
     </div>
     """
   end

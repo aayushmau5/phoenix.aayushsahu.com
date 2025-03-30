@@ -27,6 +27,6 @@ defmodule Accumulator.Plants.Plant do
       :next_water_on,
       :potting_notes
     ])
-    |> validate_required([:name, :image, :info, :care, :watering_frequency])
+    |> validate_required([:name, :image, :info, :care, :watering_frequency, :watered_on])
   end
 end
