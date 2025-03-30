@@ -9,7 +9,7 @@ defmodule Accumulator.Emails.PlantEmail do
       to: admin_email,
       subject: "🪴 Your plants need some care!",
       html:
-        body(plants)
+        body(%{plants: plants})
         |> Phoenix.HTML.html_escape()
         |> Phoenix.HTML.safe_to_string()
     }
@@ -18,7 +18,16 @@ defmodule Accumulator.Emails.PlantEmail do
   defp body(assigns) do
     ~H"""
     <div>
-      TODO
+      These plants need to be watered today.
+      <div :for={p <- @plants}>
+        <img src={"https://phoenix.aayushsahu.com#{p.image}"} />
+        <p>Name: {p.name}</p>
+        <p>Watered On: {p.watered_on}</p>
+        <p>Watering Frequency: {p.watering_frequency}</p>
+        <p>Care tips: {p.care}</p>
+        <a href={"https://phoenix.aayushsahu.com/plants/#{p.id}"}>Link</a>
+        <div></div>
+      </div>
     </div>
     """
   end

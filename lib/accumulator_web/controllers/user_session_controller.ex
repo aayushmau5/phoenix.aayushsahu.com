@@ -17,7 +17,6 @@ defmodule AccumulatorWeb.UserSessionController do
 
       Task.Supervisor.async_nolink(Accumulator.TaskRunner, fn ->
         Accumulator.Mailer.send_login_email(connection_info)
-        raise("hello world")
       end)
 
       conn

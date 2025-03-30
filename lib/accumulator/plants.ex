@@ -1,4 +1,5 @@
 defmodule Accumulator.Plants do
+  import Ecto.Query
   alias Accumulator.Repo
   alias Accumulator.Plants.{Plant, WateringFreq}
 
@@ -27,5 +28,12 @@ defmodule Accumulator.Plants do
   def update_next_water_date(%Plant{} = plant) do
     next_water_on = WateringFreq.convert_to_date(plant.watered_on, plant.watering_frequency)
     update_plant(plant, %{next_water_on: next_water_on})
+  end
+
+  def get_plants_to_be_watered_today() do
+    today = Date.utc_today()
+
+    from(p in Plant, where: fragment("?::date", p.next_water_on) == ^today)
+    |> Repo.all()
   end
 end

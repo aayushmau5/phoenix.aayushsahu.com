@@ -68,3 +68,36 @@ defmodule Accumulator.Scheduler.Pastes do
     Pastes.cleanup_expired_pastes()
   end
 end
+
+defmodule Accumulator.Scheduler.Plants do
+  use GenServer
+  alias Accumulator.Plants
+
+  def start_link(args) do
+    interval = Keyword.get(args, :interval)
+    GenServer.start_link(__MODULE__, interval)
+  end
+
+  @impl true
+  def init(interval) do
+    Process.send_after(self(), :run_job, interval)
+    {:ok, interval}
+  end
+
+  @impl true
+  def handle_info(:run_job, interval) do
+    notify_plant_water()
+    Process.send_after(self(), :run_job, interval)
+    {:noreply, interval}
+  end
+
+  defp notify_plant_water() do
+    plants = Plants.get_plants_to_be_watered_today()
+
+    if length(plants) != 0 do
+      Task.Supervisor.start_child(Accumulator.TaskRunner, fn ->
+        Accumulator.Mailer.send_plant_email(plants)
+      end)
+    end
+  end
+end
