@@ -127,15 +127,15 @@ defmodule AccumulatorWeb.PlantLive.FormComponent do
   defp save_plant(socket, :edit, plant_params) do
     plant_params = handle_upload(plant_params, socket)
 
-    case Plants.update_plant(socket.assigns.plant, plant_params) do
-      {:ok, plant} ->
-        notify_parent({:saved, plant})
+    with {:ok, plant} <- Plants.update_plant(socket.assigns.plant, plant_params),
+         {:ok, plant} <- Plants.update_next_water_date(plant) do
+      notify_parent({:saved, plant})
 
-        {:noreply,
-         socket
-         |> put_flash(:info, "Plant updated successfully")
-         |> push_patch(to: socket.assigns.patch)}
-
+      {:noreply,
+       socket
+       |> put_flash(:info, "Plant updated successfully")
+       |> push_patch(to: socket.assigns.patch)}
+    else
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
     end
@@ -144,15 +144,15 @@ defmodule AccumulatorWeb.PlantLive.FormComponent do
   defp save_plant(socket, :new, plant_params) do
     plant_params = handle_upload(plant_params, socket)
 
-    case Plants.create_plant(plant_params) do
-      {:ok, plant} ->
-        notify_parent({:saved, plant})
+    with {:ok, plant} <- Plants.create_plant(plant_params),
+         {:ok, plant} <- Plants.update_next_water_date(plant) do
+      notify_parent({:saved, plant})
 
-        {:noreply,
-         socket
-         |> put_flash(:info, "Plant created successfully")
-         |> push_patch(to: socket.assigns.patch)}
-
+      {:noreply,
+       socket
+       |> put_flash(:info, "Plant created successfully")
+       |> push_patch(to: socket.assigns.patch)}
+    else
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
     end

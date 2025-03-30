@@ -20,11 +20,6 @@ defmodule AccumulatorWeb.PlantLive.Show do
   end
 
   @impl true
-  def handle_event("log-today-entry", _, socket) do
-    # TODO;
-    {:noreply, socket}
-  end
-
   def handle_event("enable-date-edit", _, socket) do
     {:noreply, assign(socket, edit_date: true)}
   end
@@ -37,10 +32,25 @@ defmodule AccumulatorWeb.PlantLive.Show do
     {:noreply, socket}
   end
 
+  def handle_event("log-today-entry", _, socket) do
+    with {:ok, plant} <-
+           Plants.update_plant(socket.assigns.plant, %{watered_on: Date.utc_today()}),
+         {:ok, plant} <- Plants.update_next_water_date(plant) do
+      {:noreply, socket |> assign(edit_date: false) |> assign(plant: plant)}
+    else
+      {:error, _} ->
+        {:noreply, socket |> put_flash(:error, "Failed to update watered on date")}
+    end
+  end
+
   def handle_event("save", %{"watered_on" => watered_on}, socket) do
-    # TODO: save it to db
-    dbg(watered_on)
-    {:noreply, assign(socket, edit_date: false)}
+    with {:ok, plant} <- Plants.update_plant(socket.assigns.plant, %{watered_on: watered_on}),
+         {:ok, plant} <- Plants.update_next_water_date(plant) do
+      {:noreply, socket |> assign(edit_date: false) |> assign(plant: plant)}
+    else
+      {:error, _} ->
+        {:noreply, socket |> put_flash(:error, "Failed to update watered on date")}
+    end
   end
 
   def handle_event("delete-plant", _, socket) do

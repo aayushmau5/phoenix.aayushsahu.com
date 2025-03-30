@@ -23,7 +23,7 @@ defmodule Accumulator.Plants.WateringFreq do
 
   def convert_to_date(%Date{} = curr_date, frequency) do
     if frequency in Map.keys(@week_days) do
-      days = Map.get(@valid_phrases, frequency)
+      days = Map.get(@week_days, frequency)
       Date.add(curr_date, days)
     else
       case Regex.run(@regex, frequency) do
