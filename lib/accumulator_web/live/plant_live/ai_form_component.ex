@@ -93,7 +93,6 @@ defmodule AccumulatorWeb.PlantLive.AIFormComponent do
     socket =
       case result do
         {:ok, params} ->
-          params = Map.put_new(params, "image", socket.assigns.image_url)
           changeset = Plants.Plant.changeset(socket.assigns.plant, params)
           assign(socket, type: :form, form: to_form(changeset, action: :validate))
 
@@ -122,8 +121,8 @@ defmodule AccumulatorWeb.PlantLive.AIFormComponent do
 
   @impl true
   def handle_event("validate", %{"plant" => plant_params}, socket) do
-    changeset =
-      Plants.Plant.changeset(socket.assigns.plant, plant_params)
+    plant_params = Map.put_new(plant_params, "image", socket.assigns.image_url)
+    changeset = Plants.Plant.changeset(socket.assigns.plant, plant_params)
 
     changeset =
       case Plants.WateringFreq.validate_watering_frequency(plant_params["watering_frequency"]) do
@@ -135,6 +134,8 @@ defmodule AccumulatorWeb.PlantLive.AIFormComponent do
   end
 
   def handle_event("save", %{"plant" => plant_params}, socket) do
+    plant_params = Map.put_new(plant_params, "image", socket.assigns.image_url)
+
     with {:ok, plant} <- Plants.create_plant(plant_params),
          {:ok, plant} <- Plants.update_next_water_date(plant) do
       notify_parent({:saved, plant})
