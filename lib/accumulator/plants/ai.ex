@@ -48,13 +48,13 @@ defmodule Accumulator.Plants.AI do
     """
     A description of the given plant.
     As a genius expert, your task is to understand the content and provide the parsed objects in json that match the following json_schema:\n
-    {"name": string, "info": string, "care": string, "watering_frequency": one of ["weekly", "biweekly", "daily", "<num> days", "<num> weeks", "when upper soil is dry"]}
+    {"name": string, "info": string, "care": string, "watering_frequency": one of ["weekly", "biweekly", "daily", "<num> days", "<num> weeks", "upper soil dry"]}
 
     ## Fields:
     - name: Common name of the plant
     - info: Some common information about the plant such as it's features(ex. "air purifier")
     - care: Some care tips of the plant(ex. "indirect sunlight")
-    - watering_frequency: At what frequency the plant should be watered(ex. "3 days" meaning every 3 days. One special case: "when upper soil is dry")
+    - watering_frequency: At what frequency the plant should be watered(ex. "3 days" meaning every 3 days)
 
     Make sure to return an instance of the JSON, not the schema itself. Only return one JSON result even if image contains multiple plants.
     """
