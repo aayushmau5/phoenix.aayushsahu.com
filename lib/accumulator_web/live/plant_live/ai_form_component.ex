@@ -93,8 +93,10 @@ defmodule AccumulatorWeb.PlantLive.AIFormComponent do
     socket =
       case result do
         {:ok, params} ->
+          Map.put_new(params, "image", socket.assigns.image_url)
           changeset = Plants.Plant.changeset(socket.assigns.plant, params)
           assign(socket, type: :form, form: to_form(changeset, action: :validate))
+
         {:error, error} ->
           assign(socket, type: :error, ai_error: error)
       end
@@ -148,14 +150,16 @@ defmodule AccumulatorWeb.PlantLive.AIFormComponent do
   end
 
   def handle_event("image-validate", _params, socket), do: {:noreply, socket}
+
   def handle_event("image-save", _params, socket) do
     image = handle_upload(socket)
 
     pid = self()
     component_id = socket.assigns.id
+
     Task.start(fn ->
       encoded_image = File.read!(image.storage_path) |> Base.encode64()
-      result =  Plants.AI.run(encoded_image)
+      result = Plants.AI.run(encoded_image)
       send(pid, {:ai_processing_result, component_id, result})
     end)
 
@@ -190,7 +194,7 @@ defmodule AccumulatorWeb.PlantLive.AIFormComponent do
          }}
       end)
 
-      Enum.at(uploaded_files, 0)
+    Enum.at(uploaded_files, 0)
   end
 
   defp files_present?(socket) do
