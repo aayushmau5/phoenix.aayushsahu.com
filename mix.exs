@@ -47,7 +47,7 @@ defmodule Accumulator.MixProject do
       {:jason, "~> 1.4"},
       {:plug_cowboy, "~> 2.5"},
       {:castore, "~> 1.0"},
-      {:req, "~> 0.3"},
+      {:req, "~> 0.5"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:ecto_sql, "~> 3.0"},
       {:phoenix_ecto, "~> 4.5.1"},
