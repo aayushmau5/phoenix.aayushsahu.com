@@ -93,7 +93,7 @@ defmodule AccumulatorWeb.PlantLive.AIFormComponent do
     socket =
       case result do
         {:ok, params} ->
-          Map.put_new(params, "image", socket.assigns.image_url)
+          params = Map.put_new(params, "image", socket.assigns.image_url)
           changeset = Plants.Plant.changeset(socket.assigns.plant, params)
           assign(socket, type: :form, form: to_form(changeset, action: :validate))
 
