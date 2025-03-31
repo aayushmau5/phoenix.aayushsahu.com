@@ -2,12 +2,21 @@
   🪴 Plants
 </.header>
 
-<.link
-  class="flex items-center gap-1 w-max py-2 px-4 rounded-md bg-opacity-80 bg-[#36B5C1] hover:bg-opacity-70 my-3"
-  patch={~p"/plants/new"}
->
-  <Heroicons.plus class="h-5" />
-</.link>
+<div class="flex gap-2 my-3">
+  <.link
+    class="flex items-center w-max py-2 px-4 rounded-md bg-opacity-80 bg-[#36B5C1] hover:bg-opacity-70"
+    patch={~p"/plants/new"}
+  >
+    <Heroicons.plus class="h-5" />
+  </.link>
+
+  <.link
+    class="flex items-center gap-1 w-max py-2 px-4 rounded-md bg-opacity-80 bg-[#36B5C1] hover:bg-opacity-70"
+    patch={~p"/plants/new/ai"}
+  >
+    <Heroicons.plus class="h-5" /> AI
+  </.link>
+</div>
 
 <.link
   :for={{_id, plant} <- @streams.plants}
@@ -44,6 +53,16 @@
     id={@plant.id || :new}
     title={@page_title}
     action={@live_action}
+    plant={@plant}
+    patch={~p"/plants"}
+  />
+</.modal>
+
+<.modal :if={@live_action == :new_ai} id="plant-modal" show on_cancel={JS.patch(~p"/plants")}>
+  <.live_component
+    module={AccumulatorWeb.PlantLive.AIFormComponent}
+    id={:new}
+    title={@page_title}
     plant={@plant}
     patch={~p"/plants"}
   />

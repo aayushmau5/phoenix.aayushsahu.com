@@ -93,6 +93,7 @@ defmodule AccumulatorWeb.Router do
       # Plants
       live "/plants", PlantLive.Index, :index
       live "/plants/new", PlantLive.Index, :new
+      live "/plants/new/ai", PlantLive.Index, :new_ai
       live "/plants/:id", PlantLive.Show, :show
       live "/plants/:id/edit", PlantLive.Show, :edit
     end

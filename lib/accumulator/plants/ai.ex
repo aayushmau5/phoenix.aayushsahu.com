@@ -9,8 +9,7 @@ defmodule Accumulator.Plants.AI do
     case response do
       {:ok, %Req.Response{status: 200, body: body}} ->
         %{"candidates" => [%{"content" => %{"parts" => [%{"text" => text}]}} | _]} = body
-        parsed_content = clean_and_parse(text)
-        {:ok, parsed_content}
+        {:ok, clean_and_parse(text)}
 
       {:ok, %Req.Response{body: body}} ->
         %{"error" => %{"message" => message}} = body
@@ -57,7 +56,7 @@ defmodule Accumulator.Plants.AI do
     - care: Some care tips of the plant(ex. "indirect sunlight")
     - watering_frequency: At what frequency the plant should be watered(ex. "3 days" meaning every 3 days. One special case: "when upper soil is dry")
 
-    Make sure to return an instance of the JSON, not the schema itself.
+    Make sure to return an instance of the JSON, not the schema itself. Only return one JSON result even if image contains multiple plants.
     """
   end
 

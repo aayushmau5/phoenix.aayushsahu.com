@@ -20,6 +20,12 @@ defmodule AccumulatorWeb.PlantLive.Index do
     |> assign(:plant, %Plant{})
   end
 
+  defp apply_action(socket, :new_ai, _params) do
+    socket
+    |> assign(:page_title, "🌱 New Plant")
+    |> assign(:plant, %Plant{})
+  end
+
   defp apply_action(socket, :index, _params) do
     socket
     |> assign(:page_title, "🪴 Plants")
@@ -31,11 +37,12 @@ defmodule AccumulatorWeb.PlantLive.Index do
     {:noreply, stream_insert(socket, :plants, plant)}
   end
 
-  # @impl true
-  # def handle_event("delete", %{"id" => id}, socket) do
-  #   plant = Plants.get_plant!(id)
-  #   {:ok, _} = Plants.delete_plant(plant)
+  def handle_info({:ai_processing_result, component_id, result}, socket) do
+    send_update(AccumulatorWeb.PlantLive.AIFormComponent,
+      id: component_id,
+      ai_result: result
+    )
 
-  #   {:noreply, stream_delete(socket, :plants, plant)}
-  # end
+    {:noreply, socket}
+  end
 end
