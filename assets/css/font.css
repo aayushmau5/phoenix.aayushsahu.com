@@ -8,9 +8,6 @@
 } */
 
 @font-face {
-	font-family: "Input";
-	src: url("/fonts/Input-Regular.ttf"),
-		url("/fonts/Input-Italic.ttf"),
-		url("/fonts/Input-Bold.ttf"),
-		url("/fonts/Input-BoldItalic.ttf");
+    font-family: "Space Grotesk";
+    src: url("/fonts/SpaceGrotesk.ttf");
 }
