@@ -6,16 +6,14 @@ defmodule AccumulatorWeb.Router do
 
   pipeline :browser do
     plug :accepts, [
-      "html",
-      "swiftui"
+      "html"
     ]
 
     plug :fetch_session
     plug :fetch_live_flash
 
     plug :put_root_layout,
-      html: {AccumulatorWeb.Layouts, :root},
-      swiftui: {AccumulatorWeb.Layouts.SwiftUI, :root}
+      html: {AccumulatorWeb.Layouts, :root}
 
     plug :protect_from_forgery
     plug :put_secure_browser_headers
@@ -34,7 +32,6 @@ defmodule AccumulatorWeb.Router do
     live "/dashboard", DashboardLive
     live "/spotify", SpotifyLive
     delete "/logout", UserSessionController, :delete
-    live "/native", NativeLive
 
     live "/notes/public/:id", NotesPublicLive
   end

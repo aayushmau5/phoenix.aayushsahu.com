@@ -100,7 +100,3 @@ config :accumulator,
 # at the `config/runtime.exs`.
 config :accumulator, Accumulator.Mailer, adapter: Swoosh.Adapters.Local
 config :swoosh, :api_client, false
-
-config :live_view_native_stylesheet,
-  annotations: true,
-  pretty: true

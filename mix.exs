@@ -60,10 +60,7 @@ defmodule Accumulator.MixProject do
       {:libcluster, "~> 3.3"},
       {:earmark, "~> 1.4"},
       {:tz, "~> 0.26.5"},
-      {:live_view_native, "~> 0.4.0-rc.0"},
-      {:live_view_native_stylesheet, "~> 0.3.2"},
-      {:live_view_native_swiftui, "~> 0.4.0-rc.0"},
-      {:live_view_native_live_form, "~> 0.4.0-rc.0"}
+      {:tidewave, "~> 0.1", only: :dev}
     ]
   end
 
