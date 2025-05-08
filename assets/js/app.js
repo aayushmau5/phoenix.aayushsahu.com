@@ -38,26 +38,20 @@ Hooks.LocalTime = {
 // For notes
 Hooks.ScrollToBottom = {
 	mounted() {
-		this.handleEvent("new-note-scroll", () => this.scrollToBottom());
-		this.scrollToBottom();
-		
-		// Store the previous element count to detect when new content is added
-		this.previousChildCount = this.getContentChildCount();
+		this.handleEvent("new-note-scroll", (payload) => {
+			// Check if this is a submission event
+			if (payload.submitted) {
+				this.scrollToBottom();
+			}
+		});
+		// Store last content length to detect actual content changes vs typing
+		this.lastContentLength = this.getContentLength();
+		// Always scroll to bottom when component is mounted
+		setTimeout(() => this.scrollToBottom(), 100);
 	},
 	updated() {
-		// Check if the scroll was near the bottom before update
-		const wasAtBottom = this.isNearBottom();
-		
-		// Get current child count
-		const currentChildCount = this.getContentChildCount();
-		
-		// If we were at the bottom or new content was added, scroll to bottom
-		if (wasAtBottom || currentChildCount > this.previousChildCount) {
-			this.scrollToBottom();
-		}
-		
-		// Update the child count for next comparison
-		this.previousChildCount = currentChildCount;
+		// Only scroll if explicitly told to (via event)
+		// Don't auto-scroll on every update to prevent scrolling while typing
 	},
 	scrollToBottom() {
 		// Find the parent scrollable container
@@ -74,17 +68,9 @@ Hooks.ScrollToBottom = {
 			});
 		}
 	},
-	isNearBottom() {
-		// Find the parent scrollable container
-		const scrollContainer = this.el.closest('.overflow-y-auto');
-		const container = scrollContainer || this.el;
-		
-		const threshold = 100; // pixels from bottom to consider "at bottom"
-		return (container.scrollHeight - container.scrollTop - container.clientHeight) < threshold;
-	},
-	getContentChildCount() {
-		// Count all the note items
-		return this.el.querySelectorAll('[id^="note-"]').length;
+	getContentLength() {
+		// Helper to measure total content "size"
+		return this.el.textContent.length;
 	}
 }
 

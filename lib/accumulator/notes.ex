@@ -28,6 +28,16 @@ defmodule Accumulator.Notes do
     {result, starting_datetime}
   end
 
+  def get_all_notes_for_workspace(workspace_id) do
+    # Get all notes for a workspace, ordered by insertion date
+    from(n in Note,
+      where: n.workspace_id == ^workspace_id,
+      order_by: [asc: n.id]
+    )
+    |> Repo.all()
+    |> group_and_sort_notes()
+  end
+
   def get_notes_grouped_and_ordered_till_date(workspace_id, datetime) do
     datetime = datetime |> DateTime.add(1)
 

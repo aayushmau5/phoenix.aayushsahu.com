@@ -35,6 +35,16 @@
       >
         <Heroicons.pencil_square class="h-4 w-4" />
       </button>
+      <button
+        :if={@selected_workspace && @selected_workspace.title != "default"}
+        phx-click="delete-workspace"
+        phx-value-id={@selected_workspace.id}
+        class="text-sm px-2 py-1 rounded-md hover:bg-zinc-700 text-zinc-400"
+        data-confirm="Are you sure you want to delete this workspace? This will delete all notes in this workspace."
+        title="Delete Workspace"
+      >
+        <Heroicons.trash class="h-4 w-4" />
+      </button>
     </div>
   </header>
 
@@ -64,17 +74,8 @@
     </div>
   </div>
 
-  <!-- Main notes container including the load more button and notes list -->
+  <!-- Main notes container with all notes -->
   <div :if={@selected_workspace} class="flex-1 overflow-y-auto bg-[#1f1f1f] flex flex-col">
-    <!-- Load more button at the top -->
-    <div id="load-more-button" class="py-4 text-center" phx-update="ignore">
-      <button
-        phx-click="more-notes"
-        class="text-sm text-zinc-500 hover:text-zinc-300"
-      >
-        Load older notes
-      </button>
-    </div>
 
     <!-- Notes stream -->
     <div id="notes" phx-update="stream" phx-hook="ScrollToBottom" class="flex-1 px-2 sm:px-4 py-2">

@@ -41,18 +41,14 @@ defmodule AccumulatorWeb.NotesLive do
   def handle_workspace(nil, socket) do
     default_workspace = get_default_workspace(socket.assigns.workspaces)
 
-    {notes, pagination_date} =
-      Notes.get_notes_grouped_and_ordered_by_date(
-        default_workspace.id,
-        Helpers.get_utc_datetime_from_date()
-      )
+    notes = Notes.get_all_notes_for_workspace(default_workspace.id)
 
     socket
     |> stream(:notes, notes)
     |> assign(
-      pagination_date: pagination_date,
       selected_workspace: default_workspace
     )
+    |> push_event("new-note-scroll", %{})
   end
 
   def handle_workspace(workspace_id, socket) do
@@ -67,21 +63,15 @@ defmodule AccumulatorWeb.NotesLive do
         assign(socket, page_error: :no_workspace)
 
       workspace ->
-        {notes, pagination_date} =
-          Notes.get_notes_grouped_and_ordered_by_date(
-            workspace.id,
-            Helpers.get_utc_datetime_from_date()
-          )
+        notes = Notes.get_all_notes_for_workspace(workspace.id)
         
-        # Always set pagination_date to ensure "Load more" button is visible
         socket
         |> stream(:notes, notes, reset: true)
         |> assign(
-          pagination_date: pagination_date,
           selected_workspace: workspace,
           page_error: nil
         )
-        |> push_event("new-note-scroll", %{})
+        |> push_event("new-note-scroll", %{submitted: true})
     end
   end
 
@@ -108,23 +98,15 @@ defmodule AccumulatorWeb.NotesLive do
     socket =
       case Notes.insert(note_changeset) do
         {:ok, note} ->
-          {notes, pagination_date} =
-            Notes.get_notes_grouped_and_ordered_by_date(
-              workspace_id,
-              Helpers.get_utc_datetime_from_date()
-            )
+          notes = Notes.get_all_notes_for_workspace(workspace_id)
 
           Notes.broadcast!(%{type: :new_note, workspace_id: note.workspace_id})
           
-          # Always set pagination_date to ensure "Load more" button is visible
           socket
-          |> assign(
-            form: empty_form(),
-            pagination_date: pagination_date
-          )
+          |> assign(form: empty_form())
           |> stream(:notes, notes, reset: true)
           # Event to automatically scroll to bottom
-          |> push_event("new-note-scroll", %{})
+          |> push_event("new-note-scroll", %{submitted: true})
 
         {:error, changeset} ->
           assign(socket, form: to_form(changeset))
@@ -133,22 +115,7 @@ defmodule AccumulatorWeb.NotesLive do
     {:noreply, socket}
   end
 
-  def handle_event("more-notes", _params, socket) do
-    start_date = socket.assigns.pagination_date
-    workspace_id = socket.assigns.selected_workspace.id
-
-    {notes, pagination_date} =
-      Notes.get_notes_grouped_and_ordered_by_date(workspace_id, start_date)
-    
-    # Always set pagination_date, even if no more notes
-    # This ensures the "Load more" button remains visible
-    socket =
-      socket
-      |> assign(pagination_date: pagination_date)
-      |> stream(:notes, Enum.reverse(notes), at: 0)
-
-    {:noreply, socket}
-  end
+  # Removed more-notes handler as we now load all notes at once
 
   # Note update handlers
 
@@ -173,17 +140,14 @@ defmodule AccumulatorWeb.NotesLive do
     socket =
       with {:ok, _} <- Notes.update_note(note_id, note_params),
            :ok <- update_note_workspace(note_id, new_workspace_id) do
-        {notes, _} =
-          Notes.get_notes_grouped_and_ordered_by_date(
-            workspace_id,
-            Helpers.get_utc_datetime_from_date()
-          )
+        notes = Notes.get_all_notes_for_workspace(workspace_id)
 
         Notes.broadcast!(%{type: :update_note, workspace_id: workspace_id})
 
         socket
         |> stream(:notes, notes, reset: true)
         |> assign(is_editing: false, form: empty_form(), editing_note_id: nil)
+        |> push_event("new-note-scroll", %{submitted: true})
       else
         {:error, changeset} ->
           assign(socket, form: to_form(changeset))
@@ -198,13 +162,15 @@ defmodule AccumulatorWeb.NotesLive do
 
   def handle_event("delete", %{"id" => id} = _params, socket) do
     {:ok, _} = Notes.delete_note(id)
-    pagination_date = socket.assigns.pagination_date
     workspace_id = socket.assigns.selected_workspace.id
 
     Notes.broadcast!(%{type: :delete_note, workspace_id: workspace_id})
 
-    notes = Notes.get_notes_grouped_and_ordered_till_date(workspace_id, pagination_date)
-    {:noreply, stream(socket, :notes, notes, reset: true)}
+    notes = Notes.get_all_notes_for_workspace(workspace_id)
+    {:noreply, socket
+      |> stream(:notes, notes, reset: true)
+      |> push_event("new-note-scroll", %{submitted: true})
+    }
   end
 
   # Search handlers
@@ -223,18 +189,13 @@ defmodule AccumulatorWeb.NotesLive do
       if search_term_length != 0 do
         notes = Notes.search_notes(workspace_id, search_term)
 
-        socket |> stream(:notes, notes, reset: true) |> push_event("new-note-scroll", %{})
+        socket |> stream(:notes, notes, reset: true) |> push_event("new-note-scroll", %{submitted: true})
       else
-        {notes, pagination_date} =
-          Notes.get_notes_grouped_and_ordered_by_date(
-            workspace_id,
-            Helpers.get_utc_datetime_from_date()
-          )
+        notes = Notes.get_all_notes_for_workspace(workspace_id)
 
         socket
         |> stream(:notes, notes, reset: true)
-        |> assign(pagination_date: pagination_date)
-        |> push_event("new-note-scroll", %{})
+        |> push_event("new-note-scroll", %{submitted: true})
       end
 
     {:noreply, socket}
@@ -347,20 +308,15 @@ defmodule AccumulatorWeb.NotesLive do
   def handle_info(:change_to_default_workspace, socket) do
     workspace = get_default_workspace(socket.assigns.workspaces)
 
-    {notes, pagination_date} =
-      Notes.get_notes_grouped_and_ordered_by_date(
-        workspace.id,
-        Helpers.get_utc_datetime_from_date()
-      )
+    notes = Notes.get_all_notes_for_workspace(workspace.id)
 
     socket =
       socket
       |> stream(:notes, notes, reset: true)
       |> assign(
-        selected_workspace: workspace,
-        pagination_date: pagination_date
+        selected_workspace: workspace
       )
-      |> push_event("new-note-scroll", %{})
+      |> push_event("new-note-scroll", %{submitted: true})
       |> push_patch(to: "/notes/#{workspace.id}")
 
     {:noreply, socket}
