@@ -91,28 +91,34 @@ defmodule AccumulatorWeb.NotesLive do
   end
 
   def handle_event("save", %{"note" => note_params} = _params, socket) do
-    workspace_id = socket.assigns.selected_workspace.id
-    note_params = Map.merge(note_params, %{"workspace_id" => workspace_id})
-    note_changeset = Note.changeset(%Note{}, note_params)
+    # Don't save empty notes
+    text = Map.get(note_params, "text", "")
+    if String.trim(text) == "" do
+      {:noreply, socket}
+    else
+      workspace_id = socket.assigns.selected_workspace.id
+      note_params = Map.merge(note_params, %{"workspace_id" => workspace_id})
+      note_changeset = Note.changeset(%Note{}, note_params)
 
-    socket =
-      case Notes.insert(note_changeset) do
-        {:ok, note} ->
-          notes = Notes.get_all_notes_for_workspace(workspace_id)
+      socket =
+        case Notes.insert(note_changeset) do
+          {:ok, note} ->
+            notes = Notes.get_all_notes_for_workspace(workspace_id)
 
-          Notes.broadcast!(%{type: :new_note, workspace_id: note.workspace_id})
-          
-          socket
-          |> assign(form: empty_form())
-          |> stream(:notes, notes, reset: true)
-          # Event to automatically scroll to bottom
-          |> push_event("new-note-scroll", %{submitted: true})
+            Notes.broadcast!(%{type: :new_note, workspace_id: note.workspace_id})
+            
+            socket
+            |> assign(form: empty_form())
+            |> stream(:notes, notes, reset: true)
+            # Event to automatically scroll to bottom
+            |> push_event("new-note-scroll", %{submitted: true})
 
-        {:error, changeset} ->
-          assign(socket, form: to_form(changeset))
-      end
+          {:error, changeset} ->
+            assign(socket, form: to_form(changeset))
+        end
 
-    {:noreply, socket}
+      {:noreply, socket}
+    end
   end
 
   # Removed more-notes handler as we now load all notes at once
@@ -134,26 +140,32 @@ defmodule AccumulatorWeb.NotesLive do
         %{"note" => note_params, "workspace" => new_workspace_id} = _params,
         socket
       ) do
-    note_id = socket.assigns.editing_note_id
-    workspace_id = socket.assigns.selected_workspace.id
+    # Don't update with empty notes
+    text = Map.get(note_params, "text", "")
+    if String.trim(text) == "" do
+      {:noreply, assign(socket, is_editing: false, form: empty_form(), editing_note_id: nil)}
+    else
+      note_id = socket.assigns.editing_note_id
+      workspace_id = socket.assigns.selected_workspace.id
 
-    socket =
-      with {:ok, _} <- Notes.update_note(note_id, note_params),
-           :ok <- update_note_workspace(note_id, new_workspace_id) do
-        notes = Notes.get_all_notes_for_workspace(workspace_id)
+      socket =
+        with {:ok, _} <- Notes.update_note(note_id, note_params),
+             :ok <- update_note_workspace(note_id, new_workspace_id) do
+          notes = Notes.get_all_notes_for_workspace(workspace_id)
 
-        Notes.broadcast!(%{type: :update_note, workspace_id: workspace_id})
+          Notes.broadcast!(%{type: :update_note, workspace_id: workspace_id})
 
-        socket
-        |> stream(:notes, notes, reset: true)
-        |> assign(is_editing: false, form: empty_form(), editing_note_id: nil)
-        |> push_event("new-note-scroll", %{submitted: true})
-      else
-        {:error, changeset} ->
-          assign(socket, form: to_form(changeset))
-      end
+          socket
+          |> stream(:notes, notes, reset: true)
+          |> assign(is_editing: false, form: empty_form(), editing_note_id: nil)
+          |> push_event("new-note-scroll", %{submitted: true})
+        else
+          {:error, changeset} ->
+            assign(socket, form: to_form(changeset))
+        end
 
-    {:noreply, socket}
+      {:noreply, socket}
+    end
   end
 
   def handle_event("cancel-edit", _params, socket) do

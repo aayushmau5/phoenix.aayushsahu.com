@@ -85,10 +85,17 @@ Hooks.NotesInput = {
 	handleKeyDown(event) {
 		const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 		if (!isMobile && event.key === "Enter" && !event.shiftKey) {
-			const notesForm = document.getElementById("notes-form");
-			notesForm.dispatchEvent(
-				new Event("submit", { bubbles: true, cancelable: true })
-			)
+			// Don't submit if the input is empty
+			const inputText = this.el.value.trim();
+			if (inputText !== "") {
+				const notesForm = document.getElementById("notes-form");
+				notesForm.dispatchEvent(
+					new Event("submit", { bubbles: true, cancelable: true })
+				)
+			} else {
+				// Prevent default Enter behavior for empty input
+				event.preventDefault();
+			}
 		}
 		// Auto resize on key events like backspace/delete that might not trigger input event
 		this.autoResize();

@@ -133,10 +133,11 @@
         <div class="self-end p-2">
           <button
             type="submit"
-            class="rounded-full bg-[#565869] hover:bg-[#6b6d82] p-2 transition-colors"
+            disabled={String.trim(@form[:text].value || "") == ""}
+            class={if String.trim(@form[:text].value || "") == "", do: "rounded-full transition-colors bg-zinc-600 cursor-not-allowed opacity-50 p-2", else: "rounded-full transition-colors bg-[#565869] hover:bg-[#6b6d82] p-2"}
             title="Send message"
           >
-            <Heroicons.paper_airplane class="h-5 w-5 transform rotate-90" />
+            <Heroicons.paper_airplane class="h-5 w-5" />
           </button>
         </div>
       </div>
@@ -179,7 +180,8 @@
           </button>
           <button
             type="submit"
-            class="rounded-full bg-[#565869] hover:bg-[#6b6d82] p-2 transition-colors"
+            disabled={String.trim(@form[:text].value || "") == ""}
+            class={if String.trim(@form[:text].value || "") == "", do: "rounded-full transition-colors bg-zinc-600 cursor-not-allowed opacity-50 p-2", else: "rounded-full transition-colors bg-[#565869] hover:bg-[#6b6d82] p-2"}
             title="Save changes"
           >
             <Heroicons.check class="h-5 w-5" />
