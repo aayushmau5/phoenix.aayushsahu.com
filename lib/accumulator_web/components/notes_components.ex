@@ -73,10 +73,12 @@ defmodule AccumulatorWeb.NotesComponents do
         id={@id || @name}
         name={@name}
         class={[
-          "block min-h-[6rem] w-full py-[7px] px-[11px] text-white border-none resize-none bg-transparent focus:outline-none",
+          "block min-h-[2.5rem] w-full py-[7px] px-[11px] text-white border-none resize-none bg-transparent focus:outline-none overflow-y-hidden",
           @errors != [] && "border-rose-400 focus:border-rose-400 focus:ring-rose-400/10"
         ]}
-        style="box-shadow: none;"
+        style="box-shadow: none; max-height: 150px;"
+        placeholder="Type a message..."
+        rows="1"
         {@rest}
       >{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
       <.error :for={msg <- @errors}>{msg}</.error>

@@ -38,8 +38,53 @@ Hooks.LocalTime = {
 // For notes
 Hooks.ScrollToBottom = {
 	mounted() {
-		this.handleEvent("new-note-scroll", () => this.el.scrollTo(0, this.el.scrollHeight));
-		this.el.scrollTo(0, this.el.scrollHeight);
+		this.handleEvent("new-note-scroll", () => this.scrollToBottom());
+		this.scrollToBottom();
+		
+		// Store the previous element count to detect when new content is added
+		this.previousChildCount = this.getContentChildCount();
+	},
+	updated() {
+		// Check if the scroll was near the bottom before update
+		const wasAtBottom = this.isNearBottom();
+		
+		// Get current child count
+		const currentChildCount = this.getContentChildCount();
+		
+		// If we were at the bottom or new content was added, scroll to bottom
+		if (wasAtBottom || currentChildCount > this.previousChildCount) {
+			this.scrollToBottom();
+		}
+		
+		// Update the child count for next comparison
+		this.previousChildCount = currentChildCount;
+	},
+	scrollToBottom() {
+		// Find the parent scrollable container
+		const scrollContainer = this.el.closest('.overflow-y-auto');
+		if (scrollContainer) {
+			scrollContainer.scrollTo({
+				top: scrollContainer.scrollHeight,
+				behavior: 'smooth'
+			});
+		} else {
+			this.el.scrollTo({
+				top: this.el.scrollHeight,
+				behavior: 'smooth'
+			});
+		}
+	},
+	isNearBottom() {
+		// Find the parent scrollable container
+		const scrollContainer = this.el.closest('.overflow-y-auto');
+		const container = scrollContainer || this.el;
+		
+		const threshold = 100; // pixels from bottom to consider "at bottom"
+		return (container.scrollHeight - container.scrollTop - container.clientHeight) < threshold;
+	},
+	getContentChildCount() {
+		// Count all the note items
+		return this.el.querySelectorAll('[id^="note-"]').length;
 	}
 }
 
@@ -47,6 +92,9 @@ Hooks.ScrollToBottom = {
 Hooks.NotesInput = {
 	mounted() {
 		this.el.addEventListener("keydown", this.handleKeyDown);
+		this.el.addEventListener("input", this.autoResize.bind(this));
+		// Initial resize
+		this.autoResize();
 	},
 	handleKeyDown(event) {
 		const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -56,6 +104,38 @@ Hooks.NotesInput = {
 				new Event("submit", { bubbles: true, cancelable: true })
 			)
 		}
+		// Auto resize on key events like backspace/delete that might not trigger input event
+		this.autoResize();
+	},
+	autoResize() {
+		// Reset height to calculate scroll height correctly
+		this.el.style.height = 'auto';
+		
+		// Get the maximum height (max-h-[150px] converted to pixels)
+		const maxHeight = 150;
+		
+		// Calculate content height
+		const contentHeight = this.el.scrollHeight;
+		
+		// Set height based on content but capped at max height
+		if (contentHeight <= maxHeight) {
+			// Content fits within max height - grow normally
+			this.el.style.height = contentHeight + 'px';
+			this.el.style.overflowY = 'hidden';
+		} else {
+			// Content exceeds max height - enable scrolling
+			this.el.style.height = maxHeight + 'px';
+			this.el.style.overflowY = 'auto';
+			
+			// Ensure cursor is visible by scrolling to bottom when typing
+			if (this.el === document.activeElement) {
+				this.el.scrollTop = contentHeight;
+			}
+		}
+	},
+	updated() {
+		// Ensure proper sizing after LiveView updates
+		this.autoResize();
 	}
 }
 

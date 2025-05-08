@@ -1,10 +1,11 @@
-<.flash_group flash={@flash} />
-<AccumulatorWeb.Components.Notes.NotesNavbar.notes_navbar
-  current_user={@current_user}
-  workspaces={assigns[:workspaces] || []}
-  selected_workspace={assigns[:selected_workspace]}
-/>
-
-<main class="py-10 px-4">
+<div class="h-screen flex flex-col overflow-hidden">
+  <.flash_group flash={@flash} />
+  <AccumulatorWeb.Components.Notes.NotesNavbar.notes_navbar
+    current_user={@current_user}
+    workspaces={assigns[:workspaces] || []}
+    selected_workspace={assigns[:selected_workspace]}
+  />
+  <div class="h-full overflow-hidden">
     {@inner_content}
-</main>
+  </div>
+</div>

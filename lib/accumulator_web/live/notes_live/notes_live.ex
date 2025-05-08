@@ -72,7 +72,8 @@ defmodule AccumulatorWeb.NotesLive do
             workspace.id,
             Helpers.get_utc_datetime_from_date()
           )
-
+        
+        # Always set pagination_date to ensure "Load more" button is visible
         socket
         |> stream(:notes, notes, reset: true)
         |> assign(
@@ -89,12 +90,13 @@ defmodule AccumulatorWeb.NotesLive do
   @impl true
   def handle_event("validate", %{"note" => note_params} = _params, socket) do
     note_changeset = %Note{} |> Note.changeset(note_params)
-
+    
     form =
       note_changeset
       |> Map.put(:action, :validate)
       |> to_form
 
+    # Only update the form, which is in temporary_assigns
     {:noreply, assign(socket, form: form)}
   end
 
@@ -106,16 +108,20 @@ defmodule AccumulatorWeb.NotesLive do
     socket =
       case Notes.insert(note_changeset) do
         {:ok, note} ->
-          {notes, _} =
+          {notes, pagination_date} =
             Notes.get_notes_grouped_and_ordered_by_date(
               workspace_id,
               Helpers.get_utc_datetime_from_date()
             )
 
           Notes.broadcast!(%{type: :new_note, workspace_id: note.workspace_id})
-
+          
+          # Always set pagination_date to ensure "Load more" button is visible
           socket
-          |> assign(form: empty_form())
+          |> assign(
+            form: empty_form(),
+            pagination_date: pagination_date
+          )
           |> stream(:notes, notes, reset: true)
           # Event to automatically scroll to bottom
           |> push_event("new-note-scroll", %{})
@@ -133,7 +139,9 @@ defmodule AccumulatorWeb.NotesLive do
 
     {notes, pagination_date} =
       Notes.get_notes_grouped_and_ordered_by_date(workspace_id, start_date)
-
+    
+    # Always set pagination_date, even if no more notes
+    # This ensures the "Load more" button remains visible
     socket =
       socket
       |> assign(pagination_date: pagination_date)

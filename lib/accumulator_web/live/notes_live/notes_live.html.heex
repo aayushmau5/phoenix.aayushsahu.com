@@ -1,40 +1,194 @@
-<div class="w-full font-note relative p-4">
-  <div class="flex items-center justify-between mb-4">
-    <h2 class="text-xl font-semibold">
-      {if @selected_workspace, do: @selected_workspace.title, else: "Notes"}
-      <%= if @selected_workspace && @selected_workspace.is_public do %>
-        <span class="inline-block ml-1">
-          <Heroicons.globe_europe_africa class="h-4 w-4 inline" />
-        </span>
-      <% end %>
-    </h2>
+<div class="w-full font-note relative h-screen flex flex-col">
+  <!-- Header with workspace info and controls -->
+  <header class="pt-10 bg-[#26282a] p-3 flex items-center justify-between border-b border-zinc-800 sticky top-0 z-10">
+    <div class="flex items-center">
+      <h2 class="text-xl font-semibold">
+        <%= if @selected_workspace, do: @selected_workspace.title, else: "Notes" %>
+        <%= if @selected_workspace && @selected_workspace.is_public do %>
+          <span class="inline-block ml-1">
+            <Heroicons.globe_europe_africa class="h-4 w-4 inline" />
+          </span>
+        <% end %>
+      </h2>
+    </div>
     <div class="flex gap-2">
       <button
-        phx-click="new-workspace"
-        class="border text-sm px-2 py-1 rounded-md hover:opacity-80"
-        title="Create New Workspace"
-      >
-        <Heroicons.plus class="h-4 w-4" />
-      </button>
-      <button
-        class="border text-sm px-2 py-1 rounded-md hover:opacity-80"
+        class="text-sm px-2 py-1 rounded-md hover:bg-zinc-700 text-zinc-400"
         phx-click={JS.toggle(to: "#search-container")}
-        title="Toggle Search"
+        title="Search"
       >
         <Heroicons.magnifying_glass class="h-4 w-4" />
+      </button>
+      <button
+        phx-click="new-workspace"
+        class="text-sm px-2 py-1 rounded-md hover:bg-zinc-700 text-zinc-400"
+        title="New Workspace"
+      >
+        <Heroicons.plus class="h-4 w-4" />
       </button>
       <button
         :if={@selected_workspace && @selected_workspace.title != "default"}
         phx-click="edit-workspace"
         phx-value-id={@selected_workspace.id}
-        class="border text-sm px-2 py-1 rounded-md hover:opacity-80"
-        title="Edit Current Workspace"
+        class="text-sm px-2 py-1 rounded-md hover:bg-zinc-700 text-zinc-400"
+        title="Edit Workspace"
       >
         <Heroicons.pencil_square class="h-4 w-4" />
       </button>
     </div>
+  </header>
+
+  <!-- Search bar (initially hidden) -->
+  <div class="hidden px-4 py-2 bg-[#2a2c2e] border-b border-zinc-800" id="search-container">
+    <.simple_form for={@search} phx-change="search-change" phx-submit="search-submit">
+      <div class="flex items-center gap-2">
+        <.note_input
+          label=""
+          field={@search[:search]}
+          placeholder="Search notes..."
+          class="bg-transparent"
+          id="search-input"
+        />
+        <button type="submit" class="p-2 rounded-md bg-zinc-700 hover:bg-zinc-600">
+          <Heroicons.magnifying_glass class="h-4 w-4" />
+        </button>
+      </div>
+    </.simple_form>
   </div>
 
+  <!-- Error message when workspace doesn't exist -->
+  <div :if={!@selected_workspace && @page_error} class="flex-1 flex items-center justify-center text-lg text-red-400">
+    <div>
+      <Heroicons.exclamation_triangle class="h-8 w-8 mb-2 mx-auto" />
+      <p>Requested workspace doesn't exist!</p>
+    </div>
+  </div>
+
+  <!-- Main notes container including the load more button and notes list -->
+  <div :if={@selected_workspace} class="flex-1 overflow-y-auto bg-[#1f1f1f] flex flex-col">
+    <!-- Load more button at the top -->
+    <div id="load-more-button" class="py-4 text-center" phx-update="ignore">
+      <button
+        phx-click="more-notes"
+        class="text-sm text-zinc-500 hover:text-zinc-300"
+      >
+        Load older notes
+      </button>
+    </div>
+
+    <!-- Notes stream -->
+    <div id="notes" phx-update="stream" phx-hook="ScrollToBottom" class="flex-1 px-2 sm:px-4 py-2">
+      <div :for={{dom_id, [date, notes]} <- @streams.notes} id={dom_id} class="mb-4">
+        <div class="text-center my-3">
+          <span class="px-3 py-1 text-xs text-zinc-400 bg-zinc-800 rounded-full">
+            {Accumulator.Helpers.day_of_week_string(date)} {date} ({Accumulator.Helpers.days_ago(date)})
+          </span>
+        </div>
+        <div :for={note <- notes} class="max-w-4xl mx-auto my-3" id={"note-#{note.id}"}>
+          <div class="bg-[#2a2c2e] p-3 rounded-lg shadow-md">
+            <article :if={note.text} class="note-text break-words prose prose-invert prose-sm max-w-none">
+              {Earmark.as_html!(note.text, escape: false, compact_output: false)
+              |> Phoenix.HTML.raw()}
+            </article>
+            <div class="flex mt-2 justify-between">
+              <div class="text-xs opacity-40">
+                <.local_time id={"note-#{note.id}-date"} date={note.inserted_at} />
+              </div>
+              <div class="flex items-center gap-2">
+                <button phx-click="edit" phx-value-id={note.id} class="hover:text-zinc-300">
+                  <Heroicons.pencil_square class="h-4" />
+                </button>
+                <button phx-click="delete" phx-value-id={note.id} class="hover:text-zinc-300">
+                  <Heroicons.trash class="h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input area fixed at bottom -->
+  <div
+    :if={!@is_editing && @selected_workspace}
+    class="bg-[#26282a] border-t border-zinc-800 p-2 sm:p-4 sticky bottom-0"
+  >
+    <.notes_form
+      for={@form}
+      phx-change="validate"
+      phx-submit="save"
+      id="notes-form"
+      class="max-w-4xl mx-auto"
+    >
+      <div class="flex gap-2 border rounded-lg border-zinc-700 bg-[#2a2c2e] focus-within:border-zinc-500">
+        <.note_input
+          type="textarea"
+          field={@form[:text]}
+          id="notes_text"
+          phx-hook="NotesInput"
+          class="py-3 px-4 max-h-[150px] overflow-y-auto"
+        />
+        <div class="self-end p-2">
+          <button
+            type="submit"
+            class="rounded-full bg-[#565869] hover:bg-[#6b6d82] p-2 transition-colors"
+            title="Send message"
+          >
+            <Heroicons.paper_airplane class="h-5 w-5 transform rotate-90" />
+          </button>
+        </div>
+      </div>
+    </.notes_form>
+  </div>
+
+  <!-- Edit mode - similar to input area but with more controls -->
+  <div
+    :if={@is_editing}
+    class="bg-[#26282a] border-t border-zinc-800 p-2 sm:p-4 sticky bottom-0"
+  >
+    <.notes_form
+      for={@form}
+      phx-change="validate"
+      phx-submit="update-note"
+      id="notes-form"
+      class="max-w-4xl mx-auto"
+    >
+      <div class="flex gap-2 border rounded-lg border-zinc-700 bg-[#2a2c2e] focus-within:border-zinc-500">
+        <.note_input type="textarea" field={@form[:text]} id="notes_text" phx-hook="NotesInput" class="py-3 px-4 max-h-[150px] overflow-y-auto" />
+        <div class="self-end p-2 flex items-center gap-2">
+          <div class="mr-2">
+            <.input
+              type="select"
+              prompt="Workspace"
+              id="workspace"
+              name="workspace"
+              options={Enum.map(@workspaces, fn workspace -> {workspace.title, workspace.id} end)}
+              value=""
+              class="bg-[#3d3d3d] border-zinc-700 text-sm"
+            />
+          </div>
+          <button
+            type="button"
+            phx-click="cancel-edit"
+            class="rounded-full bg-zinc-700 hover:bg-zinc-600 p-2 transition-colors"
+            title="Cancel"
+          >
+            <Heroicons.x_mark class="h-5 w-5" />
+          </button>
+          <button
+            type="submit"
+            class="rounded-full bg-[#565869] hover:bg-[#6b6d82] p-2 transition-colors"
+            title="Save changes"
+          >
+            <Heroicons.check class="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+    </.notes_form>
+  </div>
+
+  <!-- Workspace modal -->
   <.modal id="workspace-modal">
     <.simple_form
       :if={@workspace_form != nil}
@@ -47,102 +201,4 @@
       <.button>Save</.button>
     </.simple_form>
   </.modal>
-
-  <div class="mb-2 hidden -mt-7" id="search-container">
-    <.simple_form for={@search} phx-change="search-change" phx-submit="search-submit">
-      <div class="flex items-center gap-2">
-        <.note_input
-          label="Search"
-          field={@search[:search]}
-          class="bg-transparent bg-green-400"
-          id="search-input"
-        />
-      </div>
-    </.simple_form>
-  </div>
-
-  <div :if={!@selected_workspace && @page_error} class="mt-40 text-center text-lg text-red-400">
-    Requested workspace doesn't exist!
-  </div>
-
-  <button
-    :if={@selected_workspace}
-    phx-click="more-notes"
-    class="block text-sm opacity-60 ml-auto"
-  >
-    Load more
-  </button>
-
-  <%!-- Notes UI --%>
-  <div
-    :if={@selected_workspace}
-    class="bg-black bg-opacity-20 p-2 rounded-md max-h-[520px] overflow-y-scroll"
-    id="notes"
-    phx-update="stream"
-    phx-hook="ScrollToBottom"
-  >
-    <div :for={{dom_id, [date, notes]} <- @streams.notes} id={dom_id}>
-      <div class="leading-10 font-bold">
-        {Accumulator.Helpers.day_of_week_string(date)} {date} ({Accumulator.Helpers.days_ago(date)})
-      </div>
-      <div :for={note <- notes} class="my-1 bg-[#3d3d3d] p-2 rounded-md" id={"note-#{note.id}"}>
-        <article :if={note.text} class="note-text break-words">
-          {Earmark.as_html!(note.text, escape: false, compact_output: false)
-          |> Phoenix.HTML.raw()}
-        </article>
-        <div class="flex mt-2 justify-between">
-          <div class="text-xs opacity-40">
-            <.local_time id={"note-#{note.id}-date"} date={note.inserted_at} />
-          </div>
-          <div class="flex items-center gap-2 ">
-            <button phx-click="delete" phx-value-id={note.id} class="hover:opacity-80">
-              <Heroicons.trash class="h-4" />
-            </button>
-            <button phx-click="edit" phx-value-id={note.id} class="hover:opacity-80">
-              <Heroicons.pencil_square class="h-4" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <%!-- New note submission form --%>
-  <div :if={!@is_editing && @selected_workspace} class="my-2">
-    <.notes_form for={@form} phx-change="validate" phx-submit="save" id="notes-form">
-      <div class="flex gap-2 border rounded-lg border-zinc-700 focus-within:border-zinc-600">
-        <.note_input type="textarea" field={@form[:text]} id="notes_text" phx-hook="NotesInput" />
-        <div class="mt-auto mb-1 mr-1">
-          <.button>
-            Save
-          </.button>
-        </div>
-      </div>
-    </.notes_form>
-  </div>
-
-  <%!-- Note editing form --%>
-  <div :if={@is_editing} class="mt-2">
-    <.notes_form for={@form} phx-change="validate" phx-submit="update-note" id="notes-form">
-      <div class="flex gap-2 border rounded-lg border-zinc-700 focus-within:border-zinc-600">
-        <.note_input type="textarea" field={@form[:text]} id="notes_text" phx-hook="NotesInput" />
-        <div class="mt-auto mb-1 mr-1">
-          <.input
-            type="select"
-            prompt="Workspace"
-            id="workspace"
-            name="workspace"
-            options={Enum.map(@workspaces, fn workspace -> {workspace.title, workspace.id} end)}
-            value=""
-          />
-          <.button class="mt-2">
-            Save
-          </.button>
-          <.button type="button" phx-click="cancel-edit" class="bg-zinc-500">
-            Cancel
-          </.button>
-        </div>
-      </div>
-    </.notes_form>
-  </div>
 </div>
