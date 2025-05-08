@@ -45,9 +45,7 @@ defmodule AccumulatorWeb.NotesLive do
 
     socket
     |> stream(:notes, notes)
-    |> assign(
-      selected_workspace: default_workspace
-    )
+    |> assign(selected_workspace: default_workspace)
     |> push_event("new-note-scroll", %{})
   end
 
@@ -64,7 +62,7 @@ defmodule AccumulatorWeb.NotesLive do
 
       workspace ->
         notes = Notes.get_all_notes_for_workspace(workspace.id)
-        
+
         socket
         |> stream(:notes, notes, reset: true)
         |> assign(
@@ -80,7 +78,7 @@ defmodule AccumulatorWeb.NotesLive do
   @impl true
   def handle_event("validate", %{"note" => note_params} = _params, socket) do
     note_changeset = %Note{} |> Note.changeset(note_params)
-    
+
     form =
       note_changeset
       |> Map.put(:action, :validate)
@@ -93,6 +91,7 @@ defmodule AccumulatorWeb.NotesLive do
   def handle_event("save", %{"note" => note_params} = _params, socket) do
     # Don't save empty notes
     text = Map.get(note_params, "text", "")
+
     if String.trim(text) == "" do
       {:noreply, socket}
     else
@@ -106,7 +105,7 @@ defmodule AccumulatorWeb.NotesLive do
             notes = Notes.get_all_notes_for_workspace(workspace_id)
 
             Notes.broadcast!(%{type: :new_note, workspace_id: note.workspace_id})
-            
+
             socket
             |> assign(form: empty_form())
             |> stream(:notes, notes, reset: true)
@@ -142,6 +141,7 @@ defmodule AccumulatorWeb.NotesLive do
       ) do
     # Don't update with empty notes
     text = Map.get(note_params, "text", "")
+
     if String.trim(text) == "" do
       {:noreply, assign(socket, is_editing: false, form: empty_form(), editing_note_id: nil)}
     else
@@ -179,10 +179,11 @@ defmodule AccumulatorWeb.NotesLive do
     Notes.broadcast!(%{type: :delete_note, workspace_id: workspace_id})
 
     notes = Notes.get_all_notes_for_workspace(workspace_id)
-    {:noreply, socket
-      |> stream(:notes, notes, reset: true)
-      |> push_event("new-note-scroll", %{submitted: true})
-    }
+
+    {:noreply,
+     socket
+     |> stream(:notes, notes, reset: true)
+     |> push_event("new-note-scroll", %{submitted: true})}
   end
 
   # Search handlers
@@ -201,7 +202,9 @@ defmodule AccumulatorWeb.NotesLive do
       if search_term_length != 0 do
         notes = Notes.search_notes(workspace_id, search_term)
 
-        socket |> stream(:notes, notes, reset: true) |> push_event("new-note-scroll", %{submitted: true})
+        socket
+        |> stream(:notes, notes, reset: true)
+        |> push_event("new-note-scroll", %{submitted: true})
       else
         notes = Notes.get_all_notes_for_workspace(workspace_id)
 
@@ -325,9 +328,7 @@ defmodule AccumulatorWeb.NotesLive do
     socket =
       socket
       |> stream(:notes, notes, reset: true)
-      |> assign(
-        selected_workspace: workspace
-      )
+      |> assign(selected_workspace: workspace)
       |> push_event("new-note-scroll", %{submitted: true})
       |> push_patch(to: "/notes/#{workspace.id}")
 
