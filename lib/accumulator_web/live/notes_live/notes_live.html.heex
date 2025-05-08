@@ -1,55 +1,36 @@
 <div class="w-full font-note relative p-4">
-  <div>
-    Workspaces
-    <div id="workspaces" class="flex gap-2 mt-2 flex-wrap">
-      <div
-        :for={workspace <- @workspaces}
-        id={"workspace-#{workspace.id}"}
-        class="flex gap-2 items-center"
-      >
-        <button
-          class="rounded-md text-sm p-2 bg-zinc-600 hover:bg-opacity-80 disabled:bg-opacity-20"
-          phx-click={JS.patch("/notes/#{workspace.id}")}
-          disabled={@selected_workspace && workspace.id == @selected_workspace.id}
-        >
-          {workspace.title}
-        </button>
-        <button
-          :if={workspace.title !== "default"}
-          class="edit-workspace-btn hidden hover:opacity-80"
-          phx-click="edit-workspace"
-          phx-value-id={workspace.id}
-        >
-          <Heroicons.pencil class="h-5 w-5" />
-        </button>
-        <button
-          :if={workspace.title !== "default"}
-          class="delete-workspace-btn hidden hover:opacity-80"
-          phx-click="delete-workspace"
-          phx-value-id={workspace.id}
-        >
-          <Heroicons.trash class="h-5 w-5" />
-        </button>
-      </div>
-    </div>
-    <div class="mt-3 flex gap-2 flex-wrap">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-xl font-semibold">
+      {if @selected_workspace, do: @selected_workspace.title, else: "Notes"}
+      <%= if @selected_workspace && @selected_workspace.is_public do %>
+        <span class="inline-block ml-1">
+          <Heroicons.globe_europe_africa class="h-4 w-4 inline" />
+        </span>
+      <% end %>
+    </h2>
+    <div class="flex gap-2">
       <button
         phx-click="new-workspace"
         class="border text-sm px-2 py-1 rounded-md hover:opacity-80"
+        title="Create New Workspace"
       >
-        Create New Workspace
-      </button>
-      <button
-        class="border text-sm px-2 py-1 rounded-md hover:opacity-80"
-        phx-click={JS.toggle(to: ".edit-workspace-btn") |> JS.toggle(to: ".delete-workspace-btn")}
-      >
-        Edit Workspaces
+        <Heroicons.plus class="h-4 w-4" />
       </button>
       <button
         class="border text-sm px-2 py-1 rounded-md hover:opacity-80"
         phx-click={JS.toggle(to: "#search-container")}
+        title="Toggle Search"
       >
-        Toggle Search
+        <Heroicons.magnifying_glass class="h-4 w-4" />
+      </button>
+      <button
+        :if={@selected_workspace && @selected_workspace.title != "default"}
+        phx-click="edit-workspace"
+        phx-value-id={@selected_workspace.id}
+        class="border text-sm px-2 py-1 rounded-md hover:opacity-80"
+        title="Edit Current Workspace"
+      >
+        <Heroicons.pencil_square class="h-4 w-4" />
       </button>
     </div>
   </div>

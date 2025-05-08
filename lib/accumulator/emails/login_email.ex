@@ -8,7 +8,8 @@ defmodule Accumulator.Emails.LoginEmail do
       from: "phoenix@resend.dev",
       to: admin_email,
       subject: "phoenix.aayushsahu.com: login detected",
-      html: body(connection_info)
+      html:
+        body(connection_info)
         |> Phoenix.HTML.html_escape()
         |> Phoenix.HTML.safe_to_string()
     }

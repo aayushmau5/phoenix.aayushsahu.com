@@ -1,3 +1,9 @@
+<AccumulatorWeb.Components.Notes.NotesNavbar.notes_navbar
+  current_user={@current_user}
+  workspaces={assigns[:workspaces] || []}
+  selected_workspace={assigns[:selected_workspace]}
+/>
+
 <main class="px-4 py-20 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-2xl">
     <.flash_group flash={@flash} />

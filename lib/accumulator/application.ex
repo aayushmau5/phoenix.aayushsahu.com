@@ -31,9 +31,12 @@ defmodule Accumulator.Application do
       AccumulatorWeb.Endpoint,
       AccumulatorWeb.Presence,
       Accumulator.Repo,
-      {Accumulator.Scheduler.Spotify, interval: 60000},       # 60000: 1 minute
-      {Accumulator.Scheduler.Pastes, interval: 3_600_000},    # 3_600_000: 1 hour
-      {Accumulator.Scheduler.Plants, interval: 43_200_000},   # 43_200_000: 12 Hour
+      # 60000: 1 minute
+      {Accumulator.Scheduler.Spotify, interval: 60000},
+      # 3_600_000: 1 hour
+      {Accumulator.Scheduler.Pastes, interval: 3_600_000},
+      # 43_200_000: 12 Hour
+      {Accumulator.Scheduler.Plants, interval: 43_200_000},
       {Task.Supervisor, name: Accumulator.TaskRunner}
     ]
 

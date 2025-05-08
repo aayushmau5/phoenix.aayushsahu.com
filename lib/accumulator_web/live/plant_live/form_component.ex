@@ -82,7 +82,8 @@ defmodule AccumulatorWeb.PlantLive.FormComponent do
      |> allow_upload(:files,
        accept: ["image/*"],
        max_entries: 1,
-       max_file_size: 30_000_000  # ~30MB
+       # ~30MB
+       max_file_size: 30_000_000
      )}
   end
 

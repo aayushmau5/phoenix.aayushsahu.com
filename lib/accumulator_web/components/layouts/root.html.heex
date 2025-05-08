@@ -18,19 +18,6 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
   </head>
   <body class="bg-[#1f1f1f] text-white antialiased font-note">
-    <.navbar current_user={@current_user}>
-      <.navbar_link to={~p"/"} label="phoenix.aayushsahu.com" />
-      <.navbar_link to={~p"/dashboard"} label="dashboard" />
-      <.navbar_link to={~p"/spotify"} label="spotify" />
-      <.navbar_link to={~p"/redirect"} label="redirect" />
-      <.navbar_link :if={@current_user} to={~p"/bin"} label="bin" />
-      <.navbar_link :if={@current_user} to={~p"/notes"} label="notes" />
-      <.navbar_link :if={!@current_user} to={~p"/notes/public/default"} label="notes" />
-      <.navbar_link :if={@current_user} to={~p"/sessions"} label="session" />
-      <.navbar_link :if={@current_user} to={~p"/livedashboard"} label="livedashboard" />
-      <.navbar_link :if={@current_user} to={~p"/plants"} label="plants" />
-    </.navbar>
-
     {@inner_content}
   </body>
 </html>

@@ -1,4 +1,10 @@
-<main class="pt-5">
-  <.flash_group flash={@flash} />
-  {@inner_content}
+<.flash_group flash={@flash} />
+<AccumulatorWeb.Components.Notes.NotesNavbar.notes_navbar
+  current_user={@current_user}
+  workspaces={assigns[:workspaces] || []}
+  selected_workspace={assigns[:selected_workspace]}
+/>
+
+<main class="py-10 px-4">
+    {@inner_content}
 </main>

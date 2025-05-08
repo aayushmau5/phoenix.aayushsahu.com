@@ -7,13 +7,16 @@ defmodule AccumulatorWeb.NotesLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    # Get all workspaces
+    workspaces = Notes.get_all_workspaces()
+
     {:ok,
      socket
      |> stream_configure(:notes, dom_id: &Enum.at(&1, 0))
      |> stream(:notes, [])
      |> assign(
        page_title: "Notes",
-       workspaces: Notes.get_all_workspaces(),
+       workspaces: workspaces,
        selected_workspace: nil,
        # Note submission form
        form: create_empty_form(:note),
