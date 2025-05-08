@@ -1,7 +1,7 @@
 defmodule AccumulatorWeb.NotesLive do
   use AccumulatorWeb, :live_view
 
-  alias Accumulator.{Notes, Notes.Note, Notes.Workspace, Helpers}
+  alias Accumulator.{Notes, Notes.Note, Notes.Workspace}
 
   # TODO: edit workspace has "public" slider
 
@@ -289,7 +289,9 @@ defmodule AccumulatorWeb.NotesLive do
             Notes.broadcast!(%{type: :new_workspace, workspace_id: workspace.id})
 
             socket
-            |> assign(workspaces: workspaces)
+            |> assign(workspaces: workspaces, selected_workspace: workspace)
+            |> stream(:notes, [], reset: true)
+            |> push_patch(to: "/notes/#{workspace.id}")
             |> push_event("notes-workspace-modal", %{
               modal_id: "workspace-modal",
               attr: "data-hide-modal"

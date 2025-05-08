@@ -63,7 +63,7 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
             <div class="border-t border-gray-700 pt-4 mb-4">
               <h3 class="text-gray-400 font-semibold mb-2">Workspaces</h3>
               <ul>
-                <li :for={workspace <- @workspaces} class="my-1">
+                <li :for={workspace <- @workspaces} class="my-1" id={"workspace-#{workspace.id}"}>
                   <.link
                     navigate={~p"/notes/#{workspace.id}"}
                     class={"block p-2 rounded text-sm #{if @selected_workspace && workspace.id == @selected_workspace.id, do: "bg-[#373739] text-white", else: "text-gray-400 hover:bg-[#373739]"}"}
