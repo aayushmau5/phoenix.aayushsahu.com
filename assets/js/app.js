@@ -77,7 +77,7 @@ Hooks.ScrollToBottom = {
 // For notes
 Hooks.NotesInput = {
 	mounted() {
-		this.el.addEventListener("keydown", this.handleKeyDown);
+		this.el.addEventListener("keydown", this.handleKeyDown.bind(this));
 		this.el.addEventListener("input", this.autoResize.bind(this));
 		// Initial resize
 		this.autoResize();
