@@ -18,6 +18,11 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
   </head>
   <body class="bg-[#1f1f1f] text-white antialiased font-note">
+    <AccumulatorWeb.Components.Notes.NotesNavbar.notes_navbar
+      current_user={assigns[:current_user]}
+      workspaces={assigns[:workspaces] || []}
+      selected_workspace={assigns[:selected_workspace]}
+    />
     {@inner_content}
   </body>
 </html>

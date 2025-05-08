@@ -12,7 +12,7 @@ module.exports = {
       },
     },
     fontFamily: {
-      note: ['"Space Grotesk"'],
+      note: ['"Work Sans"'],
     },
   },
   plugins: [
