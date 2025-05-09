@@ -176,7 +176,7 @@
           id="notes-form"
           class="max-w-4xl mx-auto"
         >
-          <div class="flex gap-2 border rounded-lg border-zinc-700 bg-[#2a2c2e] focus-within:border-zinc-500">
+          <div class="flex flex-col gap-2 border rounded-lg border-zinc-700 bg-[#2a2c2e] focus-within:border-zinc-500 overflow-hidden">
             <.note_input
               type="textarea"
               field={@form[:text]}
@@ -184,7 +184,7 @@
               phx-hook="NotesInput"
               class="py-3 px-4 max-h-[150px] overflow-y-auto"
             />
-            <div class="self-end p-2 flex items-center gap-2">
+            <div class="p-2 flex items-center bg-[#1f1f1f] w-full justify-end">
               <div class="mr-2">
                 <.input
                   type="select"
@@ -195,30 +195,31 @@
                     Enum.map(@workspaces, fn workspace -> {workspace.title, workspace.id} end)
                   }
                   value=""
-                  class="bg-[#3d3d3d] border-zinc-700 text-sm"
                 />
               </div>
-              <button
-                type="button"
-                phx-click="cancel-edit"
-                class="rounded-full bg-zinc-700 hover:bg-zinc-600 p-2 transition-colors"
-                title="Cancel"
-              >
-                <Heroicons.x_mark class="h-5 w-5" />
-              </button>
-              <button
-                type="submit"
-                disabled={String.trim(@form[:text].value || "") == ""}
-                class={
-                  if String.trim(@form[:text].value || "") == "",
-                    do:
-                      "rounded-full transition-colors bg-zinc-600 cursor-not-allowed opacity-50 p-2",
-                    else: "rounded-full transition-colors bg-[#565869] hover:bg-[#6b6d82] p-2"
-                }
-                title="Save changes"
-              >
-                <Heroicons.check class="h-5 w-5" />
-              </button>
+              <div>
+                <button
+                  type="button"
+                  phx-click="cancel-edit"
+                  class="rounded-full bg-zinc-700 hover:bg-zinc-600 p-2 transition-colors"
+                  title="Cancel"
+                >
+                  <Heroicons.x_mark class="h-5 w-5" />
+                </button>
+                <button
+                  type="submit"
+                  disabled={String.trim(@form[:text].value || "") == ""}
+                  class={
+                    if String.trim(@form[:text].value || "") == "",
+                      do:
+                        "rounded-full transition-colors bg-zinc-600 cursor-not-allowed opacity-50 p-2",
+                      else: "rounded-full transition-colors bg-[#565869] hover:bg-[#6b6d82] p-2"
+                  }
+                  title="Save changes"
+                >
+                  <Heroicons.check class="h-5 w-5" />
+                </button>
+              </div>
             </div>
           </div>
         </.notes_form>

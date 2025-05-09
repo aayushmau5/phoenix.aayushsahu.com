@@ -229,7 +229,7 @@ defmodule AccumulatorWeb.CoreComponents do
       <select
         id={@id}
         name={@name}
-        class="mt-1 text-black block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 sm:text-sm w-[140px]"
+        class="text-black block py-2 px-1 rounded-md focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 text-sm w-[140px]"
         multiple={@multiple}
         {@rest}
       >

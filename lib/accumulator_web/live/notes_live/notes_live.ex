@@ -182,8 +182,7 @@ defmodule AccumulatorWeb.NotesLive do
 
     {:noreply,
      socket
-     |> stream(:notes, notes, reset: true)
-     |> push_event("new-note-scroll", %{submitted: true})}
+     |> stream(:notes, notes, reset: true)}
   end
 
   # Search handlers
