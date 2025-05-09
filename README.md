@@ -8,7 +8,7 @@ Accumulator is a personal productivity and data tracking application built with 
 - Track website/blog visitor statistics in real-time
 - Show current page viewers using Phoenix Presence
 - Sort and organize blog analytics data
-- Monitor page view counts across my websites
+- Monitor page view counts across [my website](https://aayushsahu.com)
 
 ### Notes System
 - Create and organize notes in workspaces
