@@ -73,20 +73,29 @@ defmodule AccumulatorWeb.Router do
 
     live_dashboard "/livedashboard", metrics: AccumulatorWeb.Telemetry
 
-    live_session :require_authenticated_user,
+    live_session :bin,
       on_mount: [{AccumulatorWeb.UserAuth, :ensure_authenticated}] do
       # LiveBin
       live "/bin", BinLive.Home
       live "/bin/create", BinLive.Create
       live "/bin/:id/show", BinLive.Show
       live "/bin/:id/edit", BinLive.Edit
+    end
 
+    live_session :sessions,
+      on_mount: [{AccumulatorWeb.UserAuth, :ensure_authenticated}] do
       live "/sessions", SessionsLive
+    end
 
+    live_session :notes,
+      on_mount: [{AccumulatorWeb.UserAuth, :ensure_authenticated}] do
       # Notes
       live "/notes", NotesLive
       live "/notes/:id", NotesLive
+    end
 
+    live_session :plants,
+      on_mount: [{AccumulatorWeb.UserAuth, :ensure_authenticated}] do
       # Plants
       live "/plants", PlantLive.Index, :index
       live "/plants/new", PlantLive.Index, :new

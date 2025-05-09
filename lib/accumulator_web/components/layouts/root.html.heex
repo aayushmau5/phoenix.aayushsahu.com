@@ -18,7 +18,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
   </head>
   <body class="bg-[#1f1f1f] text-white antialiased font-note">
-    <%= if assigns[:workspaces] == nil do %>
+    <%= if assigns[:workspaces] == nil && assigns[:selected_workspace] == nil do %>
       <AccumulatorWeb.Components.Notes.NotesNavbar.notes_navbar
         current_user={assigns[:current_user]}
         workspaces={[]}
