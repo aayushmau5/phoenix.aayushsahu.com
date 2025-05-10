@@ -531,13 +531,19 @@ defmodule AccumulatorWeb.CoreComponents do
   Navbar link
   """
   attr(:to, :string, required: true)
-  attr(:label, :string, required: true)
+  attr(:class, :string, default: "")
+  slot(:inner_block, required: true)
 
   def navbar_link(assigns) do
     ~H"""
     <li>
-      <.link navigate={@to} class="flex items-center p-2 text-gray-400 rounded hover:bg-[#373739] hover:text-white transition-colors duration-150 group">
-        <span class="ml-1">{@label}</span>
+      <.link
+        navigate={@to}
+        class="flex items-center p-2 text-gray-400 rounded hover:bg-[#373739] hover:text-white transition-colors duration-150 group"
+      >
+        <div class={["flex gap-2 items-center", @class]}>
+          {render_slot(@inner_block)}
+        </div>
       </.link>
     </li>
     """

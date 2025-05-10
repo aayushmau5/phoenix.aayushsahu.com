@@ -15,8 +15,12 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
         phx-click={
           JS.toggle(
             to: "#navbar",
-            in: {"transition ease-out duration-300", "opacity-0 -translate-x-full", "opacity-100 translate-x-0"},
-            out: {"transition ease-in duration-200", "opacity-100 translate-x-0", "opacity-0 -translate-x-full"}
+            in:
+              {"transition ease-out duration-300", "opacity-0 -translate-x-full",
+               "opacity-100 translate-x-0"},
+            out:
+              {"transition ease-in duration-200", "opacity-100 translate-x-0",
+               "opacity-0 -translate-x-full"}
           )
           |> JS.toggle(
             to: "#navbar-overlay",
@@ -44,8 +48,12 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
         phx-click={
           JS.toggle(
             to: "#navbar",
-            in: {"transition ease-out duration-300", "opacity-0 -translate-x-full", "opacity-100 translate-x-0"},
-            out: {"transition ease-in duration-200", "opacity-100 translate-x-0", "opacity-0 -translate-x-full"}
+            in:
+              {"transition ease-out duration-300", "opacity-0 -translate-x-full",
+               "opacity-100 translate-x-0"},
+            out:
+              {"transition ease-in duration-200", "opacity-100 translate-x-0",
+               "opacity-0 -translate-x-full"}
           )
           |> JS.toggle(
             to: "#navbar-overlay",
@@ -63,8 +71,12 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
         phx-click-away={
           JS.toggle(
             to: "#navbar",
-            in: {"transition ease-out duration-300", "opacity-0 -translate-x-full", "opacity-100 translate-x-0"},
-            out: {"transition ease-in duration-200", "opacity-100 translate-x-0", "opacity-0 -translate-x-full"}
+            in:
+              {"transition ease-out duration-300", "opacity-0 -translate-x-full",
+               "opacity-100 translate-x-0"},
+            out:
+              {"transition ease-in duration-200", "opacity-100 translate-x-0",
+               "opacity-0 -translate-x-full"}
           )
           |> JS.toggle(
             to: "#navbar-overlay",
@@ -84,8 +96,12 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
               phx-click={
                 JS.toggle(
                   to: "#navbar",
-                  in: {"transition ease-out duration-300", "opacity-0 -translate-x-full", "opacity-100 translate-x-0"},
-                  out: {"transition ease-in duration-200", "opacity-100 translate-x-0", "opacity-0 -translate-x-full"}
+                  in:
+                    {"transition ease-out duration-300", "opacity-0 -translate-x-full",
+                     "opacity-100 translate-x-0"},
+                  out:
+                    {"transition ease-in duration-200", "opacity-100 translate-x-0",
+                     "opacity-0 -translate-x-full"}
                 )
                 |> JS.toggle(
                   to: "#navbar-overlay",
@@ -94,30 +110,49 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
                 )
               }
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-6 h-6"
+              >
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
           <ul class="mb-6 space-y-1">
-            <CoreComponents.navbar_link to={~p"/"} label="phoenix.aayushsahu.com" />
-            <CoreComponents.navbar_link to={~p"/dashboard"} label="dashboard" />
-            <CoreComponents.navbar_link to={~p"/spotify"} label="spotify" />
-            <CoreComponents.navbar_link to={~p"/redirect"} label="redirect" />
-            <CoreComponents.navbar_link :if={@current_user} to={~p"/bin"} label="bin" />
-            <CoreComponents.navbar_link :if={@current_user} to={~p"/notes"} label="notes" />
-            <CoreComponents.navbar_link
-              :if={!@current_user}
-              to={~p"/notes/public/default"}
-              label="notes"
-            />
-            <CoreComponents.navbar_link :if={@current_user} to={~p"/sessions"} label="session" />
-            <CoreComponents.navbar_link
-              :if={@current_user}
-              to={~p"/livedashboard"}
-              label="livedashboard"
-            />
-            <CoreComponents.navbar_link :if={@current_user} to={~p"/plants"} label="plants" />
+            <.navbar_link to={~p"/"}>
+              🌳 home
+            </.navbar_link>
+            <.navbar_link to={~p"/dashboard"}>
+              📈 dashboard
+            </.navbar_link>
+            <.navbar_link to={~p"/spotify"}>
+              🎵 spotify
+            </.navbar_link>
+            <.navbar_link to={~p"/redirect"}>
+              🔗 redirect
+            </.navbar_link>
+            <.navbar_link :if={@current_user} to={~p"/bin"}>
+              🚮 bin
+            </.navbar_link>
+            <.navbar_link :if={@current_user} to={~p"/notes"}>
+             📓 notes
+            </.navbar_link>
+            <.navbar_link :if={!@current_user} to={~p"/notes/public/default"}>
+             📓 notes
+            </.navbar_link>
+            <.navbar_link :if={@current_user} to={~p"/sessions"}>
+             🌐 session
+            </.navbar_link>
+            <.navbar_link :if={@current_user} to={~p"/livedashboard"}>
+             💻 livedashboard
+            </.navbar_link>
+            <.navbar_link :if={@current_user} to={~p"/plants"}>
+             🪴 plants
+            </.navbar_link>
           </ul>
 
           <%= if @workspaces && length(@workspaces) > 0 do %>
@@ -144,14 +179,25 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
 
         <div class="p-4 mt-auto mb-4 border-t border-gray-700">
           <%= if @current_user do %>
-              <div class="text-sm text-gray-300 truncate mb-2">{@current_user.email}</div>
+            <div class="text-sm text-gray-300 truncate mb-2">{@current_user.email}</div>
             <.link
               href="/logout"
               method="delete"
               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 w-full justify-center"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
               </svg>
               Log out
             </.link>
@@ -160,8 +206,19 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
               href="/login"
               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 w-full justify-center"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                />
               </svg>
               Log in
             </.link>
