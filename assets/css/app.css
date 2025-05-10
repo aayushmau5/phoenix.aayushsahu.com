@@ -71,7 +71,7 @@
 /* Cherry blossom background for homepage */
 .cherry-blossom-bg {
     position: relative;
-    min-height: 80vh;
+    height: 80vh;
 }
 
 .cherry-blossom-bg::before {
