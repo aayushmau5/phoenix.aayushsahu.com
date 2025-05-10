@@ -81,5 +81,5 @@
 .cherry-blossom-bg > * {
     position: relative;
     z-index: 1;
-    text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+    text-shadow: 0 3px 15px rgb(45, 131, 223);
 }
