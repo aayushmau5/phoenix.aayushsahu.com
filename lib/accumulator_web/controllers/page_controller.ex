@@ -7,7 +7,7 @@ defmodule AccumulatorWeb.PageController do
     # The home page is often custom made,
     # so skip the default app layout.
     conn
-    |> put_layout({AccumulatorWeb.Layouts, :home})
+    |> put_layout(html: {AccumulatorWeb.Layouts, :home})
     |> render(:home)
   end
 
