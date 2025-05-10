@@ -71,7 +71,7 @@
 /* Cherry blossom background for homepage */
 .cherry-blossom-bg {
     position: relative;
-    min-height: 100vh;
+    min-height: 80vh;
 }
 
 .cherry-blossom-bg::before {
@@ -90,8 +90,6 @@
     pointer-events: none;
 }
 
-.cherry-blossom-bg > * {
-    position: relative;
-    z-index: 1;
-    text-shadow: 0 3px 15px rgb(45, 131, 223);
+.cherry-blossom-dim::before {
+    background-image: url("/images/cherry_blossom_dim.png");
 }

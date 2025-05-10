@@ -139,19 +139,19 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
               🚮 bin
             </.navbar_link>
             <.navbar_link :if={@current_user} to={~p"/notes"}>
-             📓 notes
+              📓 notes
             </.navbar_link>
             <.navbar_link :if={!@current_user} to={~p"/notes/public/default"}>
-             📓 notes
+              📓 notes
             </.navbar_link>
             <.navbar_link :if={@current_user} to={~p"/sessions"}>
-             🌐 session
+              🌐 session
             </.navbar_link>
             <.navbar_link :if={@current_user} to={~p"/livedashboard"}>
-             💻 livedashboard
+              💻 livedashboard
             </.navbar_link>
             <.navbar_link :if={@current_user} to={~p"/plants"}>
-             🪴 plants
+              🪴 plants
             </.navbar_link>
           </ul>
 
