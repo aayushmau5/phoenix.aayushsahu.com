@@ -56,6 +56,18 @@
     margin: 2px 0;
 }
 
+/* Navbar animations */
+#navbar {
+    will-change: transform, opacity;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+#navbar-overlay {
+    will-change: opacity;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+
 /* Cherry blossom background for homepage */
 .cherry-blossom-bg {
     position: relative;

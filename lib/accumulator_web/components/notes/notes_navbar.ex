@@ -13,14 +13,20 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
     <nav class="relative z-50">
       <button
         phx-click={
-          JS.toggle_attribute({"style", "display: flex;", "display: none;"},
-            to: "#navbar"
+          JS.toggle(
+            to: "#navbar",
+            in: {"transition ease-out duration-300", "opacity-0 -translate-x-full", "opacity-100 translate-x-0"},
+            out: {"transition ease-in duration-200", "opacity-100 translate-x-0", "opacity-0 -translate-x-full"}
+          )
+          |> JS.toggle(
+            to: "#navbar-overlay",
+            in: {"transition ease-out duration-300", "opacity-0", "opacity-100"},
+            out: {"transition ease-in duration-200", "opacity-100", "opacity-0"}
           )
         }
+        id="navbar-toggle"
         type="button"
-        class="fixed top-0 p-2 ml-3 text-sm text-gray-500 rounded-lg focus:outline-none z-10"
-        aria-controls="navbar"
-        aria-expanded="false"
+        class="fixed top-0 p-2 ml-3 text-sm text-gray-400 hover:text-white rounded-lg z-10 duration-200"
       >
         <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
           <path
@@ -33,12 +39,67 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
       </button>
 
       <div
-        class="bg-[#26282a] w-content h-screen fixed flex-col overflow-y-auto justify-between"
-        style="display: none;"
+        id="navbar-overlay"
+        class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"
+        phx-click={
+          JS.toggle(
+            to: "#navbar",
+            in: {"transition ease-out duration-300", "opacity-0 -translate-x-full", "opacity-100 translate-x-0"},
+            out: {"transition ease-in duration-200", "opacity-100 translate-x-0", "opacity-0 -translate-x-full"}
+          )
+          |> JS.toggle(
+            to: "#navbar-overlay",
+            in: {"transition ease-out duration-300", "opacity-0", "opacity-100"},
+            out: {"transition ease-in duration-200", "opacity-100", "opacity-0"}
+          )
+        }
+        aria-hidden="true"
+      >
+      </div>
+
+      <div
         id="navbar"
+        class="bg-[#26282a] w-72 md:w-64 h-screen fixed top-0 left-0 flex flex-col overflow-y-auto justify-between z-50 hidden opacity-0 transform"
+        phx-click-away={
+          JS.toggle(
+            to: "#navbar",
+            in: {"transition ease-out duration-300", "opacity-0 -translate-x-full", "opacity-100 translate-x-0"},
+            out: {"transition ease-in duration-200", "opacity-100 translate-x-0", "opacity-0 -translate-x-full"}
+          )
+          |> JS.toggle(
+            to: "#navbar-overlay",
+            in: {"transition ease-out duration-300", "opacity-0", "opacity-100"},
+            out: {"transition ease-in duration-200", "opacity-100", "opacity-0"}
+          )
+        }
+        role="navigation"
+        aria-labelledby="navbar-toggle"
       >
         <div class="p-4 mt-5">
-          <ul class="mb-6">
+          <div class="mb-2 px-2 flex items-center">
+            <button
+              type="button"
+              class="ml-auto p-1 text-gray-400 hover:text-white rounded-lg focus:ring-2 focus:ring-gray-600 focus:outline-none"
+              aria-label="Close menu"
+              phx-click={
+                JS.toggle(
+                  to: "#navbar",
+                  in: {"transition ease-out duration-300", "opacity-0 -translate-x-full", "opacity-100 translate-x-0"},
+                  out: {"transition ease-in duration-200", "opacity-100 translate-x-0", "opacity-0 -translate-x-full"}
+                )
+                |> JS.toggle(
+                  to: "#navbar-overlay",
+                  in: {"transition ease-out duration-300", "opacity-0", "opacity-100"},
+                  out: {"transition ease-in duration-200", "opacity-100", "opacity-0"}
+                )
+              }
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <ul class="mb-6 space-y-1">
             <CoreComponents.navbar_link to={~p"/"} label="phoenix.aayushsahu.com" />
             <CoreComponents.navbar_link to={~p"/dashboard"} label="dashboard" />
             <CoreComponents.navbar_link to={~p"/spotify"} label="spotify" />
@@ -81,18 +142,27 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
           <% end %>
         </div>
 
-        <div class="text-right mr-4 mt-auto mb-4">
+        <div class="p-4 mt-auto mb-4 border-t border-gray-700">
           <%= if @current_user do %>
-            <div>{@current_user.email}</div>
+              <div class="text-sm text-gray-300 truncate mb-2">{@current_user.email}</div>
             <.link
               href="/logout"
               method="delete"
-              class="text-white font-semibold hover:text-[#6CFACD]"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 w-full justify-center"
             >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
               Log out
             </.link>
           <% else %>
-            <.link href="/login" class="text-white font-semibold hover:text-[#6CFACD]">
+            <.link
+              href="/login"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 w-full justify-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+              </svg>
               Log in
             </.link>
           <% end %>

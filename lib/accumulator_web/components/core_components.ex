@@ -535,9 +535,11 @@ defmodule AccumulatorWeb.CoreComponents do
 
   def navbar_link(assigns) do
     ~H"""
-    <.link navigate={@to} class="block p-2 text-gray-400 rounded hover:bg-[#373739]">
-      {@label}
-    </.link>
+    <li>
+      <.link navigate={@to} class="flex items-center p-2 text-gray-400 rounded hover:bg-[#373739] hover:text-white transition-colors duration-150 group">
+        <span class="ml-1">{@label}</span>
+      </.link>
+    </li>
     """
   end
 
