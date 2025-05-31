@@ -61,7 +61,8 @@ defmodule AccumulatorWeb.CommentChannel do
     case Comments.create_comment(attrs) do
       {:ok, comment} ->
         # Broadcast to all users in this blog's comment channel
-        broadcast!(socket, "comment_created", %{comment: serialize_comment(comment)})
+        comments = Comments.list_comments_with_nested_replies(blog_slug)
+        push(socket, "comments_loaded", %{comments: serialize_comments(comments)})
 
         # Also broadcast via PubSub for other potential listeners
         # PubSub.broadcast(@pubsub, "comments:#{blog_slug}", %{
@@ -69,7 +70,7 @@ defmodule AccumulatorWeb.CommentChannel do
         #   comment: comment
         # })
 
-        {:reply, {:ok, %{comment: serialize_comment(comment)}}, socket}
+        {:reply, {:ok, nil}, socket}
 
       {:error, changeset} ->
         {:reply, {:error, %{errors: format_errors(changeset)}}, socket}
@@ -90,7 +91,8 @@ defmodule AccumulatorWeb.CommentChannel do
     case Comments.create_comment(attrs) do
       {:ok, comment} ->
         # Broadcast to all users in this blog's comment channel
-        broadcast!(socket, "reply_created", %{reply: serialize_comment(comment)})
+        comments = Comments.list_comments_with_nested_replies(blog_slug)
+        push(socket, "comments_loaded", %{comments: serialize_comments(comments)})
 
         # Also broadcast via PubSub
         # PubSub.broadcast(@pubsub, "comments:#{blog_slug}", %{
