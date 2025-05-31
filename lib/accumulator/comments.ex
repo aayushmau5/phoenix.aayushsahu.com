@@ -6,7 +6,10 @@ defmodule Accumulator.Comments do
   Gets a single comment by ID.
   """
   def get_comment(id) do
-    Repo.get(Comment, id)
+    case Repo.get(Comment, id) do
+      nil -> nil
+      comment -> Repo.preload(comment, :replies)
+    end
   end
 
   @doc """
@@ -14,6 +17,7 @@ defmodule Accumulator.Comments do
   """
   def get_comment!(id) do
     Repo.get!(Comment, id)
+    |> Repo.preload(:replies)
   end
 
   @doc """
@@ -22,7 +26,8 @@ defmodule Accumulator.Comments do
   def list_comments(blog_slug) do
     from(c in Comment,
       where: c.blog_slug == ^blog_slug and is_nil(c.parent_id),
-      order_by: [desc: c.inserted_at]
+      order_by: [desc: c.inserted_at],
+      preload: [:replies]
     )
     |> Repo.all()
   end
@@ -33,7 +38,8 @@ defmodule Accumulator.Comments do
   def list_replies(parent_id) do
     from(c in Comment,
       where: c.parent_id == ^parent_id,
-      order_by: [asc: c.inserted_at]
+      order_by: [asc: c.inserted_at],
+      preload: [:replies]
     )
     |> Repo.all()
   end
@@ -54,18 +60,28 @@ defmodule Accumulator.Comments do
   Creates a new comment.
   """
   def create_comment(attrs \\ %{}) do
-    %Comment{}
-    |> Comment.changeset(attrs)
-    |> Repo.insert()
+    case %Comment{}
+         |> Comment.changeset(attrs)
+         |> Repo.insert() do
+      {:ok, comment} ->
+        {:ok, Repo.preload(comment, :replies)}
+      error ->
+        error
+    end
   end
 
   @doc """
   Updates an existing comment.
   """
   def update_comment(%Comment{} = comment, attrs) do
-    comment
-    |> Comment.changeset(attrs)
-    |> Repo.update()
+    case comment
+         |> Comment.changeset(attrs)
+         |> Repo.update() do
+      {:ok, comment} ->
+        {:ok, Repo.preload(comment, :replies)}
+      error ->
+        error
+    end
   end
 
   @doc """
@@ -84,9 +100,56 @@ defmodule Accumulator.Comments do
   end
 
   @doc """
+  Gets all comments for a blog with deeply nested replies loaded.
+  This is more efficient than the previous list_comments_with_replies function.
+  """
+  def list_comments_with_nested_replies(blog_slug) do
+    # Get all comments for this blog (both top-level and replies)
+    all_comments = from(c in Comment,
+      where: c.blog_slug == ^blog_slug,
+      order_by: [asc: c.inserted_at]
+    )
+    |> Repo.all()
+    
+    # Organize them into a nested structure
+    organize_comments_hierarchy(all_comments)
+  end
+
+  @doc """
   Returns an `%Ecto.Changeset{}` for tracking comment changes.
   """
   def change_comment(%Comment{} = comment, attrs \\ %{}) do
     Comment.changeset(comment, attrs)
+  end
+
+  # Private helper to organize flat comment list into nested hierarchy
+  defp organize_comments_hierarchy(comments) do
+    # Create a map for quick lookup
+    comment_map = Enum.reduce(comments, %{}, fn comment, acc ->
+      Map.put(acc, comment.id, Map.put(comment, :replies, []))
+    end)
+    
+    # Separate top-level comments and replies
+    {top_level, replies} = Enum.split_with(comments, fn comment -> 
+      is_nil(comment.parent_id) 
+    end)
+    
+    # Attach replies to their parents
+    comment_map_with_replies = Enum.reduce(replies, comment_map, fn reply, acc ->
+      case Map.get(acc, reply.parent_id) do
+        nil -> acc  # Parent not found
+        parent ->
+          updated_parent = Map.update!(parent, :replies, fn existing_replies ->
+            [Map.get(acc, reply.id) | existing_replies]
+          end)
+          Map.put(acc, reply.parent_id, updated_parent)
+      end
+    end)
+    
+    # Return top-level comments with their replies attached
+    Enum.map(top_level, fn comment ->
+      Map.get(comment_map_with_replies, comment.id)
+    end)
+    |> Enum.reverse()  # Most recent first
   end
 end
