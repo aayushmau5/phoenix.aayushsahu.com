@@ -1,7 +1,6 @@
 defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
   use AccumulatorWeb, :html
 
-  alias AccumulatorWeb.CoreComponents
   import Phoenix.Component
 
   attr :current_user, :map, required: true

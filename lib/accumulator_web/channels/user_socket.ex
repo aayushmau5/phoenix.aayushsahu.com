@@ -10,6 +10,7 @@ defmodule AccumulatorWeb.UserSocket do
 
   channel "user-join", AccumulatorWeb.UserJoinChannel
   channel "blog:*", AccumulatorWeb.BlogChannel
+  channel "comments:*", AccumulatorWeb.CommentChannel
 
   # To create a channel file, use the mix task:
   #
