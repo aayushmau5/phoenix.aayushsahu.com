@@ -57,7 +57,7 @@ defmodule AccumulatorWeb.CommentChannel do
     }
 
     case Comments.create_comment(attrs) do
-      {:ok, comment} ->
+      {:ok, _comment} ->
         # Broadcast to all users in this blog's comment channel
         comments = Comments.list_comments_with_nested_replies(blog_slug)
         push(socket, "comments_loaded", %{comments: serialize_comments(comments)})
@@ -118,7 +118,6 @@ defmodule AccumulatorWeb.CommentChannel do
       comment ->
         case Comments.delete_comment(comment) do
           {:ok, _} ->
-            blog_slug = socket.assigns.blog_slug
             broadcast!(socket, "comment_deleted", %{comment_id: comment_id})
 
             # PubSub.broadcast(@pubsub, "comments:#{blog_slug}", %{
