@@ -63,7 +63,7 @@ defmodule AccumulatorWeb.CommentChannel do
         push(socket, "comments_loaded", %{comments: serialize_comments(comments)})
 
         Task.Supervisor.start_child(Accumulator.TaskRunner, fn ->
-          Accumulator.Mailer.send_comment_mail(comment)
+          Accumulator.Mailer.send_comment_email(comment)
         end)
 
         # Also broadcast via PubSub for other potential listeners
@@ -101,7 +101,7 @@ defmodule AccumulatorWeb.CommentChannel do
         push(socket, "comments_loaded", %{comments: serialize_comments(comments)})
 
         Task.Supervisor.start_child(Accumulator.TaskRunner, fn ->
-          Accumulator.Mailer.send_comment_mail(comment)
+          Accumulator.Mailer.send_comment_email(comment)
         end)
 
         # Also broadcast via PubSub
