@@ -12,8 +12,20 @@ defmodule Accumulator.ProfanityFilter do
 
   # Fallback word list for when API is unavailable
   @fallback_profanity [
-    "fuck", "shit", "bitch", "asshole", "bastard", "madarchod", "behenchod", 
-    "chutiya", "gandu", "randi", "mc", "bc", "wtf", "stfu"
+    "fuck",
+    "shit",
+    "bitch",
+    "asshole",
+    "bastard",
+    "madarchod",
+    "behenchod",
+    "chutiya",
+    "gandu",
+    "randi",
+    "mc",
+    "bc",
+    "wtf",
+    "stfu"
   ]
 
   @doc """
@@ -114,18 +126,18 @@ defmodule Accumulator.ProfanityFilter do
 
   defp is_profane?(scores) do
     scores.toxicity > @toxicity_threshold or
-    scores.severe_toxicity > @toxicity_threshold or
-    scores.profanity > @profanity_threshold or
-    scores.identity_attack > @toxicity_threshold
+      scores.severe_toxicity > @toxicity_threshold or
+      scores.profanity > @profanity_threshold or
+      scores.identity_attack > @toxicity_threshold
   end
 
   defp check_with_fallback(text) do
-    normalized_text = 
+    normalized_text =
       text
       |> String.downcase()
       |> String.replace(~r/[^\w\s]/, " ")
 
-    contains_fallback_profanity = 
+    contains_fallback_profanity =
       @fallback_profanity
       |> Enum.any?(fn word ->
         String.contains?(normalized_text, word)
@@ -140,6 +152,6 @@ defmodule Accumulator.ProfanityFilter do
 
   defp get_api_key do
     Application.get_env(:accumulator, :perspective_api_key) ||
-    System.get_env("PERSPECTIVE_API_KEY")
+      System.get_env("PERSPECTIVE_API_KEY")
   end
 end

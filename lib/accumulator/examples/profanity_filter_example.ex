@@ -1,7 +1,7 @@
 defmodule Accumulator.Examples.ProfanityFilterExample do
   @moduledoc """
   Example usage of the Profanity Filter with Perspective API.
-  
+
   This module demonstrates how to use the profanity filter in various scenarios.
   Run examples with: `mix run -e "Accumulator.Examples.ProfanityFilterExample.run_examples()"`
   """
@@ -42,9 +42,10 @@ defmodule Accumulator.Examples.ProfanityFilterExample do
 
     Enum.each(clean_examples, fn text ->
       case ProfanityFilter.check_profanity(text) do
-        {:ok, _} -> 
+        {:ok, _} ->
           IO.puts("  ✅ CLEAN: \"#{text}\"")
-        {:error, reason} -> 
+
+        {:error, reason} ->
           IO.puts("  ❌ REJECTED: \"#{text}\" - #{reason}")
       end
     end)
@@ -60,11 +61,13 @@ defmodule Accumulator.Examples.ProfanityFilterExample do
 
     Enum.each(profane_examples, fn text ->
       case ProfanityFilter.check_profanity(text) do
-        {:ok, _} -> 
+        {:ok, _} ->
           IO.puts("  ⚠️  ALLOWED: \"#{text}\" (might be below threshold)")
-        {:error, :contains_profanity} -> 
+
+        {:error, :contains_profanity} ->
           IO.puts("  ❌ BLOCKED: \"#{text}\"")
-        {:error, reason} -> 
+
+        {:error, reason} ->
           IO.puts("  ❌ ERROR: \"#{text}\" - #{reason}")
       end
     end)
@@ -80,11 +83,13 @@ defmodule Accumulator.Examples.ProfanityFilterExample do
 
     Enum.each(hindi_examples, fn text ->
       case ProfanityFilter.check_profanity(text) do
-        {:ok, _} -> 
+        {:ok, _} ->
           IO.puts("  ⚠️  ALLOWED: \"#{text}\" (might be below threshold)")
-        {:error, :contains_profanity} -> 
+
+        {:error, :contains_profanity} ->
           IO.puts("  ❌ BLOCKED: \"#{text}\"")
-        {:error, reason} -> 
+
+        {:error, reason} ->
           IO.puts("  ❌ ERROR: \"#{text}\" - #{reason}")
       end
     end)
@@ -92,21 +97,29 @@ defmodule Accumulator.Examples.ProfanityFilterExample do
 
   defp test_edge_cases do
     edge_cases = [
-      "",  # Empty string
-      "A",  # Single character
-      String.duplicate("Clean text. ", 50),  # Long text
-      "Hello! 😊 How are you?",  # Emojis and punctuation
-      "This contains the word 'class' but should be fine",  # Potential false positive
-      "I live in Scunthorpe"  # Classic false positive test
+      # Empty string
+      "",
+      # Single character
+      "A",
+      # Long text
+      String.duplicate("Clean text. ", 50),
+      # Emojis and punctuation
+      "Hello! 😊 How are you?",
+      # Potential false positive
+      "This contains the word 'class' but should be fine",
+      # Classic false positive test
+      "I live in Scunthorpe"
     ]
 
     Enum.each(edge_cases, fn text ->
-      display_text = if String.length(text) > 50, do: "#{String.slice(text, 0, 50)}...", else: text
-      
+      display_text =
+        if String.length(text) > 50, do: "#{String.slice(text, 0, 50)}...", else: text
+
       case ProfanityFilter.check_profanity(text) do
-        {:ok, _} -> 
+        {:ok, _} ->
           IO.puts("  ✅ CLEAN: \"#{display_text}\"")
-        {:error, reason} -> 
+
+        {:error, reason} ->
           IO.puts("  ❌ REJECTED: \"#{display_text}\" - #{reason}")
       end
     end)
@@ -141,11 +154,13 @@ defmodule Accumulator.Examples.ProfanityFilterExample do
 
     Enum.each(test_comments, fn attrs ->
       changeset = Comment.changeset(%Comment{}, attrs)
-      
+
       if changeset.valid? do
         IO.puts("  ✅ VALID: \"#{attrs.content}\" by #{attrs.author}")
       else
-        errors = Enum.map(changeset.errors, fn {field, {message, _}} -> "#{field}: #{message}" end)
+        errors =
+          Enum.map(changeset.errors, fn {field, {message, _}} -> "#{field}: #{message}" end)
+
         IO.puts("  ❌ INVALID: \"#{attrs.content}\" - #{Enum.join(errors, ", ")}")
       end
     end)
@@ -162,16 +177,19 @@ defmodule Accumulator.Examples.ProfanityFilterExample do
     ]
 
     Enum.each(test_texts, fn text ->
-      {time_microseconds, result} = :timer.tc(fn ->
-        ProfanityFilter.check_profanity(text)
-      end)
+      {time_microseconds, result} =
+        :timer.tc(fn ->
+          ProfanityFilter.check_profanity(text)
+        end)
 
       time_ms = time_microseconds / 1000
-      result_str = case result do
-        {:ok, _} -> "CLEAN"
-        {:error, :contains_profanity} -> "PROFANE"
-        {:error, reason} -> "ERROR: #{reason}"
-      end
+
+      result_str =
+        case result do
+          {:ok, _} -> "CLEAN"
+          {:error, :contains_profanity} -> "PROFANE"
+          {:error, reason} -> "ERROR: #{reason}"
+        end
 
       IO.puts("  \"#{text}\" -> #{result_str} (#{Float.round(time_ms, 2)}ms)")
     end)
@@ -180,16 +198,23 @@ defmodule Accumulator.Examples.ProfanityFilterExample do
   def test_api_availability do
     IO.puts("=== API Availability Test ===\n")
 
-    api_key = Application.get_env(:accumulator, :perspective_api_key) || System.get_env("PERSPECTIVE_API_KEY")
+    api_key =
+      Application.get_env(:accumulator, :perspective_api_key) ||
+        System.get_env("PERSPECTIVE_API_KEY")
 
     if api_key && api_key != "" do
       IO.puts("  ✅ API Key configured")
-      
+
       # Test a simple request
       case ProfanityFilter.check_profanity("test message") do
-        {:ok, _} -> IO.puts("  ✅ API responding normally")
-        {:error, :contains_profanity} -> IO.puts("  ✅ API responding normally (flagged test content)")
-        {:error, reason} -> IO.puts("  ❌ API error: #{inspect(reason)}")
+        {:ok, _} ->
+          IO.puts("  ✅ API responding normally")
+
+        {:error, :contains_profanity} ->
+          IO.puts("  ✅ API responding normally (flagged test content)")
+
+        {:error, reason} ->
+          IO.puts("  ❌ API error: #{inspect(reason)}")
       end
     else
       IO.puts("  ⚠️  No API Key configured - using fallback mode")

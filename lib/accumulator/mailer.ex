@@ -48,4 +48,28 @@ defmodule Accumulator.Mailer do
         Logger.warning("Failed to send login email: #{e.message}")
     end
   end
+
+  def send_comment_email(comment) do
+    client = Resend.client(api_key: System.get_env("RESEND_API_KEY"))
+    email_meta = Accumulator.Emails.CommentEmail.generate_template(comment)
+
+    response =
+      Resend.Emails.send(client, %{
+        from: email_meta.from,
+        to: email_meta.to,
+        subject: email_meta.subject,
+        html: email_meta.html
+      })
+
+    case response do
+      {:ok, _mail} ->
+        :ok
+
+      {:error, :client_error} ->
+        Logger.warning("Failed to send login email: Client error")
+
+      {:error, e} ->
+        Logger.warning("Failed to send login email: #{e.message}")
+    end
+  end
 end

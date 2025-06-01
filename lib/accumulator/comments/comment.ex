@@ -23,14 +23,20 @@ defmodule Accumulator.Comments.Comment do
 
   defp validate_content_profanity(changeset) do
     case get_field(changeset, :content) do
-      nil -> changeset
+      nil ->
+        changeset
+
       content ->
         case ProfanityFilter.check_profanity(content) do
-          {:ok, _} -> changeset
+          {:ok, _} ->
+            changeset
+
           {:error, :contains_profanity} ->
             add_error(changeset, :content, "contains inappropriate language")
+
           {:error, :invalid_input} ->
             add_error(changeset, :content, "is invalid")
+
           {:error, _} ->
             # For API errors, we'll allow the comment but log the issue
             changeset

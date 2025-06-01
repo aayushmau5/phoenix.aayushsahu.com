@@ -57,10 +57,14 @@ defmodule AccumulatorWeb.CommentChannel do
     }
 
     case Comments.create_comment(attrs) do
-      {:ok, _comment} ->
+      {:ok, comment} ->
         # Broadcast to all users in this blog's comment channel
         comments = Comments.list_comments_with_nested_replies(blog_slug)
         push(socket, "comments_loaded", %{comments: serialize_comments(comments)})
+
+        Task.Supervisor.start_child(Accumulator.TaskRunner, fn ->
+          Accumulator.Mailer.send_comment_mail(comment)
+        end)
 
         # Also broadcast via PubSub for other potential listeners
         # PubSub.broadcast(@pubsub, "comments:#{blog_slug}", %{
@@ -95,6 +99,10 @@ defmodule AccumulatorWeb.CommentChannel do
         # Broadcast to all users in this blog's comment channel
         comments = Comments.list_comments_with_nested_replies(blog_slug)
         push(socket, "comments_loaded", %{comments: serialize_comments(comments)})
+
+        Task.Supervisor.start_child(Accumulator.TaskRunner, fn ->
+          Accumulator.Mailer.send_comment_mail(comment)
+        end)
 
         # Also broadcast via PubSub
         # PubSub.broadcast(@pubsub, "comments:#{blog_slug}", %{

@@ -94,6 +94,7 @@ defmodule AccumulatorWeb.DashboardLive do
       # Extract blog slug from the stat slug (remove "blog:" prefix)
       blog_slug = String.replace_prefix(blog.slug, "blog:", "")
       comment_count = Comments.count_comments(blog_slug)
+
       blog
       |> Stats.update_current_viewing_value(presence_count)
       |> Map.put(:comments, comment_count)

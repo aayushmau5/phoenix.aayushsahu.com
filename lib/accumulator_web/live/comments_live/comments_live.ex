@@ -40,7 +40,7 @@ defmodule AccumulatorWeb.CommentsLive do
 
   def handle_event("open_delete_modal", %{"comment_id" => comment_id}, socket) do
     comment = Comments.get_comment(comment_id)
-    
+
     {:noreply,
      socket
      |> assign(:delete_modal_open, true)
@@ -56,7 +56,7 @@ defmodule AccumulatorWeb.CommentsLive do
 
   def handle_event("delete_comment", %{"comment_id" => comment_id}, socket) do
     comment = Comments.get_comment(comment_id)
-    
+
     case Comments.delete_comment(comment) do
       {:ok, _} ->
         {:noreply,
@@ -94,12 +94,12 @@ defmodule AccumulatorWeb.CommentsLive do
   end
 
   defp load_blog_slugs(socket) do
-    blog_slugs = 
+    blog_slugs =
       Comments.get_all_comments()
       |> Enum.map(& &1.blog_slug)
       |> Enum.uniq()
       |> Enum.sort()
-    
+
     assign(socket, :blog_slugs, blog_slugs)
   end
 
@@ -113,9 +113,10 @@ defmodule AccumulatorWeb.CommentsLive do
 
   defp organize_all_comments_hierarchy(comments) do
     # Separate top-level comments and replies
-    {top_level, replies} = Enum.split_with(comments, fn comment ->
-      is_nil(comment.parent_id)
-    end)
+    {top_level, replies} =
+      Enum.split_with(comments, fn comment ->
+        is_nil(comment.parent_id)
+      end)
 
     # Create a map of replies by parent_id for quick lookup
     replies_map = Enum.group_by(replies, & &1.parent_id)
