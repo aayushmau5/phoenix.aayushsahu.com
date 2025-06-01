@@ -1,7 +1,7 @@
 defmodule AccumulatorWeb.DashboardLive do
   use AccumulatorWeb, :live_view
 
-  alias Accumulator.{Stats}
+  alias Accumulator.{Stats, Comments}
   alias AccumulatorWeb.Presence
   alias Phoenix.PubSub
 
@@ -91,7 +91,12 @@ defmodule AccumulatorWeb.DashboardLive do
   defp insert_presence_count(blogs) do
     Enum.map(blogs, fn blog ->
       presence_count = get_presence_count(blog.slug)
-      Stats.update_current_viewing_value(blog, presence_count)
+      # Extract blog slug from the stat slug (remove "blog:" prefix)
+      blog_slug = String.replace_prefix(blog.slug, "blog:", "")
+      comment_count = Comments.count_comments(blog_slug)
+      blog
+      |> Stats.update_current_viewing_value(presence_count)
+      |> Map.put(:comments, comment_count)
     end)
   end
 

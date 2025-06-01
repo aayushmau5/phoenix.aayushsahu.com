@@ -1,0 +1,219 @@
+<.back navigate={~p"/"}>Home</.back>
+
+<.header class="mb-4" h1_class="text-xl">
+  Comments Dashboard
+</.header>
+
+<div class="flex items-center justify-between mb-4">
+  <form phx-change="filter_by_blog" class="flex items-center space-x-2">
+    <.label for="blog_slug">Filter by Blog:</.label>
+    <select
+      id="blog_slug"
+      name="blog_slug"
+      class="text-black block py-2 px-1 rounded-md focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 text-sm w-[200px]"
+    >
+      <option value="">All Blogs</option>
+      <%= for blog_slug <- @blog_slugs do %>
+        <option value={blog_slug} selected={@selected_blog_slug == blog_slug}>
+          <%= blog_slug %>
+        </option>
+      <% end %>
+    </select>
+  </form>
+  
+  <.button phx-click="refresh" class="text-sm">
+    Refresh
+  </.button>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+  <.square>
+    <div class="text-sm text-zinc-300">Total Comments</div>
+    <div class="text-xl font-semibold"><%= length(@comments) + Enum.sum(Enum.map(@comments, fn comment -> length(comment.replies || []) end)) %></div>
+  </.square>
+
+  <.square>
+    <div class="text-sm text-zinc-300">Unique Blogs</div>
+    <div class="text-xl font-semibold"><%= length(@blog_slugs) %></div>
+  </.square>
+
+  <.square>
+    <div class="text-sm text-zinc-300">Total Replies</div>
+    <div class="text-xl font-semibold">
+      <%= Enum.sum(Enum.map(@comments, fn comment -> length(comment.replies || []) end)) %>
+    </div>
+  </.square>
+</div>
+
+<%= if @loading do %>
+  <.square class="text-center">
+    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#36B5C1] mx-auto"></div>
+    <div class="mt-2 text-sm text-zinc-300">Loading comments...</div>
+  </.square>
+<% else %>
+  <%= if Enum.empty?(@comments) do %>
+    <.square class="text-center">
+      <div class="text-zinc-400 mb-2">No comments found</div>
+      <div class="text-sm text-zinc-500">
+        <%= if @selected_blog_slug do %>
+          No comments found for this blog.
+        <% else %>
+          No comments have been posted yet.
+        <% end %>
+      </div>
+    </.square>
+  <% else %>
+    <div class="space-y-2">
+      <%= for comment <- @comments do %>
+        <!-- Parent Comment -->
+        <.square class="hover:bg-zinc-800 hover:bg-opacity-50 transition-colors">
+          <div class="flex items-start justify-between">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center space-x-2 mb-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#36B5C1] bg-opacity-20 text-[#36B5C1]">
+                  Comment
+                </span>
+                
+                <span class="text-sm font-medium text-white">
+                  <%= comment.author || "Anonymous" %>
+                </span>
+                
+                <span class="text-zinc-500">•</span>
+                
+                <span class="text-sm text-zinc-400">
+                  <%= format_datetime(comment.inserted_at) %>
+                </span>
+              </div>
+              
+              <div class="mb-2">
+                <span class="text-xs text-zinc-400">Blog:</span>
+                <span class="text-sm text-zinc-300 ml-1"><%= comment.blog_slug %></span>
+              </div>
+              
+              <div class="text-sm text-zinc-200 mb-2">
+                <%= truncate_content(comment.content, 200) %>
+              </div>
+              
+              <%= if length(comment.replies || []) > 0 do %>
+                <div class="text-xs text-zinc-400">
+                  <span class="font-medium"><%= length(comment.replies) %> <%= if length(comment.replies) == 1, do: "reply", else: "replies" %></span>
+                </div>
+              <% end %>
+            </div>
+            
+            <div class="flex-shrink-0 ml-4">
+              <button
+                phx-click="open_delete_modal"
+                phx-value-comment_id={comment.id}
+                class="inline-flex items-center px-2 py-1 text-xs font-medium rounded text-red-300 bg-red-600 bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </.square>
+        
+        <!-- Replies -->
+        <%= for reply <- comment.replies || [] do %>
+          <div class="ml-6">
+            <.square class="hover:bg-zinc-800 hover:bg-opacity-50 transition-colors border-l-2 border-zinc-600">
+              <div class="flex items-start justify-between">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center space-x-2 mb-2">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-600 bg-opacity-20 text-blue-300">
+                      Reply
+                    </span>
+                    
+                    <span class="text-sm font-medium text-white">
+                      <%= reply.author || "Anonymous" %>
+                    </span>
+                    
+                    <span class="text-zinc-500">•</span>
+                    
+                    <span class="text-sm text-zinc-400">
+                      <%= format_datetime(reply.inserted_at) %>
+                    </span>
+                  </div>
+                  
+                  <div class="text-sm text-zinc-200 mb-2">
+                    <%= truncate_content(reply.content, 200) %>
+                  </div>
+                </div>
+                
+                <div class="flex-shrink-0 ml-4">
+                  <button
+                    phx-click="open_delete_modal"
+                    phx-value-comment_id={reply.id}
+                    class="inline-flex items-center px-2 py-1 text-xs font-medium rounded text-red-300 bg-red-600 bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </.square>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+
+<!-- Delete Confirmation Modal -->
+<div class={"fixed inset-0 z-50 overflow-y-auto #{if @delete_modal_open, do: "block", else: "hidden"}"}>
+  <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+      <div class="absolute inset-0 bg-black opacity-75"></div>
+    </div>
+
+    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+    <div class="inline-block align-bottom bg-[#1f1f1f] border border-zinc-600 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+      <div class="sm:flex sm:items-start">
+        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-600 bg-opacity-20 sm:mx-0 sm:h-10 sm:w-10">
+          <svg class="h-6 w-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+        </div>
+        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+          <h3 class="text-lg leading-6 font-medium text-white">
+            Delete Comment
+          </h3>
+          <div class="mt-2">
+            <p class="text-sm text-zinc-300">
+              Are you sure you want to delete this comment? This action cannot be undone.
+              <%= if @comment_to_delete && @comment_to_delete.replies && length(@comment_to_delete.replies) > 0 do %>
+                <strong class="text-red-400">This will also delete all replies to this comment.</strong>
+              <% end %>
+            </p>
+            <%= if @comment_to_delete do %>
+              <div class="mt-3 p-3 bg-zinc-800 bg-opacity-50 border border-zinc-600 rounded-md">
+                <p class="text-sm font-medium text-white">Comment Preview:</p>
+                <p class="text-sm text-zinc-300 mt-1">
+                  "<%= truncate_content(@comment_to_delete.content, 100) %>"
+                </p>
+                <p class="text-xs text-zinc-400 mt-1">
+                  By: <%= @comment_to_delete.author || "Anonymous" %> • <%= format_datetime(@comment_to_delete.inserted_at) %>
+                </p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+        <.button
+          phx-click="delete_comment"
+          phx-value-comment_id={@comment_to_delete && @comment_to_delete.id}
+          class="bg-red-600 hover:bg-red-700 sm:ml-3 sm:w-auto"
+        >
+          Delete
+        </.button>
+        <.button
+          phx-click="close_delete_modal"
+          class="bg-zinc-600 hover:bg-zinc-700 mt-3 sm:mt-0 sm:w-auto"
+        >
+          Cancel
+        </.button>
+      </div>
+    </div>
+  </div>
+</div>

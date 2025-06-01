@@ -103,5 +103,11 @@ defmodule AccumulatorWeb.Router do
       live "/plants/:id", PlantLive.Show, :show
       live "/plants/:id/edit", PlantLive.Show, :edit
     end
+
+    live_session :comments,
+      on_mount: [{AccumulatorWeb.UserAuth, :ensure_authenticated}] do
+      # Comments Dashboard
+      live "/comments", CommentsLive
+    end
   end
 end

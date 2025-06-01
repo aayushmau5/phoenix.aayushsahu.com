@@ -6,7 +6,7 @@ defmodule Accumulator.Origin do
       # "moz-extension" -> true
       # "chrome-extension" -> true
       "https" -> if host in @allowed_hosts, do: true, else: false
-      _ -> true
+      _ -> false
     end
   end
 end
