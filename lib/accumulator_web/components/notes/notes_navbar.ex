@@ -1,7 +1,6 @@
 defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
   use AccumulatorWeb, :html
 
-  alias AccumulatorWeb.CoreComponents
   import Phoenix.Component
 
   attr :current_user, :map, required: true
@@ -144,14 +143,17 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
             <.navbar_link :if={!@current_user} to={~p"/notes/public/default"}>
               📓 notes
             </.navbar_link>
+            <.navbar_link :if={@current_user} to={~p"/plants"}>
+              🪴 plants
+            </.navbar_link>
+            <.navbar_link :if={@current_user} to={~p"/comments"}>
+              💬 comments
+            </.navbar_link>
             <.navbar_link :if={@current_user} to={~p"/sessions"}>
               🌐 session
             </.navbar_link>
             <.navbar_link :if={@current_user} to={~p"/livedashboard"}>
               💻 livedashboard
-            </.navbar_link>
-            <.navbar_link :if={@current_user} to={~p"/plants"}>
-              🪴 plants
             </.navbar_link>
           </ul>
 

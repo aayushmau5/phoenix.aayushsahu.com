@@ -58,6 +58,10 @@ config :mime, :types, %{
   "text/swiftui" => [:swiftui]
 }
 
+# Perspective API configuration for profanity filtering
+config :accumulator,
+  perspective_api_key: System.get_env("PERSPECTIVE_API_KEY")
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
