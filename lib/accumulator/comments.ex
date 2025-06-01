@@ -49,7 +49,7 @@ defmodule Accumulator.Comments do
   """
   def list_comments_with_replies(blog_slug) do
     comments = list_comments(blog_slug)
-    
+
     Enum.map(comments, fn comment ->
       replies = list_replies(comment.id)
       Map.put(comment, :replies, replies)
@@ -65,6 +65,7 @@ defmodule Accumulator.Comments do
          |> Repo.insert() do
       {:ok, comment} ->
         {:ok, Repo.preload(comment, :replies)}
+
       error ->
         error
     end
@@ -79,6 +80,7 @@ defmodule Accumulator.Comments do
          |> Repo.update() do
       {:ok, comment} ->
         {:ok, Repo.preload(comment, :replies)}
+
       error ->
         error
     end
@@ -105,12 +107,13 @@ defmodule Accumulator.Comments do
   """
   def list_comments_with_nested_replies(blog_slug) do
     # Get all comments for this blog (both top-level and replies)
-    all_comments = from(c in Comment,
-      where: c.blog_slug == ^blog_slug,
-      order_by: [asc: c.inserted_at]
-    )
-    |> Repo.all()
-    
+    all_comments =
+      from(c in Comment,
+        where: c.blog_slug == ^blog_slug,
+        order_by: [asc: c.inserted_at]
+      )
+      |> Repo.all()
+
     # Organize them into a nested structure
     organize_comments_hierarchy(all_comments)
   end
@@ -125,31 +128,40 @@ defmodule Accumulator.Comments do
   # Private helper to organize flat comment list into nested hierarchy
   defp organize_comments_hierarchy(comments) do
     # Create a map for quick lookup
-    comment_map = Enum.reduce(comments, %{}, fn comment, acc ->
-      Map.put(acc, comment.id, Map.put(comment, :replies, []))
-    end)
-    
+    comment_map =
+      Enum.reduce(comments, %{}, fn comment, acc ->
+        Map.put(acc, comment.id, Map.put(comment, :replies, []))
+      end)
+
     # Separate top-level comments and replies
-    {top_level, replies} = Enum.split_with(comments, fn comment -> 
-      is_nil(comment.parent_id) 
-    end)
-    
+    {top_level, replies} =
+      Enum.split_with(comments, fn comment ->
+        is_nil(comment.parent_id)
+      end)
+
     # Attach replies to their parents
-    comment_map_with_replies = Enum.reduce(replies, comment_map, fn reply, acc ->
-      case Map.get(acc, reply.parent_id) do
-        nil -> acc  # Parent not found
-        parent ->
-          updated_parent = Map.update!(parent, :replies, fn existing_replies ->
-            [Map.get(acc, reply.id) | existing_replies]
-          end)
-          Map.put(acc, reply.parent_id, updated_parent)
-      end
-    end)
-    
+    comment_map_with_replies =
+      Enum.reduce(replies, comment_map, fn reply, acc ->
+        case Map.get(acc, reply.parent_id) do
+          # Parent not found
+          nil ->
+            acc
+
+          parent ->
+            updated_parent =
+              Map.update!(parent, :replies, fn existing_replies ->
+                [Map.get(acc, reply.id) | existing_replies]
+              end)
+
+            Map.put(acc, reply.parent_id, updated_parent)
+        end
+      end)
+
     # Return top-level comments with their replies attached
     Enum.map(top_level, fn comment ->
       Map.get(comment_map_with_replies, comment.id)
     end)
-    |> Enum.reverse()  # Most recent first
+    # Most recent first
+    |> Enum.reverse()
   end
 end

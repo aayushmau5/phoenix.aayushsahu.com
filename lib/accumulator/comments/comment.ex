@@ -3,11 +3,11 @@ defmodule Accumulator.Comments.Comment do
   import Ecto.Changeset
 
   schema "comments" do
-    field :content, :string
-    field :author, :string
-    field :blog_slug, :string
-    belongs_to :parent, __MODULE__
-    has_many :replies, __MODULE__, foreign_key: :parent_id
+    field(:content, :string)
+    field(:author, :string)
+    field(:blog_slug, :string)
+    belongs_to(:parent, __MODULE__)
+    has_many(:replies, __MODULE__, foreign_key: :parent_id)
 
     timestamps()
   end

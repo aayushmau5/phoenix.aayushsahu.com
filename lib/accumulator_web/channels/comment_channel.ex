@@ -17,7 +17,6 @@ defmodule AccumulatorWeb.CommentChannel do
   @impl true
   def handle_info(:after_join, socket) do
     blog_slug = socket.assigns.blog_slug
-    {:ok, _} = Presence.track(socket, "comments:#{blog_slug}", %{})
 
     # Send initial comments to the user
     comments = Comments.list_comments_with_nested_replies(blog_slug)
@@ -78,7 +77,11 @@ defmodule AccumulatorWeb.CommentChannel do
   end
 
   @impl true
-  def handle_in("new_reply", %{"content" => content, "author" => author, "parent_id" => parent_id}, socket) do
+  def handle_in(
+        "new_reply",
+        %{"content" => content, "author" => author, "parent_id" => parent_id},
+        socket
+      ) do
     blog_slug = socket.assigns.blog_slug
 
     attrs = %{
