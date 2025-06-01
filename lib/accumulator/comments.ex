@@ -2,6 +2,10 @@ defmodule Accumulator.Comments do
   import Ecto.Query
   alias Accumulator.{Comments.Comment, Repo}
 
+  def get_all_comments() do
+    Repo.all(Comment)
+  end
+
   @doc """
   Gets a single comment by ID.
   """

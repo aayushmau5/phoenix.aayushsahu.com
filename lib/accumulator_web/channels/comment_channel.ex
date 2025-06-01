@@ -2,7 +2,6 @@ defmodule AccumulatorWeb.CommentChannel do
   use Phoenix.Channel
 
   alias Accumulator.Comments
-  alias AccumulatorWeb.Presence
   alias Phoenix.PubSub
 
   @pubsub Accumulator.PubSub
