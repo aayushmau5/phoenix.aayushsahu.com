@@ -1,0 +1,10 @@
+{
+	"mcpServers": {
+		"tidewave": {
+			"command": "/Users/aayushmau5/.asdf/shims/mcp-proxy",
+			"args": [
+				"http://localhost:4000/tidewave/mcp"
+			]
+		}
+	}
+}

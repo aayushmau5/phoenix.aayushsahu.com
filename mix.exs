@@ -30,7 +30,7 @@ defmodule Accumulator.MixProject do
       {:bcrypt_elixir, "~> 3.0"},
       {:phoenix, "~> 1.7.18"},
       {:phoenix_html, "~> 4.1.1"},
-      {:phoenix_live_reload, "~> 1.5.3", only: :dev},
+      {:phoenix_live_reload, "~> 1.6.0", only: :dev},
       {:phoenix_live_view, "~> 1.0.1"},
       {:heroicons, "~> 0.5"},
       {:floki, ">= 0.36.0", only: :test},
@@ -55,7 +55,7 @@ defmodule Accumulator.MixProject do
       {:libcluster, "~> 3.3"},
       {:earmark, "~> 1.4"},
       {:tz, "~> 0.26.5"},
-      {:tidewave, "~> 0.1", only: :dev}
+      {:tidewave, "~> 0.4", only: :dev}
     ]
   end
 

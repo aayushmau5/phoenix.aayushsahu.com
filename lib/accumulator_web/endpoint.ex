@@ -29,7 +29,9 @@ defmodule AccumulatorWeb.Endpoint do
     gzip: Mix.env() == :prod
 
   if Code.ensure_loaded?(Tidewave) do
-    plug Tidewave
+    plug Tidewave,
+      allow_remote_access: true,
+      allowed_origins: ["http://localhost:4000"]
   end
 
   # Code reloading can be explicitly enabled under the

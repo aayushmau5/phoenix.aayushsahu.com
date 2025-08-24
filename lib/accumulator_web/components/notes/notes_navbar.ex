@@ -149,6 +149,9 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
             <.navbar_link :if={@current_user} to={~p"/comments"}>
               💬 comments
             </.navbar_link>
+            <.navbar_link :if={@current_user} to={~p"/contact-messages"}>
+              📨 contact messages
+            </.navbar_link>
             <.navbar_link :if={@current_user} to={~p"/sessions"}>
               🌐 session
             </.navbar_link>
