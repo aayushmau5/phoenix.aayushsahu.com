@@ -35,8 +35,24 @@ defmodule AccumulatorWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   @impl true
-  def connect(_params, socket, _connect_info) do
-    {:ok, socket}
+  def connect(_params, socket, connect_info) do
+    ip = get_client_ip(connect_info) |> dbg()
+    {:ok, assign(socket, :client_ip, ip)}
+  end
+
+  defp get_client_ip(connect_info) do
+    x_headers = Map.get(connect_info, :x_headers, [])
+
+    case List.keyfind(x_headers, "x-forwarded-for", 0) do
+      {_, forwarded_for} ->
+        forwarded_for |> String.split(",") |> List.first() |> String.trim()
+
+      nil ->
+        case connect_info[:peer_data] do
+          %{address: addr} -> :inet.ntoa(addr) |> to_string()
+          _ -> "unknown"
+        end
+    end
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:

@@ -31,6 +31,7 @@ defmodule Accumulator.Application do
       AccumulatorWeb.Endpoint,
       AccumulatorWeb.Presence,
       Accumulator.Repo,
+      {Accumulator.RateLimit, [clean_period: :timer.minutes(10)]},
       # 60000: 1 minute
       {Accumulator.Scheduler.Spotify, interval: 60000},
       # 3_600_000: 1 hour

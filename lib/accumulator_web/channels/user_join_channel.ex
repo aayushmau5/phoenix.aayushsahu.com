@@ -1,7 +1,7 @@
 defmodule AccumulatorWeb.UserJoinChannel do
   use Phoenix.Channel
 
-  alias Accumulator.{Stats, Spotify}
+  alias Accumulator.{Stats, Spotify, RateLimit}
   alias AccumulatorWeb.Presence
   alias Phoenix.PubSub
 
@@ -19,12 +19,26 @@ defmodule AccumulatorWeb.UserJoinChannel do
     {:ok, _} = Presence.track(socket, "user-join", %{})
     push(socket, "presence_state", Presence.list(socket))
 
-    main_stats = Stats.increment_main_view_count()
-    broadcast!(socket, "view-count", %{count: main_stats.views})
+    # Rate limit: 10 view increments per minute per IP
+    ip = socket.assigns[:client_ip] || "unknown"
 
-    PubSub.broadcast_from(@pubsub, self(), "update:count", %{
-      event: :main_page_view_count
-    })
+    main_stats =
+      case RateLimit.hit("main_view:#{ip}", 60_000, 10) do
+        {:allow, _} ->
+          stats = Stats.increment_main_view_count()
+          broadcast!(socket, "view-count", %{count: stats.views})
+
+          PubSub.broadcast_from(@pubsub, self(), "update:count", %{
+            event: :main_page_view_count
+          })
+
+          stats
+
+        {:deny, _} ->
+          Stats.get_main_data()
+      end
+
+    push(socket, "view-count", %{count: main_stats.views})
 
     # Spotify now playing
     Presence.track(self(), "spotify-join", socket.id, %{})
