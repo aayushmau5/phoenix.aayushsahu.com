@@ -55,7 +55,8 @@ defmodule Accumulator.MixProject do
       {:libcluster, "~> 3.3"},
       {:earmark, "~> 1.4"},
       {:tz, "~> 0.26.5"},
-      {:tidewave, "~> 0.4", only: :dev}
+      {:tidewave, "~> 0.4", only: :dev},
+      {:live_charts, "~> 0.4.0"}
     ]
   end
 

@@ -456,6 +456,25 @@ defmodule AccumulatorWeb.CoreComponents do
   end
 
   @doc """
+  Renders a forward navigation link.
+
+  """
+  attr(:navigate, :any, required: true)
+  slot(:inner_block, required: true)
+
+  def forward(assigns) do
+    ~H"""
+    <.link
+      navigate={@navigate}
+      class="bg-white bg-opacity-10 p-2 rounded-md text-md inline-block mb-4 font-semibold leading-6 hover:bg-opacity-20"
+    >
+      {render_slot(@inner_block)}
+      <Heroicons.arrow_right solid class="w-3 h-3 stroke-current inline" />
+    </.link>
+    """
+  end
+
+  @doc """
   Converts UTC time to local time
   """
   attr(:date, :string, required: true)

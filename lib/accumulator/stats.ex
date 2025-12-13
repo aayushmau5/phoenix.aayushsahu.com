@@ -66,7 +66,7 @@ defmodule Accumulator.Stats do
   end
 
   def get_daily_stats_for_last_n_days(slug, days) do
-    end_date = Date.utc_today() |> Date.add(2)
+    end_date = Date.utc_today()
     start_date = Date.add(end_date, -(days - 1))
     get_daily_stats(slug, start_date, end_date)
   end
