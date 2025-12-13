@@ -9,7 +9,7 @@ defmodule AccumulatorWeb.DashboardComponents do
 
   def square(assigns) do
     ~H"""
-    <div class={["p-3 border border-2 border-zinc-600 rounded-lg", @class]}>
+    <div class={["p-3 border-2 border-zinc-600 rounded-lg", @class]}>
       {render_slot(@inner_block)}
     </div>
     """

@@ -1,6 +1,6 @@
 defmodule Accumulator.Stats do
   import Ecto.Query
-  alias Accumulator.{Stats.Stat, Repo}
+  alias Accumulator.{Stats.Stat, Stats.DailyStat, Repo}
 
   # Main
   def get_main_data() do
@@ -55,11 +55,29 @@ defmodule Accumulator.Stats do
     Map.put(stat, :current_viewing, value)
   end
 
+  # Daily Stats
+
+  def get_daily_stats(slug, start_date, end_date) do
+    from(ds in DailyStat,
+      where: ds.slug == ^slug and ds.date >= ^start_date and ds.date <= ^end_date,
+      order_by: [asc: ds.date]
+    )
+    |> Repo.all()
+  end
+
+  def get_daily_stats_for_last_n_days(slug, days) do
+    end_date = Date.utc_today() |> Date.add(2)
+    start_date = Date.add(end_date, -(days - 1))
+    get_daily_stats(slug, start_date, end_date)
+  end
+
   defp get_stat(slug) do
     Repo.one(from(stat in Stat, where: stat.slug == ^slug))
   end
 
   defp increment_views(slug) do
+    increment_daily_views(slug)
+
     from(stat in Stat,
       where: stat.slug == ^slug,
       update: [inc: [views: 1], set: [updated_at: ^DateTime.utc_now()]],
@@ -69,6 +87,8 @@ defmodule Accumulator.Stats do
   end
 
   defp increment_likes(slug) do
+    increment_daily_likes(slug)
+
     from(stat in Stat,
       where: stat.slug == ^slug,
       update: [inc: [likes: 1], set: [updated_at: ^DateTime.utc_now()]],
@@ -79,5 +99,25 @@ defmodule Accumulator.Stats do
 
   defp insert_stat(slug) do
     Repo.insert(%Stat{slug: slug})
+  end
+
+  defp increment_daily_views(slug) do
+    today = Date.utc_today()
+
+    Repo.insert(
+      %DailyStat{slug: slug, date: today, views: 1, likes: 0},
+      on_conflict: [inc: [views: 1], set: [updated_at: DateTime.utc_now()]],
+      conflict_target: [:slug, :date]
+    )
+  end
+
+  defp increment_daily_likes(slug) do
+    today = Date.utc_today()
+
+    Repo.insert(
+      %DailyStat{slug: slug, date: today, views: 0, likes: 1},
+      on_conflict: [inc: [likes: 1], set: [updated_at: DateTime.utc_now()]],
+      conflict_target: [:slug, :date]
+    )
   end
 end
