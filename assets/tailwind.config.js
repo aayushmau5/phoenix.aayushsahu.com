@@ -11,9 +11,9 @@ module.exports = {
         brand: "#FD4F00",
       },
     },
-    fontFamily: {
-      note: ['"Work Sans"'],
-    },
+    // fontFamily: {
+    //   note: ['"Berkeley Mono"'],
+    // },
   },
   plugins: [
     require("@tailwindcss/forms"),

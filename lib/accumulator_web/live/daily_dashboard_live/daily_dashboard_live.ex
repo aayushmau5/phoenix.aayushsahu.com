@@ -67,7 +67,7 @@ defmodule AccumulatorWeb.DailyDashboardLive do
       type: :area,
       series: [],
       options: %{
-        colors: ["#4cc4ff", "#d9ff36"],
+        colors: ["#0f4e28", "#d9ff36"],
         xaxis: %{type: "datetime"},
         yaxis: %{min: 0},
         chart: %{
@@ -106,7 +106,7 @@ defmodule AccumulatorWeb.DailyDashboardLive do
           <ul class="space-y-2">
             <li
               phx-click="select:main"
-              class={"flex items-center justify-between p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer #{if @stat_name == "main", do: "bg-white/5", else: ""}"}
+              class={"flex items-center justify-between p-2 transition-colors cursor-pointer #{if @stat_name == "main", do: "bg-[#0f4e28]", else: ""}"}
             >
               <span class="font-medium">Visitors</span>
               <span class="flex items-center gap-1 text-sm text-gray-400">
@@ -116,7 +116,7 @@ defmodule AccumulatorWeb.DailyDashboardLive do
             <li
               :for={stat <- all_stats.blogs}
               phx-click={"select:#{stat.slug}"}
-              class={"flex items-center justify-between p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer #{if @stat_name == stat.slug, do: "bg-white/5", else: ""}"}
+              class={"flex items-center justify-between p-2 hover:bg-[#0f4e28] transition-colors cursor-pointer #{if @stat_name == stat.slug, do: "bg-[#0f4e28]", else: ""}"}
             >
               <span class="font-medium truncate">{stat.slug}</span>
               <span class="flex items-center gap-3 text-sm text-gray-400">

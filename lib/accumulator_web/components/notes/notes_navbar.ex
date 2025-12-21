@@ -31,7 +31,7 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
         type="button"
         class="fixed top-0 p-2 ml-3 text-sm text-gray-400 hover:text-white rounded-lg z-10 duration-200"
       >
-        <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+        <svg class="w-6 h-6" aria-hidden="true" fill="#fff" viewBox="0 0 20 20">
           <path
             fill-rule="evenodd"
             d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
@@ -66,7 +66,7 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
 
       <div
         id="navbar"
-        class="bg-[#26282a] w-72 md:w-64 h-screen fixed top-0 left-0 flex flex-col overflow-y-auto justify-between z-50 hidden opacity-0 transform"
+        class="bg-[#111111] w-72 md:w-64 h-screen fixed top-0 left-0 flex flex-col overflow-y-auto justify-between z-50 hidden opacity-0 transform"
         phx-click-away={
           JS.toggle(
             to: "#navbar",
@@ -123,40 +123,40 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
           </div>
           <ul class="mb-6 space-y-1">
             <.navbar_link to={~p"/"}>
-              🌳 home
+              <Heroicons.home class="w-5 h-5" /> home
             </.navbar_link>
             <.navbar_link to={~p"/dashboard"}>
-              📈 dashboard
+              <Heroicons.arrow_trending_up class="w-5 h-5" /> dashboard
             </.navbar_link>
             <.navbar_link to={~p"/spotify"}>
-              🎵 spotify
+              <Heroicons.musical_note class="w-5 h-5" /> spotify
             </.navbar_link>
             <.navbar_link to={~p"/redirect"}>
-              🔗 redirect
+              <Heroicons.link class="w-5 h-5" /> redirect
             </.navbar_link>
             <.navbar_link :if={@current_user} to={~p"/bin"}>
-              🚮 bin
+              <Heroicons.trash class="w-5 h-5" /> bin
             </.navbar_link>
             <.navbar_link :if={@current_user} to={~p"/notes"}>
-              📓 notes
+              <Heroicons.pencil_square class="w-5 h-5" /> notes
             </.navbar_link>
             <.navbar_link :if={!@current_user} to={~p"/notes/public/default"}>
-              📓 notes
+              <Heroicons.pencil_square class="w-5 h-5" /> notes
             </.navbar_link>
             <.navbar_link :if={@current_user} to={~p"/plants"}>
-              🪴 plants
+              <Heroicons.globe_asia_australia class="w-5 h-5" /> plants
             </.navbar_link>
             <.navbar_link :if={@current_user} to={~p"/comments"}>
-              💬 comments
+              <Heroicons.chat_bubble_left_ellipsis class="w-5 h-5" /> comments
             </.navbar_link>
             <.navbar_link :if={@current_user} to={~p"/contact-messages"}>
-              📨 contact messages
+              <Heroicons.user_plus class="w-5 h-5" /> contact messages
             </.navbar_link>
             <.navbar_link :if={@current_user} to={~p"/sessions"}>
-              🌐 session
+              <Heroicons.globe_alt class="w-5 h-5" /> session
             </.navbar_link>
             <.navbar_link :if={@current_user} to={~p"/livedashboard"}>
-              💻 livedashboard
+              <Heroicons.rectangle_group class="w-5 h-5" /> livedashboard
             </.navbar_link>
           </ul>
 
@@ -182,7 +182,7 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
           <% end %>
         </div>
 
-        <div class="p-4 mt-auto mb-4 border-t border-gray-700">
+        <div class="p-4 mt-auto mb-4 border-t border-[#116a34]">
           <%= if @current_user do %>
             <div class="text-sm text-gray-300 truncate mb-2">{@current_user.email}</div>
             <.link
@@ -209,7 +209,7 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
           <% else %>
             <.link
               href="/login"
-              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 w-full justify-center"
+              class="inline-flex items-center px-4 py-2 text-sm font-medium shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 w-full justify-center"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

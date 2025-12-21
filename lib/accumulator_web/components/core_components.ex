@@ -380,15 +380,15 @@ defmodule AccumulatorWeb.CoreComponents do
               class="p-0 pb-4 pr-6 font-normal cursor-pointer"
             >
               <div class="flex items-center gap-1">
-                <span :if={@sort_key == col[:name]} class="text-[#158582] text-sm">
+                <span :if={@sort_key == col[:name]} class="text-[#116a34] text-sm">
                   {col[:label]}
                 </span>
                 <span :if={@sort_key != col[:name]} class="text-sm">{col[:label]}</span>
                 <%= if @sort_key == col[:name] do %>
                   <%= if @sort_order == "asc" do %>
-                    <Heroicons.arrow_up_circle class="w-5 h-5 inline text-[#158582]" />
+                    <Heroicons.arrow_up_circle class="w-5 h-5 inline text-[#116a34]" />
                   <% else %>
-                    <Heroicons.arrow_down_circle class="w-5 h-5 inline text-[#158582]" />
+                    <Heroicons.arrow_down_circle class="w-5 h-5 inline text-[#116a34]" />
                   <% end %>
                 <% else %>
                   <div class="w-5 h-5 inline-block"></div>
@@ -402,14 +402,14 @@ defmodule AccumulatorWeb.CoreComponents do
           phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
           class="relative divide-y divide-zinc-800 border-t border-zinc-800 text-sm leading-6 text-white"
         >
-          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-[#324B4A]">
+          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-[#0f4e28]">
             <td
               :for={{col, i} <- Enum.with_index(@col)}
               phx-click={@row_click && @row_click.(row)}
               class={["relative p-0", @row_click && "hover:cursor-pointer"]}
             >
               <div class="block py-4 pr-6">
-                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-[#324B4A]" />
+                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-[#0f4e28]" />
                 <span class={["relative", i == 0 && "font-semibold"]}>
                   {render_slot(col, @row_item.(row))}
                 </span>
@@ -447,7 +447,7 @@ defmodule AccumulatorWeb.CoreComponents do
     ~H"""
     <.link
       navigate={@navigate}
-      class="bg-white bg-opacity-10 p-2 rounded-md text-md inline-block mb-4 font-semibold leading-6 hover:bg-opacity-20"
+      class="px-2 py-[0.1rem] bg-[#116a34b5] text-md inline-block mb-4 font-semibold leading-6"
     >
       <Heroicons.arrow_left solid class="w-3 h-3 stroke-current inline" />
       {render_slot(@inner_block)}
@@ -466,7 +466,7 @@ defmodule AccumulatorWeb.CoreComponents do
     ~H"""
     <.link
       navigate={@navigate}
-      class="bg-white bg-opacity-10 p-2 rounded-md text-md inline-block mb-4 font-semibold leading-6 hover:bg-opacity-20"
+      class="px-2 py-[0.1rem] bg-[#116a34b5] text-md inline-block mb-4 font-semibold leading-6"
     >
       {render_slot(@inner_block)}
       <Heroicons.arrow_right solid class="w-3 h-3 stroke-current inline" />
@@ -558,7 +558,7 @@ defmodule AccumulatorWeb.CoreComponents do
     <li>
       <.link
         navigate={@to}
-        class="flex items-center p-2 text-gray-400 rounded hover:bg-[#373739] hover:text-white transition-colors duration-150 group"
+        class="flex items-center p-2 hover:bg-[#373739] hover:text-white transition-colors duration-150 group"
       >
         <div class={["flex gap-2 items-center", @class]}>
           {render_slot(@inner_block)}
