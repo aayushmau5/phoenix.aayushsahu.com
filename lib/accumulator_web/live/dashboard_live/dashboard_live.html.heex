@@ -5,15 +5,22 @@
   Dashboard for aayushsahu.com
 </.header>
 
-<.square>
-  Total page views: {@total_page_views}
-</.square>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+  <.square>
+    <div class="text-sm text-zinc-300">Total Page Views</div>
+    <div class="text-xl font-semibold">{@total_page_views}</div>
+  </.square>
 
-<.square class="mt-2">Currently viewing: {@current_page_view_count}</.square>
+  <.square>
+    <div class="text-sm text-zinc-300">Battleship Views</div>
+    <div class="text-xl font-semibold">{@battleship}</div>
+  </.square>
 
-<.square class="mt-2">
-  Battleship views: {@battleship}
-</.square>
+  <.square>
+    <div class="text-sm text-zinc-300">Currently Viewing</div>
+    <div class="text-xl font-semibold">{@current_page_view_count}</div>
+  </.square>
+</div>
 
 <p class="my-3 mt-6 text-lg font-semibold">Blog stats</p>
 

@@ -11,3 +11,31 @@
     font-family: "Berkeley Mono";
     src: url("/fonts/BerkeleyMono.otf");
 }*/
+
+@font-face {
+  font-family: "Proto Mono";
+  src: url("/fonts/ProtoMono/ProtoMono-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Proto Mono";
+  src: url("/fonts/ProtoMono/ProtoMono-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Proto Mono";
+  src: url("/fonts/ProtoMono/ProtoMono-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Proto Mono";
+  src: url("/fonts/ProtoMono/ProtoMono-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}

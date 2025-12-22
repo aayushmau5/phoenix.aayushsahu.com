@@ -182,50 +182,22 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
           <% end %>
         </div>
 
-        <div class="p-4 mt-auto mb-4 border-t border-[#116a34]">
+        <div class="p-4 mb-4 border-t border-[#116a34]">
           <%= if @current_user do %>
-            <div class="text-sm text-gray-300 truncate mb-2">{@current_user.email}</div>
+            <div class="text-sm truncate">{@current_user.email}</div>
             <.link
               href="/logout"
               method="delete"
-              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 w-full justify-center"
+              class="text-sm font-medium shadow-sm text-white focus:outline-none transition-colors duration-200 w-full"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
-              </svg>
-              Log out
+              <Heroicons.arrow_turn_down_right class="w-5 h-5" /> Log out
             </.link>
           <% else %>
             <.link
               href="/login"
-              class="inline-flex items-center px-4 py-2 text-sm font-medium shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 w-full justify-center"
+              class="text-sm font-medium shadow-sm text-white focus:outline-none transition-colors duration-200 w-full"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-                />
-              </svg>
-              Log in
+              <Heroicons.arrow_turn_down_left class="w-5 h-5" /> Log in
             </.link>
           <% end %>
         </div>

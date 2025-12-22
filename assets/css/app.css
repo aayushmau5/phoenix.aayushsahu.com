@@ -7,16 +7,16 @@
 /* This file is for your main application CSS */
 
 .note-text ul {
-    list-style: disc;
+  list-style: disc;
 }
 
 .note-text ul li {
-    margin-left: 20px;
+  margin-left: 20px;
 }
 
 .note-text a {
-    text-decoration: underline;
-    color: skyblue;
+  text-decoration: underline;
+  color: skyblue;
 }
 
 .note-text h1,
@@ -24,72 +24,72 @@
 .note-text h3,
 .note-text h4,
 .note-text h5 {
-    font-weight: bold;
-    font-size: 1.2rem;
-    border-bottom: 1px solid rgb(100, 100, 100);
+  font-weight: bold;
+  font-size: 1.2rem;
+  border-bottom: 1px solid rgb(100, 100, 100);
 }
 
 .note-text :not(pre) > code {
-    background-color: rgba(0, 0, 0, 0.224);
-    font: inherit;
-    padding: 2px;
+  background-color: rgba(0, 0, 0, 0.224);
+  font: inherit;
+  padding: 2px;
 }
 
 .note-text pre {
-    background-color: rgba(0, 0, 0, 0.224);
-    font: inherit;
-    padding: 4px;
-    overflow-x: scroll;
+  background-color: rgba(0, 0, 0, 0.224);
+  font: inherit;
+  padding: 4px;
+  overflow-x: scroll;
 }
 
 .note-text pre > code {
-    font: inherit;
+  font: inherit;
 }
 
 .note-text blockquote {
-    border-left: 5px solid gray;
-    padding-left: 5px;
-    background-color: rgba(0, 0, 0, 0.2);
+  border-left: 5px solid gray;
+  padding-left: 5px;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .note-text hr {
-    margin: 2px 0;
+  margin: 2px 0;
 }
 
 /* Navbar animations */
 #navbar {
-    will-change: transform, opacity;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  will-change: transform, opacity;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
 #navbar-overlay {
-    will-change: opacity;
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+  will-change: opacity;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
 /* Cherry blossom background for homepage */
 .cherry-blossom-bg {
-    position: relative;
-    height: 80vh;
+  position: relative;
+  height: 80vh;
 }
 
 .cherry-blossom-bg::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("/images/cherry_blossom.png");
-    background-position: top left;
-    background-repeat: no-repeat;
-    background-size: contain;
-    opacity: 0.7;
-    z-index: -1;
-    pointer-events: none;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("/images/cherry_blossom.png");
+  background-position: top left;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.7;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .cherry-blossom-dim::before {
-    background-image: url("/images/cherry_blossom_dim.png");
+  background-image: url("/images/cherry_blossom_dim.png");
 }

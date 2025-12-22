@@ -68,14 +68,30 @@ defmodule AccumulatorWeb.DailyDashboardLive do
       series: [],
       options: %{
         colors: ["#0f4e28", "#d9ff36"],
-        xaxis: %{type: "datetime"},
-        yaxis: %{min: 0},
+        xaxis: %{
+          type: "datetime",
+          labels: %{
+            style: %{
+              colors: "#ffffff"
+            }
+          }
+        },
+        yaxis: %{
+          min: 0,
+          labels: %{
+            style: %{
+              colors: "#ffffff"
+            }
+          }
+        },
         chart: %{
           animations: %{enabled: true, easing: "linear"},
           zoom: %{enabled: false},
           toolbar: %{show: false}
         },
-        dataLabels: %{enabled: false},
+        dataLabels: %{
+          enabled: false
+        },
         stroke: %{curve: "smooth"},
         tooltip: %{
           theme: "dark"
@@ -95,7 +111,9 @@ defmodule AccumulatorWeb.DailyDashboardLive do
       <.async_result :let={_stats} assign={@stats}>
         <:loading>Loading stats...</:loading>
         <:failed :let={_failure}>there was an error loading the stats</:failed>
-        <LiveCharts.chart chart={@chart} />
+        <div class="max-w-2xl">
+          <LiveCharts.chart chart={@chart} />
+        </div>
       </.async_result>
 
       <.async_result :let={all_stats} assign={@all_stats}>
