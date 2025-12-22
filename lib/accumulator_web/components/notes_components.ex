@@ -73,7 +73,7 @@ defmodule AccumulatorWeb.NotesComponents do
         id={@id || @name}
         name={@name}
         class={[
-          "block min-h-[2.5rem] w-full py-[7px] px-[11px] text-white border-none resize-none bg-transparent focus:outline-none overflow-y-hidden",
+          "block min-h-[2.5rem] w-full py-[7px] px-[11px] text-white border-none resize-none bg-transparent focus:outline-none overflow-y-hidden font-sans",
           @errors != [] && "border-rose-400 focus:border-rose-400 focus:ring-rose-400/10"
         ]}
         style="box-shadow: none; max-height: 150px;"
@@ -97,7 +97,7 @@ defmodule AccumulatorWeb.NotesComponents do
           id={@id || @name}
           value={Phoenix.HTML.Form.normalize_value(@type, @value)}
           class={[
-            "block flex-1 text-white border-zinc-700 focus:border-zinc-600 rounded-md bg-transparent focus:outline-none",
+            "block flex-1 text-white border-zinc-700 focus:border-zinc-600 rounded-md bg-transparent focus:outline-none font-sans",
             @errors != [] && "border-rose-400 focus:border-rose-400 focus:ring-rose-400/10"
           ]}
           style="box-shadow: none !important;"

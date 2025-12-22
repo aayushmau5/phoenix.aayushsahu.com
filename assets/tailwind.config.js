@@ -13,6 +13,7 @@ module.exports = {
     },
     fontFamily: {
       mono: ['"Proto Mono"', "Arial"],
+      sans: ['"Berkeley Mono"', "monospace"],
     },
   },
   plugins: [

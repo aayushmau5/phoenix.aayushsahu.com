@@ -93,7 +93,7 @@
                 <span class="text-sm text-zinc-300 ml-1">{comment.blog_slug}</span>
               </div>
 
-              <div class="text-sm text-zinc-200 mb-2">
+              <div class="text-sm text-zinc-200 mb-2 font-sans">
                 {truncate_content(comment.content, 200)}
               </div>
 
@@ -119,7 +119,7 @@
             </div>
           </div>
         </.square>
-        
+
 <!-- Replies -->
         <%= for reply <- comment.replies || [] do %>
           <div class="ml-6">
@@ -142,7 +142,7 @@
                     </span>
                   </div>
 
-                  <div class="text-sm text-zinc-200 mb-2">
+                  <div class="text-sm text-zinc-200 mb-2 font-sans">
                     {truncate_content(reply.content, 200)}
                   </div>
                 </div>
@@ -205,7 +205,7 @@
             <%= if @comment_to_delete do %>
               <div class="mt-3 p-3 bg-zinc-800 bg-opacity-50 border border-zinc-600 rounded-md">
                 <p class="text-sm font-medium text-white">Comment Preview:</p>
-                <p class="text-sm text-zinc-300 mt-1">
+                <p class="text-sm text-zinc-300 mt-1 font-sans">
                   "{truncate_content(@comment_to_delete.content, 100)}"
                 </p>
                 <p class="text-xs text-zinc-400 mt-1">

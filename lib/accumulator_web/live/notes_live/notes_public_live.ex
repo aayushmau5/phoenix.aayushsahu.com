@@ -51,7 +51,7 @@ defmodule AccumulatorWeb.NotesPublicLive do
             {Accumulator.Helpers.day_of_week_string(date)} {date} ({Accumulator.Helpers.days_ago(date)})
           </div>
           <div :for={note <- notes} class="my-1 bg-[#3d3d3d] p-2 rounded-md" id={"note-#{note.id}"}>
-            <article :if={note.text} class="note-text break-words">
+            <article :if={note.text} class="note-text break-words font-sans">
               {Earmark.as_html!(note.text, escape: false, compact_output: false)
               |> Phoenix.HTML.raw()}
             </article>

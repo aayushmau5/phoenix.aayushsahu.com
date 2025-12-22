@@ -7,10 +7,10 @@
 		url("/fonts/OverpassMono-SemiBold.ttf");
 } */
 
-/*@font-face {
-    font-family: "Berkeley Mono";
-    src: url("/fonts/BerkeleyMono.otf");
-}*/
+@font-face {
+  font-family: "Berkeley Mono";
+  src: url("/fonts/BerkeleyMono.otf") format("opentype");
+}
 
 @font-face {
   font-family: "Proto Mono";
