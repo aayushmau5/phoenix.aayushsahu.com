@@ -127,7 +127,7 @@ defmodule AccumulatorWeb.NotesComponents do
     >
       <div
         id={"#{@id}-bg"}
-        class="bg-[#191919]/60 fixed inset-0 transition-opacity"
+        class="bg-[#191919]/80 fixed inset-0 transition-opacity"
         aria-hidden="true"
       />
       <div class="fixed inset-0 overflow-y-auto" role="dialog" aria-modal="true" tabindex="0">
@@ -138,7 +138,7 @@ defmodule AccumulatorWeb.NotesComponents do
               phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}
               phx-key="escape"
               phx-click-away={JS.exec("data-cancel", to: "##{@id}")}
-              class="relative hidden rounded-2xl bg-[#3d3d3d] p-14 shadow-lg transition"
+              class="relative hidden bg-[#0c0c0c] p-14 shadow-lg transition"
             >
               <div class="absolute top-6 right-5">
                 <button

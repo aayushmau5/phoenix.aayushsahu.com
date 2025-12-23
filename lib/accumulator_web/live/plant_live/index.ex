@@ -16,19 +16,19 @@ defmodule AccumulatorWeb.PlantLive.Index do
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "🌱 New Plant")
+    |> assign(:page_title, "New Plant")
     |> assign(:plant, %Plant{})
   end
 
   defp apply_action(socket, :new_ai, _params) do
     socket
-    |> assign(:page_title, "🌱 New Plant")
+    |> assign(:page_title, "New Plant")
     |> assign(:plant, %Plant{})
   end
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "🪴 Plants")
+    |> assign(:page_title, "Plants")
     |> assign(:plant, nil)
   end
 
