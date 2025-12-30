@@ -128,6 +128,9 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
             <.navbar_link to={~p"/dashboard"}>
               <Heroicons.arrow_trending_up class="w-5 h-5" /> dashboard
             </.navbar_link>
+            <.navbar_link to={~p"/2026"}>
+              <Heroicons.calendar_days class="w-5 h-5" /> 2026
+            </.navbar_link>
             <.navbar_link to={~p"/spotify"}>
               <Heroicons.musical_note class="w-5 h-5" /> spotify
             </.navbar_link>
