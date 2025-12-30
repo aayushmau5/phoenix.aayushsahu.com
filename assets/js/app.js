@@ -16,163 +16,201 @@
 //
 
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
-import "phoenix_html"
+import "phoenix_html";
 // Establish Phoenix Socket and LiveView configuration.
-import { Socket } from "phoenix"
-import { LiveSocket } from "phoenix_live_view"
-import topbar from "../vendor/topbar"
-import LiveCharts from "live_charts"
+import { Socket } from "phoenix";
+import { LiveSocket } from "phoenix_live_view";
+import topbar from "../vendor/topbar";
+import LiveCharts from "live_charts";
 
 const Hooks = {
-	...LiveCharts.Hooks,
+  ...LiveCharts.Hooks,
 };
 
 Hooks.LocalTime = {
-	mounted() {
-		this.updated()
-	},
-	updated() {
-		const dt = new Date(this.el.textContent);
-		this.el.textContent = dt.toLocaleString();
-		this.el.classList.remove("invisible")
-	}
-}
+  mounted() {
+    this.updated();
+  },
+  updated() {
+    const dt = new Date(this.el.textContent);
+    this.el.textContent = dt.toLocaleString();
+    this.el.classList.remove("invisible");
+  },
+};
+
+Hooks.LocalDate = {
+  mounted() {
+    // Set the date input to today's local date if it's empty
+    if (!this.el.value) {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const day = String(today.getDate()).padStart(2, "0");
+      this.el.value = `${year}-${month}-${day}`;
+      // Trigger change event so LiveView picks it up
+      this.el.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+  },
+};
 
 // For notes
 Hooks.ScrollToBottom = {
-	mounted() {
-		this.handleEvent("new-note-scroll", (payload) => {
-			// Check if this is a submission event
-			if (payload.submitted) {
-				this.scrollToBottom();
-			}
-		});
-		// Store last content length to detect actual content changes vs typing
-		this.lastContentLength = this.getContentLength();
-		// Always scroll to bottom when component is mounted
-		setTimeout(() => this.scrollToBottom(), 100);
-	},
-	updated() {
-		// Only scroll if explicitly told to (via event)
-		// Don't auto-scroll on every update to prevent scrolling while typing
-	},
-	scrollToBottom() {
-		// Find the parent scrollable container
-		const scrollContainer = this.el.closest('.overflow-y-auto');
-		if (scrollContainer) {
-			scrollContainer.scrollTo({
-				top: scrollContainer.scrollHeight,
-				behavior: 'smooth'
-			});
-		} else {
-			this.el.scrollTo({
-				top: this.el.scrollHeight,
-				behavior: 'smooth'
-			});
-		}
-	},
-	getContentLength() {
-		// Helper to measure total content "size"
-		return this.el.textContent.length;
-	}
-}
+  mounted() {
+    this.handleEvent("new-note-scroll", (payload) => {
+      // Check if this is a submission event
+      if (payload.submitted) {
+        this.scrollToBottom();
+      }
+    });
+    // Store last content length to detect actual content changes vs typing
+    this.lastContentLength = this.getContentLength();
+    // Always scroll to bottom when component is mounted
+    setTimeout(() => this.scrollToBottom(), 100);
+  },
+  updated() {
+    // Only scroll if explicitly told to (via event)
+    // Don't auto-scroll on every update to prevent scrolling while typing
+  },
+  scrollToBottom() {
+    // Find the parent scrollable container
+    const scrollContainer = this.el.closest(".overflow-y-auto");
+    if (scrollContainer) {
+      scrollContainer.scrollTo({
+        top: scrollContainer.scrollHeight,
+        behavior: "smooth",
+      });
+    } else {
+      this.el.scrollTo({
+        top: this.el.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  },
+  getContentLength() {
+    // Helper to measure total content "size"
+    return this.el.textContent.length;
+  },
+};
 
 // For notes
 Hooks.NotesInput = {
-	mounted() {
-		this.el.addEventListener("keydown", this.handleKeyDown.bind(this));
-		this.el.addEventListener("input", this.autoResize.bind(this));
-		// Initial resize
-		this.autoResize();
-	},
-	handleKeyDown(event) {
-		const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-		if (!isMobile && event.key === "Enter" && !event.shiftKey) {
-			// Don't submit if the input is empty
-			const inputText = this.el.value.trim();
-			if (inputText !== "") {
-				const notesForm = document.getElementById("notes-form");
-				notesForm.dispatchEvent(
-					new Event("submit", { bubbles: true, cancelable: true })
-				)
-			} else {
-				// Prevent default Enter behavior for empty input
-				event.preventDefault();
-			}
-		}
-		// Auto resize on key events like backspace/delete that might not trigger input event
-		this.autoResize();
-	},
-	autoResize() {
-		// Reset height to calculate scroll height correctly
-		this.el.style.height = 'auto';
-		
-		// Get the maximum height (max-h-[150px] converted to pixels)
-		const maxHeight = 150;
-		
-		// Calculate content height
-		const contentHeight = this.el.scrollHeight;
-		
-		// Set height based on content but capped at max height
-		if (contentHeight <= maxHeight) {
-			// Content fits within max height - grow normally
-			this.el.style.height = contentHeight + 'px';
-			this.el.style.overflowY = 'hidden';
-		} else {
-			// Content exceeds max height - enable scrolling
-			this.el.style.height = maxHeight + 'px';
-			this.el.style.overflowY = 'auto';
-			
-			// Ensure cursor is visible by scrolling to bottom when typing
-			if (this.el === document.activeElement) {
-				this.el.scrollTop = contentHeight;
-			}
-		}
-	},
-	updated() {
-		// Ensure proper sizing after LiveView updates
-		this.autoResize();
-	}
-}
+  mounted() {
+    this.el.addEventListener("keydown", this.handleKeyDown.bind(this));
+    this.el.addEventListener("input", this.autoResize.bind(this));
+    // Initial resize
+    this.autoResize();
+  },
+  handleKeyDown(event) {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!isMobile && event.key === "Enter" && !event.shiftKey) {
+      // Don't submit if the input is empty
+      const inputText = this.el.value.trim();
+      if (inputText !== "") {
+        const notesForm = document.getElementById("notes-form");
+        notesForm.dispatchEvent(
+          new Event("submit", { bubbles: true, cancelable: true })
+        );
+      } else {
+        // Prevent default Enter behavior for empty input
+        event.preventDefault();
+      }
+    }
+    // Auto resize on key events like backspace/delete that might not trigger input event
+    this.autoResize();
+  },
+  autoResize() {
+    // Reset height to calculate scroll height correctly
+    this.el.style.height = "auto";
+
+    // Get the maximum height (max-h-[150px] converted to pixels)
+    const maxHeight = 150;
+
+    // Calculate content height
+    const contentHeight = this.el.scrollHeight;
+
+    // Set height based on content but capped at max height
+    if (contentHeight <= maxHeight) {
+      // Content fits within max height - grow normally
+      this.el.style.height = contentHeight + "px";
+      this.el.style.overflowY = "hidden";
+    } else {
+      // Content exceeds max height - enable scrolling
+      this.el.style.height = maxHeight + "px";
+      this.el.style.overflowY = "auto";
+
+      // Ensure cursor is visible by scrolling to bottom when typing
+      if (this.el === document.activeElement) {
+        this.el.scrollTop = contentHeight;
+      }
+    }
+  },
+  updated() {
+    // Ensure proper sizing after LiveView updates
+    this.autoResize();
+  },
+};
 
 Hooks.MaintainAttrs = {
-	attrs() { return this.el.getAttribute("data-attrs").split(", ") },
-	beforeUpdate() { this.prevAttrs = this.attrs().map(name => [name, this.el.getAttribute(name)]) },
-	updated() { this.prevAttrs.forEach(([name, val]) => this.el.setAttribute(name, val)) }
-}
+  attrs() {
+    return this.el.getAttribute("data-attrs").split(", ");
+  },
+  beforeUpdate() {
+    this.prevAttrs = this.attrs().map((name) => [
+      name,
+      this.el.getAttribute(name),
+    ]);
+  },
+  updated() {
+    this.prevAttrs.forEach(([name, val]) => this.el.setAttribute(name, val));
+  },
+};
 
 window.addEventListener("phx:copy", (event) => {
-	const text = event.target.innerText;
-	navigator.clipboard.writeText(text).then(() => {
-		const copyButtonTextEl = document.getElementById("copy-button-text");
-		copyButtonTextEl.innerText = "Copied!";
-		setTimeout(() => {
-			copyButtonTextEl.innerText = "Copy";
-		}, 1000);
-	})
-})
+  const text = event.target.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const copyButtonTextEl = document.getElementById("copy-button-text");
+    copyButtonTextEl.innerText = "Copied!";
+    setTimeout(() => {
+      copyButtonTextEl.innerText = "Copy";
+    }, 1000);
+  });
+});
 
 window.addEventListener("phx:notes-workspace-modal", ({ detail }) => {
-	// https://fly.io/phoenix-files/server-triggered-js/
-	const modalId = detail.modal_id;
-	const modalEl = document.getElementById(modalId);
-	window.liveSocket.execJS(modalEl, modalEl.getAttribute(detail.attr));
-})
+  // https://fly.io/phoenix-files/server-triggered-js/
+  const modalId = detail.modal_id;
+  const modalEl = document.getElementById(modalId);
+  window.liveSocket.execJS(modalEl, modalEl.getAttribute(detail.attr));
+});
 
-let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks, params: { _csrf_token: csrfToken } })
+window.addEventListener("phx:close_modal", ({ detail }) => {
+  const modalEl = document.querySelector(detail.to);
+  if (modalEl) {
+    window.liveSocket.execJS(modalEl, modalEl.getAttribute("data-cancel"));
+  }
+});
+
+let csrfToken = document
+  .querySelector("meta[name='csrf-token']")
+  .getAttribute("content");
+let liveSocket = new LiveSocket("/live", Socket, {
+  hooks: Hooks,
+  params: { _csrf_token: csrfToken },
+});
 
 // Show progress bar on live navigation and form submits
-topbar.config({ barColors: { 0: "#00C6C2" }, shadowColor: "rgba(0, 0, 0, .3)" })
-window.addEventListener("phx:page-loading-start", _info => topbar.show(300))
-window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
+topbar.config({
+  barColors: { 0: "#116a34" },
+  shadowColor: "rgba(0, 0, 0, .3)",
+});
+window.addEventListener("phx:page-loading-start", (_info) => topbar.show(300));
+window.addEventListener("phx:page-loading-stop", (_info) => topbar.hide());
 
 // connect if there are any LiveViews on the page
-liveSocket.connect()
+liveSocket.connect();
 
 // expose liveSocket on window for web console debug logs and latency simulation:
 // >> liveSocket.enableDebug()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
-window.liveSocket = liveSocket
-
+window.liveSocket = liveSocket;

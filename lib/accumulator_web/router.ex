@@ -32,6 +32,7 @@ defmodule AccumulatorWeb.Router do
     live "/dashboard", DashboardLive
     live "/daily-dashboard", DailyDashboardLive
     live "/spotify", SpotifyLive
+    live "/2026", YearLive
     delete "/logout", UserSessionController, :delete
 
     live "/notes/public/:id", NotesPublicLive
