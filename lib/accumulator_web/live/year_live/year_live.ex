@@ -9,7 +9,7 @@ defmodule AccumulatorWeb.YearLive do
   @impl true
   def mount(_params, _session, socket) do
     year = 2026
-    today = Date.utc_today() |> Date.add(80)
+    today = Date.utc_today()
 
     days_in_year = if Date.leap_year?(Date.new!(year, 1, 1)), do: 366, else: 365
 
