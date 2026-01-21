@@ -3,8 +3,8 @@ defmodule Accumulator.Year.Log do
   import Ecto.Changeset
 
   schema "year_logs" do
-    field :text, :string
-    field :logged_on, :date
+    field(:text, :string)
+    field(:logged_on, :date)
 
     timestamps(updated_at: false)
   end

@@ -49,7 +49,7 @@
           </button>
         </div>
       </header>
-
+      
 <!-- Search bar (initially hidden) -->
       <div class="hidden px-4 py-2 bg-[#2a2c2e] border-b border-zinc-800" id="search-container">
         <.simple_form for={@search} phx-change="search-change" phx-submit="search-submit">
@@ -67,7 +67,7 @@
           </div>
         </.simple_form>
       </div>
-
+      
 <!-- Error message when workspace doesn't exist -->
       <div
         :if={!@selected_workspace && @page_error}
@@ -78,10 +78,10 @@
           <p>Requested workspace doesn't exist!</p>
         </div>
       </div>
-
+      
 <!-- Main notes container with all notes -->
       <div :if={@selected_workspace} class="flex-1 overflow-y-auto bg-[#1f1f1f] flex flex-col">
-
+        
 <!-- Notes stream -->
         <div
           id="notes"
@@ -124,7 +124,7 @@
           </div>
         </div>
       </div>
-
+      
 <!-- Input area fixed at bottom -->
       <div
         :if={!@is_editing && @selected_workspace}
@@ -163,7 +163,7 @@
           </div>
         </.notes_form>
       </div>
-
+      
 <!-- Edit mode - similar to input area but with more controls -->
       <div
         :if={@is_editing}
@@ -224,7 +224,7 @@
           </div>
         </.notes_form>
       </div>
-
+      
 <!-- Workspace modal -->
       <.modal id="workspace-modal">
         <.simple_form

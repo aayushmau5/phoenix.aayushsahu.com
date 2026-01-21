@@ -23,6 +23,11 @@ defmodule Accumulator.Application do
       AccumulatorWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: Accumulator.PubSub},
+      # Shared PubSub with EventHorizon for cross-cluster messaging
+      Supervisor.child_spec(
+        {Phoenix.PubSub, name: EventHorizon.PubSub, adapter: Phoenix.PubSub.PG2},
+        id: EventHorizon.PubSub
+      ),
       # Start Finch
       {Finch, name: Accumulator.Finch},
       # Start libcluster
@@ -37,7 +42,9 @@ defmodule Accumulator.Application do
       {Accumulator.Scheduler.Pastes, interval: 3_600_000},
       # 43_200_000: 12 Hour
       {Accumulator.Scheduler.Plants, interval: 43_200_000},
-      {Task.Supervisor, name: Accumulator.TaskRunner}
+      {Task.Supervisor, name: Accumulator.TaskRunner},
+      # Analytics subscriber for EventHorizon events
+      Accumulator.Analytics.Subscriber
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -102,10 +102,7 @@ defmodule AccumulatorWeb.YearLive do
         <span class="tracking-wide">{@year}</span>
         <span class="tracking-tight">{@percentage_left}% left</span>
       </div>
-      <button
-        :if={@current_user}
-        phx-click={show_modal("log-modal")}
-      >
+      <button :if={@current_user} phx-click={show_modal("log-modal")}>
         Add log
       </button>
 
@@ -114,24 +111,18 @@ defmodule AccumulatorWeb.YearLive do
           <h3 class="text-lg font-bold text-[#5db37f]">
             {format_date(@selected_log.logged_on)}
           </h3>
-          <button
-            phx-click="clear_selection"
-            class="text-zinc-500 hover:text-white transition-colors"
-          >
+          <button phx-click="clear_selection" class="text-zinc-500 hover:text-white transition-colors">
             <Heroicons.x_mark class="w-5 h-5" />
           </button>
         </div>
-        <p class="text-zinc-300 whitespace-pre-wrap font-sans">{@selected_log.text || "No log entry"}</p>
+        <p class="text-zinc-300 whitespace-pre-wrap font-sans">
+          {@selected_log.text || "No log entry"}
+        </p>
       </div>
 
       <.modal id="log-modal" show={@show_modal} on_cancel={JS.push("close_modal")}>
         <h2 class="text-xl font-bold mb-6">Add Log</h2>
-        <.simple_form
-          for={@form}
-          id="log-form"
-          phx-change="validate"
-          phx-submit="save"
-        >
+        <.simple_form for={@form} id="log-form" phx-change="validate" phx-submit="save">
           <.input type="date" field={@form[:logged_on]} label="Date" phx-hook="LocalDate" />
           <.input type="textarea" field={@form[:text]} label="Log" rows="6" />
           <:actions>
