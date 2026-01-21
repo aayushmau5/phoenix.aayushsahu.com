@@ -1,7 +1,6 @@
 defmodule Accumulator.Analytics.Subscriber do
   @moduledoc """
   Subscribes to analytics events from EventHorizon and processes them.
-
   Listens on "analytics:events" topic and broadcasts stats updates back.
   """
 
@@ -9,9 +8,11 @@ defmodule Accumulator.Analytics.Subscriber do
   require Logger
 
   alias Accumulator.{Stats, Comments}
+  alias PubSubContract.Bus
+  alias EhaPubsubMessages.{Analytics, Stats, Topics}
+  alias Accumulator.PubSub.Messages.Local
 
   @pubsub EventHorizon.PubSub
-  @analytics_topic "analytics:events"
 
   def start_link(_opts) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -19,41 +20,37 @@ defmodule Accumulator.Analytics.Subscriber do
 
   @impl true
   def init(_) do
-    Phoenix.PubSub.subscribe(@pubsub, @analytics_topic)
-    Logger.info("Analytics subscriber started, listening on #{@analytics_topic}")
+    Bus.subscribe(@pubsub, Analytics.SiteVisit)
+    Logger.info("Analytics subscriber started, listening on #{Analytics.SiteVisit.topic()}")
     {:ok, %{}}
   end
 
   @impl true
-  def handle_info({:site_visit}, state) do
+  def handle_info(%Analytics.SiteVisit{}, state) do
     Logger.debug("Received site visit")
-    stat = Stats.increment_main_view_count()
-    stats = %{visits: stat.views}
-    Phoenix.PubSub.broadcast(@pubsub, "stats:site", {:site_stats_updated, stats})
-    Phoenix.PubSub.broadcast(Accumulator.PubSub, "local:update:count", {:site_visit})
+    stat = Accumulator.Stats.increment_main_view_count()
+    Bus.publish(@pubsub, Stats.SiteUpdated.new!(visits: stat.views))
+    Bus.publish(Accumulator.PubSub, %Local.SiteVisit{})
     {:noreply, state}
   end
 
-  def handle_info({:blog_visit, slug}, state) do
+  def handle_info(%Analytics.BlogVisit{slug: slug}, state) do
     Logger.debug("Received blog visit for #{slug}")
-    stat = Stats.increment_blog_view_count("blog:#{slug}")
-    stats = build_blog_stats(slug, stat)
-    broadcast_stats(slug, stats)
-    Phoenix.PubSub.broadcast(Accumulator.PubSub, "local:update:count", {:blog_visit})
+    stat = Accumulator.Stats.increment_blog_view_count("blog:#{slug}")
+    broadcast_blog_stats(slug, stat)
+    Bus.publish(Accumulator.PubSub, %Local.BlogVisit{})
     {:noreply, state}
   end
 
-  def handle_info({:blog_like, slug}, state) do
+  def handle_info(%Analytics.BlogLike{slug: slug}, state) do
     Logger.debug("Received blog like for #{slug}")
-    stat = Stats.increment_blog_like_count("blog:#{slug}")
-    stats = build_blog_stats(slug, stat)
-    broadcast_stats(slug, stats)
+    stat = Accumulator.Stats.increment_blog_like_count("blog:#{slug}")
+    broadcast_blog_stats(slug, stat)
     {:noreply, state}
   end
 
-  def handle_info({:blog_comment, slug, comment_data}, state) do
+  def handle_info(%Analytics.BlogComment{slug: slug, content: content, author: author}, state) do
     Logger.debug("Received blog comment for #{slug}")
-    %{content: content, author: author} = comment_data
 
     attrs = %{
       content: content,
@@ -67,9 +64,8 @@ defmodule Accumulator.Analytics.Subscriber do
           Accumulator.Mailer.send_comment_email(comment)
         end)
 
-        stat = Stats.get_blog_data(slug) || %{views: 0, likes: 0}
-        stats = build_blog_stats(slug, stat)
-        broadcast_stats(slug, stats)
+        stat = Accumulator.Stats.get_blog_data(slug) || %{views: 0, likes: 0}
+        broadcast_blog_stats(slug, stat)
 
       {:error, _changeset} ->
         # TODO: handle this later
@@ -84,19 +80,16 @@ defmodule Accumulator.Analytics.Subscriber do
     {:noreply, state}
   end
 
-  defp build_blog_stats(slug, stat) do
+  defp broadcast_blog_stats(slug, stat) do
     comments = Comments.list_comments_with_nested_replies(slug)
+    topic = Topics.blog_stats(slug: slug)
 
-    %{
-      visits: stat.views,
-      likes: stat.likes,
-      comments: comments
-    }
-  end
+    Bus.publish(
+      @pubsub,
+      Stats.BlogUpdated.new!(slug: slug, visits: stat.views, likes: stat.likes, comments: comments),
+      topic: topic
+    )
 
-  defp broadcast_stats(slug, stats) do
-    topic = "stats:blog:#{slug}"
-    Phoenix.PubSub.broadcast(@pubsub, topic, {:stats_updated, stats})
-    Logger.debug("Broadcasted stats update for #{slug}: #{inspect(stats)}")
+    Logger.debug("Broadcasted stats update for #{slug}")
   end
 end

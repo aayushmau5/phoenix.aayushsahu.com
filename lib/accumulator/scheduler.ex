@@ -4,7 +4,8 @@ defmodule Accumulator.Scheduler.Spotify do
 
   alias Accumulator.Spotify
   alias AccumulatorWeb.Presence
-  alias Phoenix.PubSub
+  alias PubSubContract.Bus
+  alias Accumulator.PubSub.Messages.Spotify.NowPlaying
 
   def start_link(args) do
     interval = Keyword.get(args, :interval)
@@ -31,10 +32,7 @@ defmodule Accumulator.Scheduler.Spotify do
       Logger.info("Running Spotify Job")
       now_playing = Spotify.get_now_playing()
 
-      PubSub.broadcast_from(Accumulator.PubSub, self(), "spotify:now_playing_update", %{
-        event: :spotify_now_playing,
-        data: now_playing
-      })
+      Bus.publish_from(Accumulator.PubSub, self(), NowPlaying.new!(data: now_playing))
     end
   end
 end

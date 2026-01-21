@@ -1,10 +1,11 @@
 defmodule Accumulator.Notes do
   alias Accumulator.Notes.{Note, Workspace}
   alias Accumulator.{Repo, Helpers}
+  alias PubSubContract.Bus
+  alias Accumulator.PubSub.Messages.Notes.Changed, as: NotesChanged
   import Ecto.Query
 
   @pubsub Accumulator.PubSub
-  @pubsub_topic "notes-pubsub-event"
 
   def get_note_by_id(id) do
     Repo.get!(Note, id)
@@ -135,10 +136,10 @@ defmodule Accumulator.Notes do
   end
 
   def subscribe() do
-    Phoenix.PubSub.subscribe(@pubsub, @pubsub_topic)
+    Bus.subscribe(@pubsub, NotesChanged)
   end
 
   def broadcast!(message) do
-    Phoenix.PubSub.broadcast!(@pubsub, @pubsub_topic, message)
+    Bus.publish(@pubsub, NotesChanged.new!(message))
   end
 end

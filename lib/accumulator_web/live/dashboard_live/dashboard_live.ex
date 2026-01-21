@@ -2,22 +2,24 @@ defmodule AccumulatorWeb.DashboardLive do
   use AccumulatorWeb, :live_view
 
   alias Accumulator.{Stats, Comments}
-  alias Phoenix.PubSub
-
-  @presence_topic "stats:presence"
+  alias PubSubContract.Bus
+  alias EhaPubsubMessages.Presence
+  alias Accumulator.PubSub.Messages.Local
 
   @impl true
   def mount(_params, _session, socket) do
     socket =
       if connected?(socket) do
         # Subscribe to presence updates from EventHorizon
-        PubSub.subscribe(EventHorizon.PubSub, @presence_topic)
-        PubSub.subscribe(EventHorizon.PubSub, "presence:response")
-        PubSub.subscribe(Accumulator.PubSub, "local:update:count")
+        Bus.subscribe(EventHorizon.PubSub, Presence.SitePresence)
+        Bus.subscribe(EventHorizon.PubSub, Presence.BlogPresence)
+
+        # Subscribe to local updates
+        Bus.subscribe(Accumulator.PubSub, Local.SiteVisit)
 
         # Request current presence counts from remote nodes
-        PubSub.broadcast(EventHorizon.PubSub, "remote:presence:request", {:get_presence, :site})
-        PubSub.broadcast(EventHorizon.PubSub, "remote:presence:request", {:get_presence, :blog})
+        Bus.publish(EventHorizon.PubSub, Presence.PresenceRequest.new!(type: :site))
+        Bus.publish(EventHorizon.PubSub, Presence.PresenceRequest.new!(type: :blog))
 
         main_stats = Stats.get_main_data()
 
@@ -49,12 +51,12 @@ defmodule AccumulatorWeb.DashboardLive do
 
   # Handle site presence updates from EventHorizon
   @impl true
-  def handle_info({:site_presence, count}, socket) do
+  def handle_info(%Presence.SitePresence{count: count}, socket) do
     {:noreply, assign(socket, current_viewing: count)}
   end
 
   # Handle blog presence updates from EventHorizon
-  def handle_info({:blog_presence, slug, count}, socket) do
+  def handle_info(%Presence.BlogPresence{slug: slug, count: count}, socket) do
     blog_presence = Map.put(socket.assigns.blog_presence, "blog:#{slug}", count)
     blogs_data = generate_blog_data(blog_presence)
 
@@ -65,12 +67,12 @@ defmodule AccumulatorWeb.DashboardLive do
      )}
   end
 
-  def handle_info({:site_visit}, socket) do
+  def handle_info(%Local.SiteVisit{}, socket) do
     main_stats = Stats.get_main_data()
     {:noreply, assign(socket, total_page_views: main_stats.views)}
   end
 
-  def handle_info({:blog_visit}, socket) do
+  def handle_info(%Local.BlogVisit{}, socket) do
     blogs_data = generate_blog_data(socket.assigns.blog_presence)
     {:noreply, assign(socket, blogs_data: sort_blog_data(blogs_data, socket.assigns.sort_key, socket.assigns.sort_order))}
   end

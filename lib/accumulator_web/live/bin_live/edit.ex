@@ -3,6 +3,9 @@ defmodule AccumulatorWeb.BinLive.Edit do
 
   alias Accumulator.{Pastes, Pastes.Paste}
   alias AccumulatorWeb.Presence
+  alias PubSubContract.Bus
+  alias Accumulator.PubSub.Topics
+  alias Accumulator.PubSub.Messages.Paste, as: PasteMsg
 
   @max_file_entries 20
   @max_file_size 5_000_000_00
@@ -257,9 +260,8 @@ defmodule AccumulatorWeb.BinLive.Edit do
     socket =
       case Pastes.update_existing_paste(paste_changeset) do
         {:ok, paste} ->
-          Phoenix.PubSub.broadcast(Accumulator.PubSub, "paste_updates:#{paste.id}", %{
-            event: :paste_update
-          })
+          topic = Topics.paste_updates(paste_id: paste.id)
+          Bus.publish(Accumulator.PubSub, PasteMsg.Updated.new!(paste_id: paste.id), topic: topic)
 
           cleanup_deleted_files(socket)
           push_navigate(socket, to: "/bin/#{paste.id}/show")

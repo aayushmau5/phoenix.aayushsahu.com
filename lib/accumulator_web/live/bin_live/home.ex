@@ -2,6 +2,7 @@ defmodule AccumulatorWeb.BinLive.Home do
   use AccumulatorWeb, :live_view
 
   alias Accumulator.Pastes
+  alias Accumulator.PubSub.Messages.Paste, as: PasteMsg
 
   @impl true
   def render(assigns) do
@@ -49,12 +50,12 @@ defmodule AccumulatorWeb.BinLive.Home do
   end
 
   @impl true
-  def handle_info(:new_paste, socket) do
+  def handle_info(%PasteMsg.Created{}, socket) do
     {:noreply, assign(socket, pastes: Pastes.get_all_pastes())}
   end
 
   @impl true
-  def handle_info(:paste_delete, socket) do
+  def handle_info(%PasteMsg.Deleted{}, socket) do
     {:noreply, assign(socket, pastes: Pastes.get_all_pastes())}
   end
 end

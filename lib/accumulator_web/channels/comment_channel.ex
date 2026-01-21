@@ -2,7 +2,7 @@ defmodule AccumulatorWeb.CommentChannel do
   use Phoenix.Channel
 
   alias Accumulator.Comments
-  alias Phoenix.PubSub
+  alias EhaPubsubMessages.Topics
 
   @pubsub Accumulator.PubSub
 
@@ -22,7 +22,8 @@ defmodule AccumulatorWeb.CommentChannel do
     push(socket, "comments_loaded", %{comments: serialize_comments(comments)})
 
     # Subscribe to comment updates for this blog
-    PubSub.subscribe(@pubsub, "comments:#{blog_slug}")
+    topic = Topics.comments(blog_slug: blog_slug)
+    Phoenix.PubSub.subscribe(@pubsub, topic)
 
     {:noreply, socket}
   end

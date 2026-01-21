@@ -3,7 +3,9 @@ defmodule AccumulatorWeb.UserJoinChannel do
 
   alias Accumulator.{Stats, Spotify}
   alias AccumulatorWeb.Presence
-  alias Phoenix.PubSub
+  alias PubSubContract.Bus
+  alias Accumulator.PubSub.Messages.Local.CountUpdate
+  alias Accumulator.PubSub.Messages.Spotify.NowPlaying
 
   @pubsub Accumulator.PubSub
   @spotify_update_event "spotify:now_playing_update"
@@ -22,27 +24,22 @@ defmodule AccumulatorWeb.UserJoinChannel do
     main_stats = Stats.increment_main_view_count()
     broadcast!(socket, "view-count", %{count: main_stats.views})
 
-    PubSub.broadcast_from(@pubsub, self(), "update:count", %{
-      event: :main_page_view_count
-    })
+    Bus.publish_from(@pubsub, self(), CountUpdate.new!(event: :main_page_view_count))
 
     # Spotify now playing
     Presence.track(self(), "spotify-join", socket.id, %{})
-    PubSub.subscribe(@pubsub, @spotify_update_event)
+    Bus.subscribe(@pubsub, NowPlaying)
     now_playing = Spotify.get_cached_now_playing()
     data = process_spotify_now_playing(now_playing)
     push(socket, @spotify_update_event, data)
 
-    PubSub.broadcast_from(@pubsub, self(), "spotify:now_playing_update", %{
-      event: :spotify_now_playing,
-      data: now_playing
-    })
+    Bus.publish_from(@pubsub, self(), NowPlaying.new!(data: now_playing))
 
     {:noreply, socket}
   end
 
   @impl true
-  def handle_info(%{event: :spotify_now_playing, data: data} = _event_data, socket) do
+  def handle_info(%NowPlaying{data: data}, socket) do
     data = process_spotify_now_playing(data)
     push(socket, @spotify_update_event, data)
     {:noreply, socket}

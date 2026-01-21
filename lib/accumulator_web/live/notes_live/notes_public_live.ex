@@ -2,6 +2,7 @@ defmodule AccumulatorWeb.NotesPublicLive do
   use AccumulatorWeb, :live_view
 
   alias Accumulator.{Notes, Notes.Workspace}
+  alias Accumulator.PubSub.Messages.Notes.Changed, as: NotesChanged
 
   @impl true
   def render(assigns) do
@@ -157,7 +158,7 @@ defmodule AccumulatorWeb.NotesPublicLive do
   end
 
   @impl true
-  def handle_info(%{type: event_type, workspace_id: workspace_id}, socket) do
+  def handle_info(%NotesChanged{type: event_type, workspace_id: workspace_id}, socket) do
     workspace_id =
       if is_binary(workspace_id), do: String.to_integer(workspace_id), else: workspace_id
 

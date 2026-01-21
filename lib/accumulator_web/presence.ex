@@ -9,30 +9,27 @@ defmodule AccumulatorWeb.Presence do
     otp_app: :accumulator,
     pubsub_server: Accumulator.PubSub
 
-  alias Phoenix.PubSub
+  alias PubSubContract.Bus
+  alias Accumulator.PubSub.Topics
+  alias Accumulator.PubSub.Messages.Local.CountUpdate
+  alias Accumulator.PubSub.Messages.Paste.EditStatus
 
   def init(_opts), do: {:ok, %{}}
 
   def handle_metas("user-join", _, _, state) do
-    PubSub.broadcast(Accumulator.PubSub, "update:count", %{event: :main_page_user_count})
+    Bus.publish(Accumulator.PubSub, CountUpdate.new!(event: :main_page_user_count))
     {:ok, state}
   end
 
   def handle_metas("blog:" <> id, _, _, state) do
-    PubSub.broadcast(Accumulator.PubSub, "update:count", %{
-      event: :blog_page_user_count,
-      key: "blog:" <> id
-    })
-
+    Bus.publish(Accumulator.PubSub, CountUpdate.new!(event: :blog_page_user_count, key: "blog:" <> id))
     {:ok, state}
   end
 
   def handle_metas("paste_edit:" <> id, _metas, presences, state) do
-    PubSub.broadcast(Accumulator.PubSub, "paste_updates:#{id}", %{
-      event: :edit,
-      count: map_size(presences)
-    })
-
+    paste_id = String.to_integer(id)
+    topic = Topics.paste_updates(paste_id: paste_id)
+    Bus.publish(Accumulator.PubSub, EditStatus.new!(paste_id: paste_id, count: map_size(presences)), topic: topic)
     {:ok, state}
   end
 

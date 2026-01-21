@@ -1,15 +1,16 @@
 defmodule Accumulator.Pastes do
   import Ecto.Query
   alias Accumulator.{Pastes.Paste, Repo, Helpers}
+  alias PubSubContract.Bus
+  alias Accumulator.PubSub.Messages.Paste, as: PasteMsg
 
   # TODO: add tests
 
   @pubsub Accumulator.PubSub
-  @pubsub_topic "paste_event"
 
   def add_paste(changeset) do
     with {:ok, _record} <- Repo.insert(changeset) do
-      broadcast(:new_paste)
+      Bus.publish(@pubsub, %PasteMsg.Created{})
       :ok
     end
   end
@@ -48,7 +49,7 @@ defmodule Accumulator.Pastes do
             cleanup_dir(paste.storage_directory)
           end
 
-          broadcast(:paste_delete)
+          Bus.publish(@pubsub, %PasteMsg.Deleted{})
           :ok
         end
     end
@@ -76,11 +77,11 @@ defmodule Accumulator.Pastes do
       )
 
     Repo.delete_all(query)
-    broadcast(:paste_delete)
+    Bus.publish(@pubsub, %PasteMsg.Deleted{})
   end
 
   def subscribe() do
-    Phoenix.PubSub.subscribe(@pubsub, @pubsub_topic)
+    Bus.subscribe(@pubsub, PasteMsg.Created)
   end
 
   def cleanup_files(files) do
@@ -95,10 +96,6 @@ defmodule Accumulator.Pastes do
 
     :ok = File.mkdir(storage_directory)
     storage_directory
-  end
-
-  defp broadcast(event) do
-    Phoenix.PubSub.broadcast(@pubsub, @pubsub_topic, event)
   end
 
   defp get_expired_pastes_dir(current_date_time) do

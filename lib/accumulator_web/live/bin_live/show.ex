@@ -2,6 +2,8 @@ defmodule AccumulatorWeb.BinLive.Show do
   use AccumulatorWeb, :live_view
 
   alias Accumulator.Pastes
+  alias Accumulator.PubSub.Topics
+  alias Accumulator.PubSub.Messages.Paste, as: PasteMsg
 
   @impl true
   def render(assigns) do
@@ -65,7 +67,8 @@ defmodule AccumulatorWeb.BinLive.Show do
     title = page_title(socket, paste) <> " | LiveBin"
 
     if connected?(socket) and paste not in [nil, :error] do
-      Phoenix.PubSub.subscribe(Accumulator.PubSub, "paste_updates:#{paste.id}")
+      topic = Topics.paste_updates(paste_id: paste.id)
+      PubSubContract.Bus.subscribe(Accumulator.PubSub, topic)
     end
 
     {:ok,
@@ -97,13 +100,13 @@ defmodule AccumulatorWeb.BinLive.Show do
   end
 
   @impl true
-  def handle_info(%{event: :edit, count: count}, socket) do
+  def handle_info(%PasteMsg.EditStatus{count: count}, socket) do
     enable_edit = if count == 0, do: true, else: false
     {:noreply, assign(socket, enable_edit: enable_edit)}
   end
 
   @impl true
-  def handle_info(%{event: :paste_update}, socket) do
+  def handle_info(%PasteMsg.Updated{}, socket) do
     updated_paste = Pastes.get_paste(socket.assigns.paste.id)
     {:noreply, assign(socket, paste: updated_paste)}
   end

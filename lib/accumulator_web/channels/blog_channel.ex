@@ -3,7 +3,8 @@ defmodule AccumulatorWeb.BlogChannel do
 
   alias AccumulatorWeb.Presence
   alias Accumulator.Stats
-  alias Phoenix.PubSub
+  alias PubSubContract.Bus
+  alias Accumulator.PubSub.Messages.Local.CountUpdate
 
   @pubsub Accumulator.PubSub
 
@@ -20,10 +21,7 @@ defmodule AccumulatorWeb.BlogChannel do
     broadcast!(socket, "blog-view-count", %{count: blog_stats.views})
     push(socket, "likes-count", %{count: blog_stats.likes})
 
-    PubSub.broadcast_from(@pubsub, self(), "update:count", %{
-      event: :blog_page_view_count,
-      key: room_id
-    })
+    Bus.publish_from(@pubsub, self(), CountUpdate.new!(event: :blog_page_view_count, key: room_id))
 
     {:noreply, socket}
   end
@@ -32,10 +30,7 @@ defmodule AccumulatorWeb.BlogChannel do
     blog_stats = Stats.increment_blog_like_count(topic)
     broadcast!(socket, "likes-count", %{count: blog_stats.likes})
 
-    PubSub.broadcast_from(@pubsub, self(), "update:count", %{
-      event: :blog_like_count,
-      key: topic
-    })
+    Bus.publish_from(@pubsub, self(), CountUpdate.new!(event: :blog_like_count, key: topic))
 
     {:reply, {:ok, params}, socket}
   end

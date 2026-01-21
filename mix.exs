@@ -56,7 +56,9 @@ defmodule Accumulator.MixProject do
       {:earmark, "~> 1.4"},
       {:tz, "~> 0.26.5"},
       {:tidewave, "~> 0.4", only: :dev},
-      {:live_charts, "~> 0.4.0"}
+      {:live_charts, "~> 0.4.0"},
+      {:pub_sub_contract, github: "aayushmau5/PubSubContract"},
+      {:eha_pubsub_messages, github: "aayushmau5/eha_pubsub_messages"}
     ]
   end
 
