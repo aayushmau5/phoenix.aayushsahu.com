@@ -49,13 +49,22 @@ defmodule Accumulator.Analytics.Subscriber do
     {:noreply, state}
   end
 
-  def handle_info(%Analytics.BlogComment{slug: slug, content: content, author: author}, state) do
+  def handle_info(
+        %Analytics.BlogComment{
+          slug: slug,
+          content: content,
+          author: author,
+          parent_id: parent_id
+        },
+        state
+      ) do
     Logger.debug("Received blog comment for #{slug}")
 
     attrs = %{
       content: content,
       author: author,
-      blog_slug: slug
+      blog_slug: slug,
+      parent_id: parent_id
     }
 
     case Comments.create_comment(attrs) do
@@ -64,7 +73,7 @@ defmodule Accumulator.Analytics.Subscriber do
           Accumulator.Mailer.send_comment_email(comment)
         end)
 
-        stat = Accumulator.Stats.get_blog_data(slug) || %{views: 0, likes: 0}
+        stat = Accumulator.Stats.get_blog_data("blog:#{slug}") || %{views: 0, likes: 0}
         broadcast_blog_stats(slug, stat)
 
       {:error, _changeset} ->
@@ -86,7 +95,12 @@ defmodule Accumulator.Analytics.Subscriber do
 
     Bus.publish(
       @pubsub,
-      Stats.BlogUpdated.new!(slug: slug, visits: stat.views, likes: stat.likes, comments: comments),
+      Stats.BlogUpdated.new!(
+        slug: slug,
+        visits: stat.views,
+        likes: stat.likes,
+        comments: comments
+      ),
       topic: topic
     )
 
