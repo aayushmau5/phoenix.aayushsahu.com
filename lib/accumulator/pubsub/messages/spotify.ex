@@ -5,7 +5,7 @@ defmodule Accumulator.PubSub.Messages.Spotify.NowPlaying do
   use PubSubContract.Message
 
   message do
-    field :data, :any, required: true
+    field(:data, :any, required: true)
   end
 
   @impl true

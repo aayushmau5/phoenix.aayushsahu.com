@@ -39,8 +39,8 @@ defmodule Accumulator.PubSub.Messages.Local.CountUpdate do
   use PubSubContract.Message
 
   message do
-    field :event, :atom, required: true
-    field :key, :string, default: nil
+    field(:event, :atom, required: true)
+    field(:key, :string, default: nil)
   end
 
   @impl true

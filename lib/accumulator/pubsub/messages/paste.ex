@@ -40,8 +40,8 @@ defmodule Accumulator.PubSub.Messages.Paste.EditStatus do
   use PubSubContract.Message
 
   message do
-    field :paste_id, :integer, required: true
-    field :count, :integer, required: true
+    field(:paste_id, :integer, required: true)
+    field(:count, :integer, required: true)
   end
 
   @impl true
@@ -62,7 +62,7 @@ defmodule Accumulator.PubSub.Messages.Paste.Updated do
   use PubSubContract.Message
 
   message do
-    field :paste_id, :integer, required: true
+    field(:paste_id, :integer, required: true)
   end
 
   @impl true

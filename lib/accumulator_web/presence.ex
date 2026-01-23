@@ -22,14 +22,24 @@ defmodule AccumulatorWeb.Presence do
   end
 
   def handle_metas("blog:" <> id, _, _, state) do
-    Bus.publish(Accumulator.PubSub, CountUpdate.new!(event: :blog_page_user_count, key: "blog:" <> id))
+    Bus.publish(
+      Accumulator.PubSub,
+      CountUpdate.new!(event: :blog_page_user_count, key: "blog:" <> id)
+    )
+
     {:ok, state}
   end
 
   def handle_metas("paste_edit:" <> id, _metas, presences, state) do
     paste_id = String.to_integer(id)
     topic = Topics.paste_updates(paste_id: paste_id)
-    Bus.publish(Accumulator.PubSub, EditStatus.new!(paste_id: paste_id, count: map_size(presences)), topic: topic)
+
+    Bus.publish(
+      Accumulator.PubSub,
+      EditStatus.new!(paste_id: paste_id, count: map_size(presences)),
+      topic: topic
+    )
+
     {:ok, state}
   end
 

@@ -21,7 +21,11 @@ defmodule AccumulatorWeb.BlogChannel do
     broadcast!(socket, "blog-view-count", %{count: blog_stats.views})
     push(socket, "likes-count", %{count: blog_stats.likes})
 
-    Bus.publish_from(@pubsub, self(), CountUpdate.new!(event: :blog_page_view_count, key: room_id))
+    Bus.publish_from(
+      @pubsub,
+      self(),
+      CountUpdate.new!(event: :blog_page_view_count, key: room_id)
+    )
 
     {:noreply, socket}
   end

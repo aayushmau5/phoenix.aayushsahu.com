@@ -5,8 +5,8 @@ defmodule Accumulator.PubSub.Messages.Notes.Changed do
   use PubSubContract.Message
 
   message do
-    field :type, :atom, required: true
-    field :workspace_id, :any, required: true
+    field(:type, :atom, required: true)
+    field(:workspace_id, :any, required: true)
   end
 
   @impl true
@@ -14,7 +14,14 @@ defmodule Accumulator.PubSub.Messages.Notes.Changed do
 
   @impl true
   def validate(%__MODULE__{type: type, workspace_id: workspace_id})
-      when type in [:new_note, :update_note, :delete_note, :new_workspace, :update_workspace, :delete_workspace] and
+      when type in [
+             :new_note,
+             :update_note,
+             :delete_note,
+             :new_workspace,
+             :update_workspace,
+             :delete_workspace
+           ] and
              not is_nil(workspace_id),
       do: :ok
 

@@ -3,9 +3,7 @@ defmodule Accumulator.Scheduler.Spotify do
   require Logger
 
   alias Accumulator.Spotify
-  alias AccumulatorWeb.Presence
   alias PubSubContract.Bus
-  alias Accumulator.PubSub.Messages.Spotify.NowPlaying
 
   def start_link(args) do
     interval = Keyword.get(args, :interval)
@@ -25,16 +23,19 @@ defmodule Accumulator.Scheduler.Spotify do
     {:noreply, interval}
   end
 
-  def spotify_now_playing_job do
-    users_connected = Presence.list("spotify-join") |> map_size()
+  defp spotify_now_playing_job do
+    Logger.info("Running Spotify Job")
+    now_playing = Spotify.get_now_playing()
 
-    if users_connected != 0 do
-      Logger.info("Running Spotify Job")
-      now_playing = Spotify.get_now_playing()
-
-      Bus.publish_from(Accumulator.PubSub, self(), NowPlaying.new!(data: now_playing))
-    end
+    Bus.publish(
+      EventHorizon.PubSub,
+      EhaPubsubMessages.Stats.Spotify.NowPlaying.new!(data: process_now_playing(now_playing))
+    )
   end
+
+  defp process_now_playing({:ok, data}), do: data
+  defp process_now_playing({:not_playing, _}), do: nil
+  defp process_now_playing({:error, _}), do: nil
 end
 
 defmodule Accumulator.Scheduler.Pastes do

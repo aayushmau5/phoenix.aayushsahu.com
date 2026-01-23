@@ -6,7 +6,7 @@ defmodule Accumulator.PubSub.Topics do
   use PubSubContract.Topics
 
   # Dynamic topics (local only)
-  topic :paste_updates, "paste_updates:{paste_id}"
+  topic(:paste_updates, "paste_updates:{paste_id}")
 
   # Static topics (local only)
   def spotify_now_playing, do: "spotify:now_playing_update"

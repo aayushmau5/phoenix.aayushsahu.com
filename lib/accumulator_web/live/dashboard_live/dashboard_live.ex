@@ -74,7 +74,11 @@ defmodule AccumulatorWeb.DashboardLive do
 
   def handle_info(%Local.BlogVisit{}, socket) do
     blogs_data = generate_blog_data(socket.assigns.blog_presence)
-    {:noreply, assign(socket, blogs_data: sort_blog_data(blogs_data, socket.assigns.sort_key, socket.assigns.sort_order))}
+
+    {:noreply,
+     assign(socket,
+       blogs_data: sort_blog_data(blogs_data, socket.assigns.sort_key, socket.assigns.sort_order)
+     )}
   end
 
   def handle_info(_msg, socket), do: {:noreply, socket}
