@@ -36,8 +36,8 @@ defmodule Accumulator.Application do
       AccumulatorWeb.Endpoint,
       AccumulatorWeb.Presence,
       Accumulator.Repo,
-      # 60000: 1 minute
-      {Accumulator.Scheduler.Spotify, interval: 60000},
+      # 5 seconds. 12 reqs/min.
+      {Accumulator.Scheduler.Spotify, interval: 5000},
       # 3_600_000: 1 hour
       {Accumulator.Scheduler.Pastes, interval: 3_600_000},
       # 43_200_000: 12 Hour
