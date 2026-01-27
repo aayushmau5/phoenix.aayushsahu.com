@@ -37,14 +37,16 @@ defmodule Accumulator.Application do
       AccumulatorWeb.Presence,
       Accumulator.Repo,
       # 5 seconds. 12 reqs/min.
-      {Accumulator.Scheduler.Spotify, interval: 5000},
+      # {Accumulator.Scheduler.Spotify, interval: 5000},
       # 3_600_000: 1 hour
       {Accumulator.Scheduler.Pastes, interval: 3_600_000},
       # 43_200_000: 12 Hour
       {Accumulator.Scheduler.Plants, interval: 43_200_000},
       {Task.Supervisor, name: Accumulator.TaskRunner},
       # Analytics subscriber for EventHorizon events
-      Accumulator.Analytics.Subscriber
+      Accumulator.Analytics.Subscriber,
+      # Poll subscriber for blog poll requests
+      Accumulator.Poll.Subscriber
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
