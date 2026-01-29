@@ -26,6 +26,20 @@ defmodule Accumulator.Analytics.Subscriber do
   end
 
   @impl true
+  def handle_info(%Analytics.SiteStatRequest{}, state) do
+    Logger.debug("Received site stats request")
+    stat = Accumulator.Stats.get_main_data()
+    Bus.publish(@pubsub, Stats.SiteUpdated.new!(visits: stat.views))
+    {:noreply, state}
+  end
+
+  def handle_info(%Analytics.BlogStatRequest{slug: slug}, state) do
+    Logger.debug("Received blog stats request")
+    stat = Accumulator.Stats.get_blog_data("blog:#{slug}")
+    broadcast_blog_stats(slug, stat)
+    {:noreply, state}
+  end
+
   def handle_info(%Analytics.SiteVisit{}, state) do
     Logger.debug("Received site visit")
     stat = Accumulator.Stats.increment_main_view_count()
