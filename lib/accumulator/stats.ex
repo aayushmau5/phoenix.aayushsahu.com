@@ -1,6 +1,6 @@
 defmodule Accumulator.Stats do
   import Ecto.Query
-  alias Accumulator.{Stats.Stat, Stats.DailyStat, Repo}
+  alias Accumulator.{Stats.Stat, Stats.DailyStat, Stats.DailyUserAgentStat, Repo}
 
   # Main
   def get_main_data() do
@@ -108,6 +108,16 @@ defmodule Accumulator.Stats do
       %DailyStat{slug: slug, date: today, views: 1, likes: 0},
       on_conflict: [inc: [views: 1], set: [updated_at: DateTime.utc_now()]],
       conflict_target: [:slug, :date]
+    )
+  end
+
+  def increment_daily_user_agent(%{browser: browser, os: os, device: device}) do
+    today = Date.utc_today()
+
+    Repo.insert(
+      %DailyUserAgentStat{date: today, browser: browser, os: os, device: device, count: 1},
+      on_conflict: [inc: [count: 1], set: [updated_at: DateTime.utc_now()]],
+      conflict_target: [:date, :browser, :os, :device]
     )
   end
 

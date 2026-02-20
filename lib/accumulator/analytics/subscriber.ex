@@ -40,9 +40,16 @@ defmodule Accumulator.Analytics.Subscriber do
     {:noreply, state}
   end
 
-  def handle_info(%Analytics.SiteVisit{}, state) do
+  def handle_info(%Analytics.SiteVisit{user_agent: user_agent}, state) do
     Logger.debug("Received site visit")
+
     stat = Accumulator.Stats.increment_main_view_count()
+
+    if user_agent do
+      parsed_ua = Accumulator.Analytics.UA.parse(user_agent)
+      Accumulator.Stats.increment_daily_user_agent(parsed_ua)
+    end
+
     Bus.publish(@pubsub, Stats.SiteUpdated.new!(visits: stat.views))
     Bus.publish(Accumulator.PubSub, %Local.SiteVisit{})
     {:noreply, state}
