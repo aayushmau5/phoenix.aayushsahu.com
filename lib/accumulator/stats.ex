@@ -111,6 +111,15 @@ defmodule Accumulator.Stats do
     )
   end
 
+  def get_user_agent_stats() do
+    from(s in DailyUserAgentStat,
+      group_by: [s.browser, s.os, s.device],
+      select: %{browser: s.browser, os: s.os, device: s.device, count: sum(s.count)},
+      order_by: [desc: sum(s.count)]
+    )
+    |> Repo.all()
+  end
+
   def increment_daily_user_agent(%{browser: browser, os: os, device: device}) do
     today = Date.utc_today()
 

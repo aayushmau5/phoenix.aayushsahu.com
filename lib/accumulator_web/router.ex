@@ -31,6 +31,7 @@ defmodule AccumulatorWeb.Router do
     get "/redirect", PageController, :redirect
     live "/dashboard", DashboardLive
     live "/daily-dashboard", DailyDashboardLive
+    live "/devices", DevicesLive
     live "/spotify", SpotifyLive
     live "/2026", YearLive
     delete "/logout", UserSessionController, :delete

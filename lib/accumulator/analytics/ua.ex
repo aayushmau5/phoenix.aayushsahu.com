@@ -15,7 +15,7 @@ defmodule Accumulator.Analytics.UA do
 
     browser = ua.family || "Unknown"
     os = (ua.os && ua.os.family) || "Unknown"
-    device = (ua.device && ua.device.family) || "Unknown"
+    device = sanitize_device(ua.device)
 
     if browser == "Unknown" and os == "Unknown" and device == "Unknown" do
       unknown()
@@ -23,6 +23,20 @@ defmodule Accumulator.Analytics.UA do
       %{browser: browser, os: os, device: device}
     end
   end
+
+  @max_device_length 30
+
+  defp sanitize_device(nil), do: "Unknown"
+
+  defp sanitize_device(%{family: family, brand: brand}) do
+    cond do
+      is_binary(family) and String.length(family) <= @max_device_length -> family
+      is_binary(brand) -> brand
+      true -> "Unknown"
+    end
+  end
+
+  defp sanitize_device(_), do: "Unknown"
 
   defp unknown, do: %{browser: "Unknown", os: "Unknown", device: "Unknown"}
 end

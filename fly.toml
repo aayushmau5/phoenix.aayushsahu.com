@@ -4,7 +4,7 @@
 #
 
 app = "phoenix-aayushsahu-com"
-primary_region = "cdg"
+primary_region = "fra"
 kill_signal = "SIGTERM"
 kill_timeout = "5s"
 
