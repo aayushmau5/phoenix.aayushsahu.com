@@ -12,7 +12,7 @@ defmodule Accumulator.Spotify do
   @now_playing_key "now_playing"
   @top_tracks_key "top_tracks"
   @top_artists_key "top_artists"
-  @now_playing_expire 180
+  @now_playing_expire 30
   @top_tracks_expire 86_400
   @top_artists_expire 86_400
 
