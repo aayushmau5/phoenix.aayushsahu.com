@@ -23,6 +23,8 @@ defmodule AccumulatorWeb.Endpoint do
     gzip: false,
     only: AccumulatorWeb.static_paths()
 
+  plug :uploads_cors
+
   plug Plug.Static,
     at: "/uploads",
     from: Application.compile_env(:accumulator, :serve_dir),
@@ -74,4 +76,10 @@ defmodule AccumulatorWeb.Endpoint do
   # socket "/extension", AccumulatorWeb.ExtensionSocket,
   #   websocket: true,
   #   longpoll: false
+
+  defp uploads_cors(%{path_info: ["uploads" | _]} = conn, _opts) do
+    Plug.Conn.put_resp_header(conn, "access-control-allow-origin", "*")
+  end
+
+  defp uploads_cors(conn, _opts), do: conn
 end
