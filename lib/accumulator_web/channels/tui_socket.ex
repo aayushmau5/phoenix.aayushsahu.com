@@ -38,8 +38,8 @@ defmodule AccumulatorWeb.TUISocket do
     secret = Map.get(params, "secret")
     meowui_secret = Application.get_env(:accumulator, :meowui_secret)
 
-    if secret == meowui_secret do
-      {:ok, socket}
+    if valid_secret?(secret, meowui_secret) do
+      {:ok, assign(socket, :tui_authenticated, true)}
     else
       :error
     end
@@ -57,4 +57,12 @@ defmodule AccumulatorWeb.TUISocket do
   # Returning `nil` makes this socket anonymous.
   @impl true
   def id(_socket), do: nil
+
+  defp valid_secret?(provided, expected)
+       when is_binary(provided) and is_binary(expected) and byte_size(provided) > 0 and
+              byte_size(provided) == byte_size(expected) do
+    Plug.Crypto.secure_compare(provided, expected)
+  end
+
+  defp valid_secret?(_provided, _expected), do: false
 end

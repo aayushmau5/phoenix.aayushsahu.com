@@ -11,6 +11,10 @@ defmodule Accumulator.Notes do
     Repo.get!(Note, id)
   end
 
+  def get_note(id) do
+    Repo.get(Note, id)
+  end
+
   def get_notes_grouped_and_ordered_by_date(workspace_id, ending_datetime) do
     ending_datetime = ending_datetime |> DateTime.add(1)
     starting_datetime = DateTime.add(ending_datetime, -30, :day)

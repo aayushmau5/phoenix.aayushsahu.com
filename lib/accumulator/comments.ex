@@ -1,6 +1,10 @@
 defmodule Accumulator.Comments do
   import Ecto.Query
   alias Accumulator.{Comments.Comment, Repo}
+  alias Accumulator.PubSub.Messages.Comments.Changed
+  alias PubSubContract.Bus
+
+  @pubsub Accumulator.PubSub
 
   def get_all_comments() do
     Repo.all(Comment)
@@ -68,7 +72,9 @@ defmodule Accumulator.Comments do
          |> Comment.changeset(attrs)
          |> Repo.insert() do
       {:ok, comment} ->
-        {:ok, Repo.preload(comment, :replies)}
+        comment = Repo.preload(comment, :replies)
+        broadcast_change(:created, comment)
+        {:ok, comment}
 
       error ->
         error
@@ -83,7 +89,9 @@ defmodule Accumulator.Comments do
          |> Comment.changeset(attrs)
          |> Repo.update() do
       {:ok, comment} ->
-        {:ok, Repo.preload(comment, :replies)}
+        comment = Repo.preload(comment, :replies)
+        broadcast_change(:updated, comment)
+        {:ok, comment}
 
       error ->
         error
@@ -94,7 +102,14 @@ defmodule Accumulator.Comments do
   Deletes a comment and all its replies (cascading delete).
   """
   def delete_comment(%Comment{} = comment) do
-    Repo.delete(comment)
+    case Repo.delete(comment) do
+      {:ok, deleted_comment} = result ->
+        broadcast_change(:deleted, deleted_comment)
+        result
+
+      error ->
+        error
+    end
   end
 
   @doc """
@@ -127,6 +142,17 @@ defmodule Accumulator.Comments do
   """
   def change_comment(%Comment{} = comment, attrs \\ %{}) do
     Comment.changeset(comment, attrs)
+  end
+
+  def subscribe do
+    Bus.subscribe(@pubsub, Changed)
+  end
+
+  defp broadcast_change(type, comment) do
+    Bus.publish(
+      @pubsub,
+      Changed.new!(type: type, blog_slug: comment.blog_slug, comment_id: comment.id)
+    )
   end
 
   # Private helper to organize flat comment list into nested hierarchy
