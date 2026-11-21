@@ -39,10 +39,11 @@ defmodule AccumulatorWeb.Router do
     live "/notes/public/:id", NotesPublicLive
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", AccumulatorWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", AccumulatorWeb do
+    pipe_through :api
+
+    get "/photos", PhotoController, :index
+  end
 
   if Application.compile_env(:accumulator, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put

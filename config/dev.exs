@@ -17,6 +17,11 @@ config :accumulator, AccumulatorWeb.Endpoint,
     certfile: "priv/cert/selfsigned.pem",
     keyfile: "priv/cert/selfsigned_key.pem"
   ],
+  static_url: [
+    scheme: "http",
+    host: "localhost",
+    port: String.to_integer(System.get_env("PORT") || "4000")
+  ],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,

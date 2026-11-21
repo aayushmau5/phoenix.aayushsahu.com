@@ -149,6 +149,9 @@ defmodule AccumulatorWeb.Components.Notes.NotesNavbar do
             <.navbar_link :if={@current_user} to={~p"/plants"}>
               <Heroicons.globe_asia_australia class="w-5 h-5" /> plants
             </.navbar_link>
+            <.navbar_link :if={@current_user} to={~p"/photos"}>
+              <Heroicons.photo class="w-5 h-5" /> photos
+            </.navbar_link>
             <.navbar_link :if={@current_user} to={~p"/comments"}>
               <Heroicons.chat_bubble_left_ellipsis class="w-5 h-5" /> comments
             </.navbar_link>
