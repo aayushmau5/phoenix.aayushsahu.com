@@ -6,7 +6,6 @@ import Config
 
 # Configures Swoosh API Client
 config :swoosh, :api_client, Accumulator.Finch
-config :accumulator, Accumulator.Mailer, adapter: Resend.Swoosh.Adapter
 
 # Note we also include the path to a cache manifest
 # containing the digested version of static files. This

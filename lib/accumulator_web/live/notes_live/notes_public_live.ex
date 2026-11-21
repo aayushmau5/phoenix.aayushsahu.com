@@ -53,7 +53,10 @@ defmodule AccumulatorWeb.NotesPublicLive do
           </div>
           <div :for={note <- notes} class="my-1 bg-[#3d3d3d] p-2 rounded-md" id={"note-#{note.id}"}>
             <article :if={note.text} class="note-text break-words font-sans">
-              {Earmark.as_html!(note.text, escape: false, compact_output: false)
+              {MDEx.to_html!(note.text,
+                extension: [strikethrough: true, table: true, autolink: true],
+                render: [unsafe: true]
+              )
               |> Phoenix.HTML.raw()}
             </article>
             <div class="text-xs opacity-40 mt-2">
