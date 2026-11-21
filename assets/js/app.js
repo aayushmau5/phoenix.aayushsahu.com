@@ -23,10 +23,13 @@ import { LiveSocket } from "phoenix_live_view";
 import topbar from "../vendor/topbar";
 import LiveCharts from "live_charts";
 import PhotosPage from "./hooks/photos_page";
+import BinShare from "./hooks/bin_share";
+import { registerServiceWorker } from "./share_target";
 
 const Hooks = {
   ...LiveCharts.Hooks,
   PhotosPage,
+  BinShare,
 };
 
 Hooks.LocalTime = {
@@ -210,6 +213,8 @@ window.addEventListener("phx:page-loading-stop", (_info) => topbar.hide());
 
 // connect if there are any LiveViews on the page
 liveSocket.connect();
+
+registerServiceWorker();
 
 // expose liveSocket on window for web console debug logs and latency simulation:
 // >> liveSocket.enableDebug()

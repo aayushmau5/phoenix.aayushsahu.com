@@ -16,6 +16,8 @@ defmodule AccumulatorWeb.BinLive.Create do
         Back
       </.back>
 
+      <div :if={@shared} id="bin-share" phx-hook="BinShare" class="hidden"></div>
+
       <h1 class="text-center text-xl font-bold">Create a paste</h1>
       <.simple_form for={@form} id="paste_form" phx-submit="add_paste" phx-change="validate_paste">
         <.input field={@form[:title]} type="text" id="paste_title" label="Title" required />
@@ -90,7 +92,7 @@ defmodule AccumulatorWeb.BinLive.Create do
   end
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
     paste_form = %Paste{} |> Paste.changeset() |> to_form
 
     {:ok,
@@ -98,7 +100,8 @@ defmodule AccumulatorWeb.BinLive.Create do
      |> assign(
        page_title: "Create | LiveBin",
        form: paste_form,
-       submit_disabled: true
+       submit_disabled: true,
+       shared: Map.has_key?(params, "shared")
      )
      |> allow_upload(:files,
        accept: :any,

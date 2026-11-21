@@ -1,3 +1,5 @@
+import { takeSharedPhotos } from "../share_target";
+
 const hasFiles = (event) =>
   Array.from(event.dataTransfer?.types || []).includes("Files");
 
@@ -22,6 +24,14 @@ const PhotosPage = {
     this.listeners.forEach(([target, name, handler]) =>
       target.addEventListener(name, handler),
     );
+
+    this.uploadSharedPhotos();
+  },
+
+  async uploadSharedPhotos() {
+    if (!new URLSearchParams(window.location.search).has("shared")) return;
+    const photos = await takeSharedPhotos();
+    if (photos.length > 0) this.upload("photos", photos);
   },
 
   destroyed() {

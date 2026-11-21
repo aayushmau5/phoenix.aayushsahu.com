@@ -19,7 +19,7 @@ defmodule AccumulatorWeb do
 
   def static_paths,
     do:
-      ~w(assets fonts images favicon.ico robots.txt manifest.json apple-touch-icon.png favicon-32x32.png favicon-16x16.png)
+      ~w(assets fonts images favicon.ico robots.txt manifest.json sw.js apple-touch-icon.png android-chrome-192x192.png android-chrome-512x512.png maskable-icon-512x512.png favicon-32x32.png favicon-16x16.png)
 
   def router do
     quote do
