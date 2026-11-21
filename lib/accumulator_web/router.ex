@@ -118,5 +118,10 @@ defmodule AccumulatorWeb.Router do
       # Contact Messages Dashboard
       live "/contact-messages", ContactMessagesLive
     end
+
+    live_session :photos,
+      on_mount: [{AccumulatorWeb.UserAuth, :ensure_authenticated}] do
+      live "/photos", PhotosLive
+    end
   end
 end
