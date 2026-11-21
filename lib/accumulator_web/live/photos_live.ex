@@ -175,11 +175,12 @@ defmodule AccumulatorWeb.PhotosLive do
 
           <.form
             for={@form}
-            id="photo-details-form"
+            id={"photo-details-form-#{@selected.id}"}
             phx-change="save_details"
             phx-submit="save_details"
             class="mt-1"
           >
+            <input type="hidden" name="photo_id" value={@selected.id} />
             <.input
               field={@form[:caption]}
               type="textarea"
@@ -268,20 +269,11 @@ defmodule AccumulatorWeb.PhotosLive do
     {:noreply, socket}
   end
 
-  def handle_event("save_details", %{"photo" => params}, socket) do
-    case Photos.update_photo_details(socket.assigns.selected, params) do
-      {:ok, photo} ->
-        {:noreply,
-         socket
-         |> assign(selected: photo, save_state: :saved)
-         |> stream_insert(:photos, photo)}
-
-      {:error, changeset} ->
-        {:noreply,
-         assign(socket,
-           form: to_form(Map.put(changeset, :action, :validate)),
-           save_state: :error
-         )}
+  def handle_event("save_details", %{"photo_id" => id, "photo" => params}, socket) do
+    if to_string(socket.assigns.selected.id) == id do
+      save_selected_details(socket, params)
+    else
+      save_other_details(socket, Photos.get_photo!(id), params)
     end
   end
 
@@ -346,11 +338,39 @@ defmodule AccumulatorWeb.PhotosLive do
     |> reinsert_selected()
     |> assign(
       selected: photo,
-      form: to_form(Photos.change_photo_details(photo)),
+      form: details_form(photo, Photos.change_photo_details(photo)),
       save_state: :idle
     )
     |> stream_insert(:photos, photo)
   end
+
+  defp save_selected_details(socket, params) do
+    photo = socket.assigns.selected
+
+    case Photos.update_photo_details(photo, params) do
+      {:ok, photo} ->
+        {:noreply,
+         socket
+         |> assign(selected: photo, save_state: :saved)
+         |> stream_insert(:photos, photo)}
+
+      {:error, changeset} ->
+        {:noreply,
+         assign(socket,
+           form: details_form(photo, Map.put(changeset, :action, :validate)),
+           save_state: :error
+         )}
+    end
+  end
+
+  defp save_other_details(socket, photo, params) do
+    case Photos.update_photo_details(photo, params) do
+      {:ok, photo} -> {:noreply, stream_insert(socket, :photos, photo)}
+      {:error, _changeset} -> {:noreply, socket}
+    end
+  end
+
+  defp details_form(photo, changeset), do: to_form(changeset, id: "photo-#{photo.id}")
 
   defp close_panel(socket) do
     socket
