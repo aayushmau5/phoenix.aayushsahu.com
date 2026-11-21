@@ -6,10 +6,10 @@ defmodule AccumulatorWeb.UserAuth do
 
   alias Accumulator.Auth
 
-  # Make the remember me cookie valid for 60 days.
+  # Make the remember me cookie valid for 365 days.
   # If you want bump or reduce this value, also change
   # the token expiry itself in UserToken.
-  @max_age 60 * 60 * 24 * 60
+  @max_age 60 * 60 * 24 * 365
   @remember_me_cookie "_accumulator_web_user_remember_me"
   @remember_me_options [sign: true, max_age: @max_age, same_site: "Lax"]
 
@@ -86,7 +86,29 @@ defmodule AccumulatorWeb.UserAuth do
   def fetch_current_user(conn, _opts) do
     {user_token, conn} = ensure_user_token(conn)
     user = user_token && Auth.get_user_by_session_token(user_token)
-    assign(conn, :current_user, user)
+
+    conn
+    |> assign(:current_user, user)
+    |> maybe_refresh_session(user && user_token)
+  end
+
+  defp maybe_refresh_session(conn, nil), do: conn
+
+  defp maybe_refresh_session(conn, token) do
+    case Auth.touch_session_token(token) do
+      :refreshed -> maybe_refresh_remember_me_cookie(conn, token)
+      :unchanged -> conn
+    end
+  end
+
+  defp maybe_refresh_remember_me_cookie(conn, token) do
+    conn = fetch_cookies(conn, signed: [@remember_me_cookie])
+
+    if conn.cookies[@remember_me_cookie] == token do
+      put_resp_cookie(conn, @remember_me_cookie, token, @remember_me_options)
+    else
+      conn
+    end
   end
 
   defp ensure_user_token(conn) do

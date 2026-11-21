@@ -5,11 +5,13 @@ defmodule Accumulator.Auth.UserToken do
 
   @rand_size 32
 
-  @session_validity_in_days 60
+  @session_validity_in_days 365
+  @touch_interval_in_hours 24
 
   schema "users_tokens" do
     field(:token, :binary)
     field(:context, :string)
+    field(:last_used_at, :naive_datetime)
     field(:ip_address, :string)
     field(:location, :string)
     field(:device_info, :string)
@@ -39,7 +41,10 @@ defmodule Accumulator.Auth.UserToken do
   """
   def build_session_token(user) do
     token = :crypto.strong_rand_bytes(@rand_size)
-    {token, %UserToken{token: token, context: "session", user_id: user.id}}
+    now = NaiveDateTime.utc_now(:second)
+
+    {token,
+     %UserToken{token: token, context: "session", user_id: user.id, last_used_at: now}}
   end
 
   @doc """
@@ -47,18 +52,31 @@ defmodule Accumulator.Auth.UserToken do
 
   The query returns the user found by the token, if any.
 
-  The token is valid if it matches the value in the database and it has
-  not expired (after @session_validity_in_days).
+  The token is valid if it matches the value in the database and it was
+  used within the last @session_validity_in_days.
   """
   def verify_session_token_query(token) do
     query =
       from(token in token_and_context_query(token, "session"),
         join: user in assoc(token, :user),
-        where: token.inserted_at > ago(@session_validity_in_days, "day"),
+        where: token.last_used_at > ago(@session_validity_in_days, "day"),
         select: user
       )
 
     {:ok, query}
+  end
+
+  @doc """
+  Returns a query that marks a session token as used now.
+
+  It only matches tokens not touched within @touch_interval_in_hours,
+  so an active session costs at most one write per interval.
+  """
+  def touch_session_token_query(token) do
+    from(t in token_and_context_query(token, "session"),
+      where: t.last_used_at < ago(@touch_interval_in_hours, "hour"),
+      update: [set: [last_used_at: fragment("(now() at time zone 'utc')")]]
+    )
   end
 
   @doc """

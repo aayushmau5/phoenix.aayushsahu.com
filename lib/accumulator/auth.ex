@@ -64,6 +64,19 @@ defmodule Accumulator.Auth do
   end
 
   @doc """
+  Extends the life of a session token that is in use.
+
+  Returns `:refreshed` when the token's last use was pushed forward,
+  or `:unchanged` when it was already refreshed recently.
+  """
+  def touch_session_token(token) do
+    case Repo.update_all(UserToken.touch_session_token_query(token), []) do
+      {0, _} -> :unchanged
+      {_count, _} -> :refreshed
+    end
+  end
+
+  @doc """
   Deletes the signed token with the given context.
   """
   def delete_user_session_token(token) do
